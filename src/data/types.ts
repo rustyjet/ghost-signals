@@ -68,6 +68,8 @@ export interface Figure {
   unit?: string
   /** One short line under the number saying what it is. */
   label: string
+  /** A year or code: no thousands separator (1903, not 1,903). */
+  plain?: boolean
 }
 
 /**

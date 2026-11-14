@@ -48,3 +48,15 @@ NASA content is generally not subject to copyright in the United States; NASA's 
 | `insight.webp` | InSight's final selfie, 24 Apr 2022 | NASA/JPL-Caltech (PIA25287) | https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia25/pia25287/PIA25287.jpg | Scaled to 2400 px; shown whole on black so the mosaic gaps blend with space. |
 | `sojourner.webp` | Sojourner near "The Dice", seen by the Pathfinder lander, sol 22 | NASA/JPL (PIA01122) | https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia01/pia01122/PIA01122.jpg | WebP only. |
 
+## Ingenuity chapter photos (downloaded 14 Nov 2026)
+
+| File | What | Credit | Source | Changes |
+|---|---|---|---|---|
+| `jezero-ground-wide.webp`, `jezero-ground-narrow.webp` | Mastcam-Z 360° view of Van Zyl Overlook, where Perseverance parked for Ingenuity's first flights (PIA24663) | NASA/JPL-Caltech/ASU/MSSS | https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia24/pia24663/PIA24663.jpg | Cropped to the ground band below the horizon (middle part of the 360°, no mosaic gaps); 6000 px and 2400 px wide. Also used as the full-screen pan in step 2. |
+| `ingenuity-belly.webp` | WATSON view of Ingenuity on Perseverance's belly, 25 Mar 2021 (PIA24424) | NASA/JPL-Caltech/MSSS | https://assets.science.nasa.gov/content/dam/science/psd/mars/downloadable_items/4/5/45906_PIA24424-full.jpg | Black mosaic edge cropped; 2400 px. |
+| `ingenuity-first-flight.webp` | First flight recorded by Mastcam-Z, 19 Apr 2021 (PIA24550) | NASA/JPL-Caltech/ASU/MSSS | https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia24/pia24550/PIA24550.jpg | WebP only. |
+| `ingenuity-swatch.webp` | Wright Flyer swatch on a cable under the solar panel, JPL clean room, 15 Jan 2020 (PIA24291) | NASA/JPL-Caltech | https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia24/pia24291/PIA24291.jpg | 2400 px. |
+| `ingenuity-aerial.webp` | First aerial colour image of Mars, flight 2 (PIA24593) | NASA/JPL-Caltech | https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia24/pia24593/PIA24593.jpg | 2400 px. |
+| `ingenuity-blade-shadow.webp` | Shadow of the damaged rotor blade after flight 72 (PIA26243) | NASA/JPL-Caltech | https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia26/pia26243/PIA26243.jpg | 2400 px. |
+| `ingenuity-final-airfield.webp` | Perseverance spots Ingenuity at its final airfield, 4 Feb 2024 (PIA26236) | NASA/JPL-Caltech/ASU/MSSS | https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia26/pia26236/PIA26236.jpg | Black mosaic edges cropped; 2800 px. |
+

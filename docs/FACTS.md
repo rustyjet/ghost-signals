@@ -167,3 +167,38 @@ Sources were read by a research agent on 14 Nov 2026; the exact sentences are qu
 | Sojourner was the first rover on Mars ("the first-ever robotic rover, Sojourner, to the Martian surface") | PATH | Checked |
 | Sojourner: "spent 83 days of a planned seven-day mission" → "Planned for a week, it lasted 83 days" | PIA01122 caption | Checked |
 | Four of the story's machines are on Mars (Opportunity, Ingenuity, InSight, Sojourner) | chapters above | Checked |
+
+### Ingenuity (14 Nov 2026)
+
+Read by a research agent on 14 Nov 2026 (quotes below); winter row read directly.
+
+- **SIX** = NASA, "6 Things to Know About NASA's Ingenuity Mars Helicopter" (5 Apr 2021) — https://www.nasa.gov/solar-system/6-things-to-know-about-nasas-ingenuity-mars-helicopter/
+- **QF** = JPL Ingenuity landing press kit, quick facts — https://www.jpl.nasa.gov/news/press_kits/ingenuity/landing/quick_facts/
+- **FIRST** = NASA, "NASA's Ingenuity Mars Helicopter Succeeds in Historic First Flight" — https://www.nasa.gov/news-release/nasas-ingenuity-mars-helicopter-succeeds-in-historic-first-flight/
+- **KITTY** = NASA History, "120 Years Ago, the First Powered Flight at Kitty Hawk" — https://www.nasa.gov/history/120-years-ago-the-first-powered-flight-at-kitty-hawk/
+- **OPSDEMO** = JPL, "NASA's Ingenuity Helicopter to Begin New Demonstration Phase" (30 Apr 2021) — https://www.jpl.nasa.gov/news/nasas-ingenuity-helicopter-to-begin-new-demonstration-phase/
+- **F30** = NASA Science blog, "Ingenuity Team Spun Up for Upcoming Flight 30" (19 Aug 2022) — https://science.nasa.gov/blog/ingenuity-team-spun-up-for-upcoming-flight-30/
+- **IEND** = JPL, "After Three Years on Mars, NASA's Ingenuity Helicopter Mission Ends" (25 Jan 2024) — https://www.jpl.nasa.gov/news/after-three-years-on-mars-nasas-ingenuity-helicopter-mission-ends/
+- **ACCID** = JPL, "NASA Performs First Aircraft Accident Investigation on Another World" (11 Dec 2024) — https://www.jpl.nasa.gov/news/nasa-performs-first-aircraft-accident-investigation-on-another-world/
+- **BYE** = JPL, "NASA's Ingenuity Mars Helicopter Team Says Goodbye … for Now" (16 Apr 2024) — https://www.jpl.nasa.gov/news/nasas-ingenuity-mars-helicopter-team-says-goodbye-for-now/
+- **IMP** = NASA Science, Ingenuity mission page — https://science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter/
+
+| Step | Claim | Source | Checked |
+|------|-------|--------|---------|
+| Title | Allowed five flights ("up to five experimental test flights over 30 days"); flew 72 ("completed 72 flights") | IEND, IMP | Checked |
+| Title | Place: Jezero crater | ACCID ("a region of Jezero Crater") | Checked |
+| Counter | "Flight N of 5 planned": 0 before flight 1; 1; 5; 29 (last flight before winter, 11 June 2022); 72 | FIRST, OPSDEMO, F30, IEND | Checked |
+| 1 | 1.8 kg ("about 4 pounds (1.8 kilograms)") | SIX, IMP | Checked |
+| 1 | Rode to Mars "attached to the belly of NASA's Perseverance rover" | IEND | Checked |
+| 2 | Air "about 1% the density of Earth's atmosphere at the surface" | QF | Checked |
+| 3 | Blades "around 2,400 rpm – many times faster than a passenger helicopter on Earth" (no multiple given, none claimed) | SIX | Checked |
+| 4 | 19 April 2021; 39.1 seconds; rose 3 m; "first aircraft in history to make a powered, controlled flight on another planet" | FIRST | Checked |
+| 5 | Cloth "the size of a postage stamp from the Wright Flyer's wing", attached "to a cable underneath the helicopter's solar panel"; the Flyer flew 17 Dec 1903 | KITTY, PIA24438 caption | Checked |
+| 6 | Five flights planned, then an "operations demonstration" scouting for the rover | IEND, OPSDEMO | Checked |
+| 7 | "Nights there dip down to minus 130 degrees Fahrenheit (minus 90 degrees Celsius)" | SIX | Checked |
+| 7 | Winter: "unable to power its heaters throughout the night during the coldest parts of winter"; flight 29 on 11 June, flight 30 "after surviving 101 sols of winter" (sols shown as days) | IEND, F30 | Checked |
+| 8 | Last flight 18 Jan 2024; navigation "couldn't find enough surface features to track" over "featureless sand ripples"; "one or more of its rotor blades sustained damage"; "rough landing" | IEND, ACCID, PIA26243 caption | Checked |
+| 9 | 72 flights; 17.0 km; 128.8 flying minutes ("just over two hours") | IMP | Checked |
+| 9 | "flew more than 14 times farther than planned" (Jan 2024 wording; NASA's Dec 2024 report says "more than 30 times") | IEND | Checked (Jan 2024 figure used) |
+| 9 | "Then the team said goodbye": JPL "Team Says Goodbye … for Now" | BYE | Checked |
+| 10 | Stationary testbed: "wake up daily", "take a picture of the surface with its color camera", "collect temperature data"; "memory could potentially hold about 20 years' worth of daily data" (shown as what the memory can hold, not how long it will last) | BYE | Checked |

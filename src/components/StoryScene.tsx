@@ -4,8 +4,9 @@ import type { Chapter, Figure } from '../data/types'
 import { gsap, isNarrow, prefersReducedMotion, ScrollTrigger, SplitText, useGSAP } from '../scroll/smoothScroll'
 import Backdrop, { makeBackdropController, type Shot } from './story/Backdrop'
 
-const fmt = (n: number, decimals = 0) =>
-  n.toLocaleString('en-GB', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
+/** Numbers as the story shows them: grouped thousands (unless `plain`), and a true minus sign. */
+const fmt = (n: number, decimals = 0, plain = false) =>
+  n.toLocaleString('en-GB', { minimumFractionDigits: decimals, maximumFractionDigits: decimals, useGrouping: !plain }).replace('-', '−')
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
@@ -181,8 +182,9 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
               if (num) {
                 const value = Number(num.dataset.value)
                 const decimals = Number(num.dataset.decimals)
+                const plain = num.dataset.plain === 'true'
                 const counter = { v: 0 }
-                let shown = fmt(0, decimals)
+                let shown = fmt(0, decimals, plain)
                 num.textContent = shown
                 tl.to(
                   counter,
@@ -191,7 +193,7 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
                     duration: 0.75,
                     ease: 'power2.out',
                     onUpdate: () => {
-                      const s = fmt(counter.v, decimals)
+                      const s = fmt(counter.v, decimals, plain)
                       if (s !== shown) num.textContent = shown = s
                     },
                   },
@@ -383,11 +385,11 @@ function FigureView({ figure }: { figure: Figure }) {
     <div data-fade="">
     <div data-figure="">
       <p
-        aria-label={`${fmt(figure.value, d)}${figure.unit ? ` ${figure.unit}` : ''}`}
+        aria-label={`${fmt(figure.value, d, figure.plain)}${figure.unit ? ` ${figure.unit}` : ''}`}
         className="font-display font-extrabold leading-[0.85] tracking-[-0.035em] text-[clamp(3.2rem,16vw,4.6rem)] [@media(max-height:700px)]:text-[clamp(2.8rem,13vw,3.6rem)] md:text-[6.5rem] lg:text-[clamp(5rem,9vw,9.5rem)] lg:[@media(max-height:700px)]:text-[clamp(4rem,8vw,6.5rem)]"
       >
-        <span aria-hidden="true" data-num="" data-value={figure.value} data-decimals={d} className="tabular-nums">
-          {fmt(figure.value, d)}
+        <span aria-hidden="true" data-num="" data-value={figure.value} data-decimals={d} data-plain={figure.plain ? 'true' : 'false'} className="tabular-nums">
+          {fmt(figure.value, d, figure.plain)}
         </span>
         {figure.unit && (
           <span aria-hidden="true" className={`text-[0.36em] tracking-normal ${figure.unit === '+' || figure.unit === '%' ? '' : 'ml-[0.12em]'}`}>

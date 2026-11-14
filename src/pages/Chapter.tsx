@@ -30,7 +30,8 @@ export default function Chapter() {
 
   return (
     <main>
-      <StoryScene chapter={chapter} />
+      {/* Keyed, so moving between chapters builds a fresh story (the title's letters are split in place) */}
+      <StoryScene key={chapter.slug} chapter={chapter} />
 
       {chapter.interaction === 'dust-storm' && <LastLight />}
 
