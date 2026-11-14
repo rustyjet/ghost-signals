@@ -44,6 +44,29 @@ Sources are abbreviated below:
 | Opportunity | More than 217,000 images, 15 full 360° colour panoramas | END | Checked |
 | Opportunity | "My battery is low and it's getting dark" came from a journalist, not the rover | General knowledge | **Recheck — find a source before submission** |
 
+## Story script v2 (rover's own voice) — checked 14 Nov 2026
+
+More sources:
+
+- **HOLE** = JPL, "New Look at 2004's Martian Hole-in-One Site" — https://www.jpl.nasa.gov/news/new-look-at-2004s-martian-hole-in-one-site/
+- **BOWL** = NASA Photojournal, "Discovery Served Up in a Bowl" (PIA05634) — https://science.nasa.gov/photojournal/discovery-served-up-in-a-bowl
+- **APOD** = NASA APOD, "A Berry Bowl of Martian Spherules" — https://science.nasa.gov/image-article/apod-2025-june-22-a-berry-bowl-of-martian-spherules/
+- **LAST** = NASA Photojournal, "Opportunity's Last Message" (PIA22929) — https://science.nasa.gov/photojournal/opportunitys-last-message
+
+| Step | Claim | Source | Checked |
+|------|-------|--------|---------|
+| Title | Sent to Mars in 2003 to look for clues of past water | MP | Checked |
+| 1 | Airbag-cushioned lander bounced and tumbled into Eagle crater, 22 m (72 ft) across | HOLE | Checked |
+| 1 | Called a "hole-in-one" landing | HOLE | Checked |
+| 1 | Day 1 = landing day (counter) | Landing 24 Jan 2004 PST, MP | Checked |
+| 2 | Designed for 90 Martian days and about 1,000 m of driving | END | Checked |
+| 3 | Day 48: "Berry Bowl" brushing; hematite in the sphere-like grains, deposited in water | BOWL | Checked |
+| 3 | Average blueberry about 4 mm across | APOD | Checked (replaces the earlier Recheck row) |
+| 3 | Hematite is a mineral that forms in water | END | Checked |
+| Later | Last image taken 10 June 2018, the 5,111th sol; the Sun image is dark and the transmission stopped before the image was complete | LAST | Checked |
+
+"Day N on Mars" counts sols (Martian days), the same unit as the 90-day plan.
+
 ## Known traps
 
 - Sojourner was the first rover **on Mars**, not the first wheeled vehicle on another world (Lunokhod 1 drove on the Moon in 1970).

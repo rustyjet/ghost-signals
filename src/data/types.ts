@@ -5,71 +5,59 @@ export interface Source {
   url: string
 }
 
-/** One first-person story card. `text` is imagined narration built on real mission facts. */
-export interface StoryBeat {
-  heading: string
-  text: string
-  image?: { src: string; alt: string; credit: string }
+export interface Photo {
+  src: string
+  alt: string
+  credit: string
 }
 
-/** A numbered pin on the 3D model (or on the fallback photo). */
-export interface Hotspot {
-  id: string
-  name: string
-  /** What this part did and what science it made possible. */
-  text: string
-  /** model-viewer surface position "x y z" in metres, model space. */
-  position?: string
-  normal?: string
-  /** Fallback placement on the photo, in percent from the top-left. */
-  photoXY?: [number, number]
-}
-
-export interface QuickFact {
+/** The big number on a step. It counts up from zero when the step arrives. */
+export interface Figure {
+  value: number
+  decimals?: number
+  /** Short unit set beside the number, e.g. "m", "km", "days". */
+  unit?: string
+  /** One short line under the number saying what it is. */
   label: string
-  value: string
 }
 
 /**
- * One screen of the pinned scroll scene. It shows either a story beat or a part of the machine,
- * and tells the camera and sky where to be.
+ * One screen of the story. The machine speaks in the first person.
+ * Limits (checked by scripts/check-copy.mjs): heading at most 5 words, body at most 150 characters.
  */
-export interface SceneStep {
-  kind: 'title' | 'beat' | 'part'
-  /** Beat heading or hotspot id. Unused for the title step. */
-  ref?: string
-  /** Where in the mission we are, shown top-left. Must be a sourced date or figure. */
-  marker: string
+export interface Step {
+  /** Value of the chapter's running counter (e.g. day on Mars) at this moment. Must be sourced. */
+  spine: number
+  /** True once the machine has gone silent: the counter stops and says so. */
+  silent?: boolean
+  figure?: Figure
+  heading: string
+  body: string
   /** model-viewer camera-orbit, e.g. "-35deg 70deg 4m" */
   orbit: string
   /** model-viewer camera-target "x y z" in metres, or "auto" */
   target: string
   /** 0 = clear sky, 1 = full dust storm */
   storm: number
+  photo?: Photo
 }
 
-export type InteractionId = 'dust-storm' | 'laser-ranging' | 'rotor-lift' | 'quake-spotter'
+export type InteractionId = 'dust-storm' | 'laser-ranging' | 'rotor-lift'
 
 export interface Chapter {
   slug: string
   name: string
-  /** Short line shown on the tuner when the signal locks. */
-  callSign: string
   world: World
-  /** Dial position of this beacon on the hub tuner, 0-100. */
-  frequency: number
-  status: string
-  model?: { src: string; alt: string; credit: string; cameraOrbit?: string }
-  photo?: { src: string; alt: string; credit: string }
-  hotspots: Hotspot[]
-  beats: StoryBeat[]
-  /** The scroll scene, in order. */
-  scene: SceneStep[]
+  /** Where the machine is, shown on the title screen. */
+  place: string
   /** One line under the name on the title screen. */
   tagline: string
+  /** How the running counter reads, e.g. { before: 'Day', after: 'on Mars' }. */
+  spine: { before: string; after: string }
+  /** Camera and sky for the title screen. */
+  title: { orbit: string; target: string; storm: number }
+  model: Photo
+  steps: Step[]
   interaction?: InteractionId
-  learned: string
-  stillMatters: string
-  quickFacts: QuickFact[]
   sources: Source[]
 }

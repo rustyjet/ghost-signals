@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "node scripts/check-copy.mjs && tsc -b && vite build",
+    "check:copy": "node scripts/check-copy.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

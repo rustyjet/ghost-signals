@@ -1,0 +1,39 @@
+// Fails the build if any story step breaks the writing limits.
+// Short copy is a design rule: it is what keeps one idea per screen and makes phones readable.
+// Runs the chapter .ts files directly (Node strips the type-only imports).
+import { readdirSync } from 'node:fs'
+import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
+
+const MAX_HEADING_WORDS = 5
+const MAX_BODY_CHARS = 150
+const MAX_TAGLINE_CHARS = 70
+const BANNED = [/\bjourney\b/i, /look closer/i, /!/, /\?$/]
+
+const dir = join(import.meta.dirname, '..', 'src', 'data', 'chapters')
+const files = readdirSync(dir).filter((f) => f.endsWith('.ts') && f !== 'index.ts')
+const problems = []
+
+for (const file of files) {
+  const mod = await import(pathToFileURL(join(dir, file)).href)
+  for (const chapter of Object.values(mod)) {
+    if (!chapter?.steps) continue
+    if (chapter.tagline.length > MAX_TAGLINE_CHARS)
+      problems.push(`${chapter.slug} tagline: ${chapter.tagline.length} chars (max ${MAX_TAGLINE_CHARS})`)
+    chapter.steps.forEach((s, i) => {
+      const where = `${chapter.slug} step ${i + 1} "${s.heading}"`
+      const words = s.heading.trim().split(/\s+/).length
+      if (words > MAX_HEADING_WORDS) problems.push(`${where}: heading has ${words} words (max ${MAX_HEADING_WORDS})`)
+      if (s.body.length > MAX_BODY_CHARS) problems.push(`${where}: body has ${s.body.length} chars (max ${MAX_BODY_CHARS})`)
+      for (const re of BANNED) {
+        if (re.test(s.heading) || re.test(s.body)) problems.push(`${where}: uses banned pattern ${re}`)
+      }
+    })
+  }
+}
+
+if (problems.length) {
+  console.error('Copy check failed:\n  ' + problems.join('\n  '))
+  process.exit(1)
+}
+console.log(`Copy check passed (${files.length} chapter file${files.length === 1 ? '' : 's'}).`)

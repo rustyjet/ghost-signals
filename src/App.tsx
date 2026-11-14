@@ -5,6 +5,7 @@ import { startSmoothScroll } from './scroll/smoothScroll'
 
 // Chapters pull in the 3D viewer, so they load separately from the start page.
 const Chapter = lazy(() => import('./pages/Chapter'))
+const DevFrames = import.meta.env.DEV ? lazy(() => import('./pages/DevFrames')) : null
 
 export default function App() {
   useEffect(() => startSmoothScroll(), [])
@@ -14,6 +15,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Hub />} />
         <Route path="/signal/:slug" element={<Chapter />} />
+        {DevFrames && <Route path="/dev/frames" element={<DevFrames />} />}
         <Route path="*" element={<Hub />} />
       </Routes>
     </Suspense>

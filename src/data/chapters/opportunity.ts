@@ -1,121 +1,67 @@
 import type { Chapter } from '../types'
 
-// Every fact here has a row in docs/FACTS.md. Narration is imagined; the facts in it are not.
+// Script: see the approved plan. Every number here has a checked row in docs/FACTS.md.
+// The voice is the rover's own, first person. Steps 4-12 are added after the checkpoint.
 export const opportunity: Chapter = {
   slug: 'opportunity',
   name: 'Opportunity',
-  callSign: 'MER-B · Meridiani Planum, Mars',
   world: 'mars',
-  frequency: 62,
-  status: 'Silent since 10 June 2018',
-  tagline: 'Built to last 90 days. It lasted almost 15 years.',
-  scene: [
-    { kind: 'title', marker: 'Meridiani Planum, Mars', orbit: '-35deg 78deg 7m', target: 'auto', storm: 0 },
-    { kind: 'beat', ref: 'Ninety days', marker: 'January 2004', orbit: '-35deg 74deg 4.2m', target: 'auto', storm: 0 },
-    { kind: 'part', ref: 'mast', marker: 'January 2004', orbit: '25deg 66deg 3.6m', target: '0.2 1.0 0.45', storm: 0 },
-    { kind: 'beat', ref: 'Blueberries', marker: '2004', orbit: '55deg 82deg 3.4m', target: 'auto', storm: 0.05 },
-    { kind: 'part', ref: 'arm', marker: '2004', orbit: '15deg 84deg 2m', target: '-0.05 0.4 0.68', storm: 0.05 },
-    { kind: 'beat', ref: 'Waiting for the wind', marker: 'July 2007', orbit: '-70deg 62deg 3.8m', target: 'auto', storm: 0.8 },
-    { kind: 'part', ref: 'panels', marker: 'July 2007', orbit: '-85deg 38deg 2.6m', target: '-0.6 0.78 -0.3', storm: 0.6 },
-    { kind: 'beat', ref: 'The long drive', marker: '45.16 km driven', orbit: '140deg 76deg 4.2m', target: 'auto', storm: 0.12 },
-    { kind: 'part', ref: 'wheels', marker: '45.16 km driven', orbit: '-40deg 86deg 3.4m', target: '-0.3 0.2 0.3', storm: 0.12 },
-    { kind: 'beat', ref: 'The last storm', marker: 'June 2018', orbit: '-35deg 76deg 5.2m', target: 'auto', storm: 1 },
-    { kind: 'beat', ref: 'Still here', marker: 'Perseverance Valley, today', orbit: '-10deg 80deg 7.5m', target: 'auto', storm: 0.3 },
-  ],
+  place: 'Meridiani Planum, Mars',
+  tagline: 'Sent to Mars in 2003 to find out if it was ever wet.',
+  spine: { before: 'Day', after: 'on Mars' },
+  title: { orbit: '-35deg 78deg 7m', target: 'auto', storm: 0 },
   model: {
     src: 'models/opportunity.glb',
-    alt: '3D model of the Opportunity rover: six wheels, flat solar panels like wings, and a tall camera mast.',
+    alt: 'The Opportunity rover: six wheels, flat solar panels like wings, and a tall camera mast.',
     credit: 'NASA/JPL-Caltech',
-    cameraOrbit: '-35deg 70deg auto',
   },
-  hotspots: [
+  steps: [
     {
-      id: 'panels',
-      name: 'Solar panels',
-      text: 'My only power source. On a clear day they made up to 140 watts. Dust kept settling on them and I had no way to wipe it off. In a 2007 dust storm my power dropped to just 128 watt-hours in a whole day. Sometimes the wind blew the dust away for me.',
-      position: '-0.6 0.78 -0.3',
-      normal: '0 1 0',
+      spine: 1,
+      figure: { value: 22, unit: 'm', label: 'across: the crater I rolled into' },
+      heading: 'I landed in a hole.',
+      body: 'Wrapped in airbags, I bounced across Mars and rolled into a crater 22 metres wide. My team called it a hole in one.',
+      orbit: '-60deg 84deg 4.6m',
+      target: 'auto',
+      storm: 0,
     },
     {
-      id: 'mast',
-      name: 'Camera mast',
-      text: 'My eyes sat about 1.4 metres up, roughly the height of a ten-year-old. I sent home more than 217,000 pictures, including 15 full 360-degree colour panoramas.',
-      position: '0.25 1.4 0.55',
-      normal: '0 0 1',
+      spine: 1,
+      figure: { value: 90, unit: 'days', label: 'the whole plan' },
+      heading: 'The plan was short.',
+      body: 'Ninety days on Mars. About one kilometre of driving. Then my job would be done.',
+      orbit: '25deg 70deg 4.2m',
+      target: 'auto',
+      storm: 0,
     },
     {
-      id: 'arm',
-      name: 'Robotic arm',
-      text: 'My arm held instruments I could press against rocks. One of them, a Mössbauer spectrometer, showed that the little grey balls all around me were made of hematite, a mineral that usually forms in water.',
-      position: '-0.05 0.4 0.68',
-      normal: '0 0 1',
-    },
-    {
-      id: 'wheels',
-      name: 'Six wheels',
-      text: 'My top speed was about 3.75 centimetres a second, so driving 100 metres took me about 45 minutes. My best single day was 220 metres, on 20 March 2005.',
-      position: '-0.95 0.3 0.2',
-      normal: '1 0 0',
-    },
-  ],
-  beats: [
-    {
-      heading: 'Ninety days',
-      text: 'I landed on 24 January 2004 and bounced to a stop inside a small crater called Eagle, on a flat plain called Meridiani Planum. My team built me to work for 90 Martian days and to drive about one kilometre. That was the whole plan.',
-    },
-    {
-      heading: 'Blueberries',
-      text: 'Right outside my crater, the ground was covered in tiny grey balls, about 4 millimetres across. My team called them blueberries. My instruments showed they were hematite, a mineral that forms in water. Long ago, water had soaked these rocks. It was acidic and salty, but it was water.',
-    },
-    {
-      heading: 'Waiting for the wind',
-      text: 'Dust fell on my solar panels every day. In 2007 a dust storm darkened the sky and my power fell lower than ever. My team switched off almost everything: no driving, few pictures, very little talking. We waited. When the sky cleared, I was still here. Every so often a gust of wind blew my panels clean, like someone opening the curtains.',
-    },
-    {
-      heading: 'The long drive',
-      text: 'I kept going for years. I drove to Endeavour Crater, 22 kilometres wide, and found more signs of ancient water at its rim. By the end I had driven 45.16 kilometres, farther than any vehicle had ever driven on another world.',
-    },
-    {
-      heading: 'The last storm',
-      text: 'In June 2018 a dust storm wrapped the whole planet. Not enough sunlight reached my panels to charge my batteries. My last signal reached Earth on 10 June 2018. For eight months my team sent more than a thousand commands, hoping I would answer. On 13 February 2019 they said goodbye.',
-    },
-    {
-      heading: 'Still here',
-      text: 'I am parked on the western edge of a place called Perseverance Valley. I was meant to last 90 days. I lasted almost 15 years, sixty times longer than planned.',
+      spine: 48,
+      figure: { value: 4, unit: 'mm', label: 'across, each grey berry' },
+      heading: 'The ground had berries.',
+      body: 'Tiny grey balls lay everywhere. They are hematite, a mineral that forms in water. Mars was once wet.',
+      orbit: '15deg 84deg 2.2m',
+      target: '-0.05 0.4 0.68',
+      storm: 0,
     },
   ],
   interaction: 'dust-storm',
-  learned:
-    'Opportunity found hematite "blueberries" and other clues showing that liquid water once soaked the ground at Meridiani Planum. Its evidence suggested Mars may once have been able to support microbial life, though the water there was acidic and salty, which would have made life harder.',
-  stillMatters:
-    'Opportunity set the record for the longest drive on another world, and it showed that a solar-powered rover could survive years of Martian dust by waiting out storms and catching lucky gusts of wind. A famous line, "My battery is low and it\'s getting dark," was a science journalist\'s way of summing up its last data. The rover never said it, but the line is how many people remember it.',
-  quickFacts: [
-    { label: 'Launched', value: '7 July 2003' },
-    { label: 'Landed', value: '24 Jan 2004, Meridiani Planum' },
-    { label: 'Planned life', value: '90 sols (Mars days)' },
-    { label: 'Actual life', value: 'Almost 15 years' },
-    { label: 'Distance driven', value: '45.16 km' },
-    { label: 'Mass', value: '185 kg' },
-    { label: 'Last signal', value: '10 June 2018' },
-    { label: 'Resting place', value: 'Perseverance Valley' },
-  ],
   sources: [
     { label: 'NASA Science: Opportunity mission page', url: 'https://science.nasa.gov/mission/mer-opportunity/' },
+    {
+      label: "JPL: New Look at 2004's Martian Hole-in-One Site",
+      url: 'https://www.jpl.nasa.gov/news/new-look-at-2004s-martian-hole-in-one-site/',
+    },
     {
       label: "NASA Science: NASA's Opportunity Rover Mission on Mars Comes to End",
       url: 'https://science.nasa.gov/missions/mer/nasas-opportunity-rover-mission-on-mars-comes-to-end/',
     },
     {
-      label: 'NASA NSSDCA: Opportunity spacecraft details',
-      url: 'https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2003-032A',
+      label: 'NASA Photojournal: Discovery Served Up in a Bowl',
+      url: 'https://science.nasa.gov/photojournal/discovery-served-up-in-a-bowl',
     },
     {
-      label: "JPL: Mineral in Mars 'Berries' Adds to Water Story",
-      url: 'https://www.jpl.nasa.gov/news/mineral-in-mars-berries-adds-to-water-story/',
-    },
-    {
-      label: 'JPL: Mars Rovers Survive Dust Storms, Ready for Next Objectives',
-      url: 'https://www.jpl.nasa.gov/news/mars-rovers-survive-dust-storms-ready-for-next-objectives/',
+      label: 'NASA APOD: A Berry Bowl of Martian Spherules',
+      url: 'https://science.nasa.gov/image-article/apod-2025-june-22-a-berry-bowl-of-martian-spherules/',
     },
     {
       label: 'NASA 3D Resources: Spirit and Opportunity Rover 3D model',
