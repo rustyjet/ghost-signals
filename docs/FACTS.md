@@ -128,3 +128,17 @@ Each photo is shown with the step it belongs to, so the picture itself is a clai
 - Sojourner was the first rover **on Mars**, not the first wheeled vehicle on another world (Lunokhod 1 drove on the Moon in 1970).
 - "My battery is low and it's getting dark" was a journalist's paraphrase of Opportunity's last data, not a message the rover sent.
 - Opportunity, InSight and Sojourner had fixed solar panels. They could not tilt them to shed dust; wind did the cleaning.
+
+### Last Light game (14 Nov 2026)
+
+The game's numbers (battery, warmth, dust, 40 days, power costs) are game units, said on screen ("The game's numbers are simpler than the real rover's"). Only the endings make real claims:
+
+| Where | Claim | Source | Checked |
+|-------|-------|--------|---------|
+| Win ending | July 2007: the team stopped driving and waited | STORM07, STORM07B | Checked (same as step 6) |
+| Win ending | Power fell to 128 watt-hours a day | MP, STORM07B | Checked (same as step 6) |
+| Win ending | Opportunity made it through the 2007 storm | STORM07 ("Mars Rovers Survive Dust Storms") | Checked |
+| Loss ending | June 2018 storm covered all of Mars; panels could not recharge the batteries | MP, END | Checked |
+| Loss ending | Last signal reached Earth on 10 June 2018 | MP, NSSDCA | Checked |
+| Loss ending | In 2007 the team got it through a storm like this by stopping and waiting | STORM07 | Checked |
+| Scene | The deck photos are the two 2014 self-portraits (PIA17759 dusty, PIA18079 clean), used to show dust building up and blowing off | PIA17759, PIA18079 | Shown as a game picture, not a dated moment |

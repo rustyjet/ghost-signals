@@ -13,6 +13,8 @@
   --color-sun: #f2e2c2;
   --color-frost: #a8c6d6;
   --color-ink: #1f140e;
+  /* Warnings in the Last Light game: a hot, dusty orange that reads on basalt */
+  --color-warn: #ff9e6e;
 
   --font-display: 'Bricolage Grotesque Variable', 'Arial Black', sans-serif;
   --font-body: 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
@@ -32,6 +34,12 @@ body {
   overflow-x: clip;
 }
 
+/* No single word left alone on the last line of a paragraph */
+p,
+li {
+  text-wrap: pretty;
+}
+
 h1,
 h2,
 h3 {
@@ -41,9 +49,21 @@ h3 {
   letter-spacing: -0.03em;
 }
 
+/* The day's battery change floats up beside the number and fades */
+@keyframes rise {
+  0% { opacity: 0; transform: translateY(6px); }
+  15% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-22px); }
+}
+
 :focus-visible {
   outline: 3px solid currentColor;
   outline-offset: 4px;
+}
+
+/* Headings that receive focus from script (so screen readers hear a result) don't need a ring */
+[tabindex='-1']:focus-visible {
+  outline: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

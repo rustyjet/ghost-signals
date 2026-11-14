@@ -13,6 +13,7 @@ The visual world is the real place each machine stands in. Tokens live in `src/i
 | sun | `#f2e2c2` | Light text on dark ground |
 | ink | `#1f140e` | Dark text on sky |
 | frost | `#a8c6d6` | Cold, reserved for the Last Light game |
+| warn | `#ff9e6e` | Low battery in the Last Light game (always with a word, never colour alone) |
 
 The Moon chapters will use black sky, bright grey ground and gold foil.
 
@@ -34,6 +35,18 @@ The Moon chapters will use black sky, bright grey ground and gold foil.
 - 1024 px and wider: words travel up the left side over a dark scrim.
 - Narrower: the backdrop fills the screen and its lower part is darkened. Words are read there, and each part of the words fades out before it passes the middle of the screen. Nothing is ever layered on top of the words.
 - No fixed chrome except the story counter (e.g. "Day 48 on Mars"). No progress bar, no next button.
+
+## The Last Light game
+
+- One full screen after the story, on Opportunity's real deck (the 2014 self-portraits). The state is in the picture, not in bars:
+  - dust on the panels: the clean photo turns into the dusty one;
+  - a gust: the dustier picture is swept off left to right behind a thin light line, the camera shakes a little and the air fills with dust;
+  - the storm: the light goes dark brown;
+  - cold: the colour drains and frost grows in from the edges;
+  - signal lost: the picture goes black from the bottom up in rows, like the real last picture.
+- The battery is a big number; each day's change floats up beside it. A one-line news line says what just happened.
+- Two big switches (up is on): Heaters and Radio. The game pauses itself when it scrolls out of view or the tab is hidden.
+- The deck rises out of the story's dark on scroll (scrubbed), so there is no hard edge between the story and the game.
 
 ## Motion
 

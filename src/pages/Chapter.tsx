@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import StoryScene from '../components/StoryScene'
+import LastLight from '../components/game/LastLight'
 import { sceneImages } from '../components/story/Backdrop'
 import { getChapter } from '../data/chapters'
 import type { Chapter as ChapterData } from '../data/types'
@@ -31,15 +32,7 @@ export default function Chapter() {
     <main>
       <StoryScene chapter={chapter} />
 
-      {/* Checkpoint: the Last Light game is rebuilt here next */}
-      <section className="grid min-h-[60dvh] place-items-center bg-basalt px-5 text-center">
-        <div>
-          <h2 className="text-5xl sm:text-7xl">Your turn.</h2>
-          <p className="mx-auto mt-4 max-w-[36ch] text-lg text-sun/80">
-            A dust storm is coming. The game where you keep a rover alive through it is being built.
-          </p>
-        </div>
-      </section>
+      {chapter.interaction === 'dust-storm' && <LastLight />}
 
       {chapter.closing && <Closing chapter={chapter} />}
       <Sources chapter={chapter} />
