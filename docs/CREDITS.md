@@ -11,8 +11,6 @@ All 3D models come from NASA's 3D Resources (science.nasa.gov). Downloaded 14 No
 
 ## Photographs
 
-| File in `public/photos/` | Title | Credit | Source page | Notes |
-|---|---|---|---|---|
 All downloaded 14 Nov 2026 and converted to WebP with ffmpeg. "Step" is the Opportunity chapter step that shows the photo (0 = title).
 
 | File in `public/photos/` | Title | Credit | Source page | Notes |
@@ -22,12 +20,12 @@ All downloaded 14 Nov 2026 and converted to WebP with ffmpeg. "Step" is the Oppo
 | `berry-bowl.webp` | Discovery Served Up in a Bowl (PIA05634) | NASA/JPL/Cornell | https://science.nasa.gov/photojournal/discovery-served-up-in-a-bowl | Calibration strip at the bottom cropped off. Step 3. |
 | `endurance-horizon.webp` | 'Endurance' Looms on the Horizon (PIA05847) | NASA/JPL/Cornell | https://photojournal.jpl.nasa.gov/catalog/PIA05847 | Taken on sol 93, about 70 m from Endurance crater's rim. Black/white mosaic borders cropped. Step 4 (day 91). |
 | `purgatory-wide.webp`, `purgatory-tall.webp` | Opportunity's 'Rub al Khali' Panorama (PIA07216) | NASA/JPL/Cornell | https://science.nasa.gov/photojournal/opportunitys-rub-al-khali-panorama/ | Taken sols 456–464 at Purgatory Dune; the ruts from being stuck are in the foreground. Two crops around the tracks. Step 5. |
-| `sky-2007.webp` | A Darkened Mars Sky | NASA/JPL-Caltech/Cornell | https://science.nasa.gov/resource/a-darkened-mars-sky/ | Unmodified apart from format. Five frames, sols 1,205–1,235 (14 June to 15 July 2007), labels are NASA's. Step 6. |
-| `selfie-dusty.webp` | Self-Portrait by Opportunity Mars Rover in January 2014 (PIA17759) | NASA/JPL-Caltech/Cornell Univ./Arizona State Univ. | https://science.nasa.gov/photojournal/self-portrait-by-opportunity-mars-rover-in-january-2014 | Cropped and scaled to match the March portrait so the two line up for the wipe. Step 7. |
-| `selfie-clean.webp` | Self-Portrait by Freshly Cleaned Opportunity Mars Rover in March 2014 (PIA18079) | NASA/JPL-Caltech/Cornell Univ./Arizona State Univ. | https://science.nasa.gov/photojournal/self-portrait-by-freshly-cleaned-opportunity-mars-rover-in-march-2014 | As above. Step 7. |
+| `sky-2007.webp` | A Darkened Mars Sky | NASA/JPL-Caltech/Cornell | https://science.nasa.gov/resource/a-darkened-mars-sky/ | Five frames, sols 1,205–1,235 (14 June to 15 July 2007). Label rows above and below the frames cropped off so it can fill the screen. Step 6. |
+| `selfie-dusty.webp` | Self-Portrait by Opportunity Mars Rover in January 2014 (PIA17759) | NASA/JPL-Caltech/Cornell Univ./Arizona State Univ. | https://science.nasa.gov/photojournal/self-portrait-by-opportunity-mars-rover-in-january-2014 | Cropped and scaled (2400 px wide) to match the March portrait so the two line up for the wipe. Step 7. |
+| `selfie-clean.webp` | Self-Portrait by Freshly Cleaned Opportunity Mars Rover in March 2014 (PIA18079) | NASA/JPL-Caltech/Cornell Univ./Arizona State Univ. | https://science.nasa.gov/photojournal/self-portrait-by-freshly-cleaned-opportunity-mars-rover-in-march-2014 | Cropped and scaled to 2400 px wide, as above. Step 7. |
 | `marathon-map.webp` | Opportunity Rover's Full Marathon-Length Traverse (PIA19154) | NASA/JPL-Caltech/MSSS/NMMNHS | https://science.nasa.gov/resource/opportunity-rovers-full-marathon-length-traverse | Scaled to 2600 px wide. Step 8. |
 | `sprained-ankle.webp` | Panorama Above Perseverance Valley ('Sprained Ankle') (PIA21723) | NASA/JPL-Caltech/Cornell/Arizona State Univ. | https://science.nasa.gov/photojournal/panorama-above-perseverance-valley-on-mars/ | Taken sols 4,753–4,765 (June 2017) while engineers diagnosed a front-wheel steering stall. Black lower edge cropped. Step 9. |
-| `last-picture.webp` | Opportunity's Last Message (PIA22929) | NASA/JPL-Caltech/Cornell/ASU | https://science.nasa.gov/photojournal/opportunitys-last-message | Unmodified apart from format. Step 10. |
+| `last-picture.webp` | Opportunity's Last Message (PIA22929) | NASA/JPL-Caltech/Cornell/ASU | https://science.nasa.gov/photojournal/opportunitys-last-message | The last few rows before the black band are faded into it, so the edge reads softly when the picture fills the screen. Step 10. |
 | `perseverance-valley-wide.webp`, `perseverance-valley-narrow.webp` | Opportunity Legacy Pan (True Color) (PIA22909) | NASA/JPL-Caltech/Cornell/ASU | https://science.nasa.gov/photojournal/opportunity-legacy-pan-true-color | Opportunity's last panorama, sols 5,084–5,111. Cropped from the full TIFF to the valley floor. Ground band under the 3D rover, step 12. |
 
 No NASA 3D model was found for Sojourner; its chapter uses a NASA photo with pins.

@@ -12,17 +12,20 @@ export interface Shot {
 
 /** Scenes with the same key share one layer, so a photo used by two steps keeps travelling. */
 export const sceneKey = (s: Scene): string =>
-  s.kind === 'photo' || s.kind === 'framed' ? s.image.id : s.kind === 'compare' ? `${s.before.id}|${s.after.id}` : s.kind
+  s.kind === 'photo' ? s.image.id : s.kind === 'compare' ? `${s.before.id}|${s.after.id}` : s.kind
 
 /** Every picture a list of shots shows, once each (for the credits). */
 export function sceneImages(scenes: Scene[]): SceneImage[] {
   const out = new Map<string, SceneImage>()
   for (const s of scenes) {
-    const imgs = s.kind === 'photo' || s.kind === 'framed' ? [s.image] : s.kind === 'compare' ? [s.before, s.after] : s.kind === 'rover' ? [s.ground] : []
+    const imgs = s.kind === 'photo' ? [s.image] : s.kind === 'compare' ? [s.before, s.after] : s.kind === 'rover' ? [s.ground] : []
     for (const i of imgs) if (!out.has(i.name + i.credit)) out.set(i.name + i.credit, i)
   }
   return [...out.values()]
 }
+
+/** How much of the scroll between two steps the cross-fade takes (0–1). Wide, so scenes dissolve rather than cut. */
+const FADE = 0.6
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
@@ -82,7 +85,6 @@ export function makeBackdropController(
       img.dataset.bw = String(w * base)
       img.dataset.bh = String(h * base)
     })
-    el.querySelectorAll<HTMLElement>('[data-frame]').forEach((f) => (f.dataset.fw = String(f.clientWidth)))
     memo.clear()
   }
 
@@ -98,47 +100,40 @@ export function makeBackdropController(
   }
 
   /** How far through its own stretch of the story a shot is, 0–1. */
-  const progress = (s: number, f: number) => {
+  // A shot keeps moving all through the cross-fades on either side of it, so nothing ever sits frozen
+  // on screen. Two steps on one photo (`shared`) hand over at the midpoint instead, so the pan is continuous.
+  const progress = (s: number, f: number, shared: boolean) => {
     if (opts.reduced) return 1
     if (s === 0) return clamp01(f / 0.5)
-    if (s === n - 1) return clamp01((f - (s - 0.5)) / 1.5)
-    return clamp01(f - (s - 0.5))
+    const lead = shared ? 0.5 : 0.5 + FADE / 2
+    if (s === n - 1) return clamp01((f - (s - lead)) / (lead + 1))
+    return clamp01((f - (s - lead)) / (2 * lead))
   }
 
-  const draw = (s: number, f: number, id: string) => {
+  const draw = (s: number, f: number, id: string, shared = false) => {
     const layer = layers.get(keys[s])
     const scene = shots[s].scene
     if (!layer) return
-    const u = progress(s, f)
-    if (scene.kind === 'photo') {
-      const img = layer.querySelector<HTMLImageElement>('img[data-cover]')
-      if (!img) return
-      const v = lerpView(scene.from, scene.to, u)
+    const u = progress(s, f, shared)
+    if (scene.kind === 'photo' || scene.kind === 'compare') {
+      // Every photo in the layer travels together (the two halves of a wipe stay lined up).
+      const [from, to] = scene.narrow && isNarrow() ? scene.narrow : [scene.from, scene.to]
+      const v = lerpView(from, to, u)
       const z = v.zoom ?? 1
-      const W = Number(img.dataset.bw) * z
-      const H = Number(img.dataset.bh) * z
-      set(img, 'transform', `translate3d(${(-(W - vw) * v.x).toFixed(1)}px, ${(-(H - vh) * v.y).toFixed(1)}px, 0) scale(${z.toFixed(4)})`, id + 'img')
-    } else if (scene.kind === 'framed') {
-      const frame = layer.querySelector<HTMLElement>('[data-frame]')
-      const img = layer.querySelector<HTMLElement>('img')
-      if (!frame || !img) return
-      const r = scene.reveal === 'none' ? 1 : smooth(u / 0.45)
-      const clip = scene.reveal === 'left' ? `inset(0 ${((1 - r) * 100).toFixed(2)}% 0 0)` : `inset(0 0 ${((1 - r) * 100).toFixed(2)}% 0)`
-      set(frame, 'clipPath', clip, id + 'frame')
-      if (scene.from && scene.to) {
-        const v = lerpView(scene.from, scene.to, u)
-        set(img, 'transformOrigin', `${(v.x * 100).toFixed(1)}% ${(v.y * 100).toFixed(1)}%`, id + 'io')
-        set(img, 'transform', `scale(${(v.zoom ?? 1).toFixed(4)})`, id + 'it')
+      layer.querySelectorAll<HTMLImageElement>('img[data-cover]').forEach((img, i) => {
+        const W = Number(img.dataset.bw) * z
+        const H = Number(img.dataset.bh) * z
+        set(img, 'transform', `translate3d(${(-(W - vw) * v.x).toFixed(1)}px, ${(-(H - vh) * v.y).toFixed(1)}px, 0) scale(${z.toFixed(4)})`, `${id}img${i}`)
+      })
+      if (scene.kind === 'compare') {
+        const after = layer.querySelector<HTMLElement>('[data-after]')
+        const line = layer.querySelector<HTMLElement>('[data-wipe]')
+        if (!after || !line) return
+        const w = opts.reduced ? 1 : smooth((u - 0.15) / 0.6)
+        set(after, 'clipPath', `inset(0 ${((1 - w) * 100).toFixed(2)}% 0 0)`, id + 'after')
+        set(line, 'transform', `translate3d(${(w * vw).toFixed(1)}px, 0, 0)`, id + 'line')
+        set(line, 'opacity', w > 0.01 && w < 0.99 ? '1' : '0', id + 'lineop')
       }
-    } else if (scene.kind === 'compare') {
-      const after = layer.querySelector<HTMLElement>('[data-after]')
-      const line = layer.querySelector<HTMLElement>('[data-wipe]')
-      const frame = layer.querySelector<HTMLElement>('[data-frame]')
-      if (!after || !line || !frame) return
-      const w = opts.reduced ? 1 : smooth((u - 0.2) / 0.55)
-      set(after, 'clipPath', `inset(0 ${((1 - w) * 100).toFixed(2)}% 0 0)`, id + 'after')
-      set(line, 'transform', `translate3d(${(w * Number(frame.dataset.fw)).toFixed(1)}px, 0, 0)`, id + 'line')
-      set(line, 'opacity', w > 0.01 && w < 0.99 ? '1' : '0', id + 'lineop')
     } else if (scene.kind === 'rover') {
       layer.querySelectorAll<HTMLElement>('[data-ground]').forEach((g) =>
         set(g, 'opacity', g.dataset.ground === scene.ground.id ? '1' : '0', `${id}g${g.dataset.ground}`),
@@ -180,11 +175,11 @@ export function makeBackdropController(
     if (d >= 0) {
       a = cur
       b = Math.min(n - 1, cur + 1)
-      t = b === a ? 0 : d > 0.35 ? smooth((d - 0.35) / 0.3) : 0
+      t = b === a ? 0 : smooth((d - (0.5 - FADE / 2)) / FADE)
     } else {
       a = Math.max(0, cur - 1)
       b = cur
-      t = a === b ? 1 : d < -0.35 ? 1 - smooth((-0.35 - d) / 0.3) : 1
+      t = a === b ? 1 : 1 - smooth((-(0.5 - FADE / 2) - d) / FADE)
     }
     if (opts.reduced) t = t < 0.5 ? 0 : 1
 
@@ -198,7 +193,7 @@ export function makeBackdropController(
         set(layer, 'display', '', id)
         set(layer, 'opacity', '1', id)
         set(layer, 'zIndex', '1', id)
-        draw(t < 0.5 ? a : b, f, id)
+        draw(t < 0.5 ? a : b, f, id, true)
       } else if (key === kb && t > 0) {
         set(layer, 'display', '', id)
         set(layer, 'opacity', t.toFixed(3), id)
@@ -250,19 +245,6 @@ function CoverPhoto({ image }: { image: SceneImage }) {
   )
 }
 
-/** A small photo shown sharp: above the words on phones, to the right of them on wide screens. */
-function Frame({ image, children }: { image: SceneImage; children: React.ReactNode }) {
-  return (
-    <div
-      data-frame=""
-      className="absolute left-1/2 top-[11svh] w-[min(calc(100vw-2.5rem),calc(33svh*var(--ar)))] -translate-x-1/2 overflow-hidden rounded-md lg:left-auto lg:right-[6vw] lg:top-1/2 lg:w-[min(44vw,calc(64svh*var(--ar)))] lg:translate-x-0 lg:-translate-y-1/2"
-      style={{ aspectRatio: `${image.wide.w} / ${image.wide.h}`, '--ar': image.wide.w / image.wide.h } as React.CSSProperties}
-    >
-      {children}
-    </div>
-  )
-}
-
 function Layer({ scene, shots, model, modelRef, title, loaded }: {
   scene: Scene
   shots: Shot[]
@@ -279,22 +261,15 @@ function Layer({ scene, shots, model, modelRef, title, loaded }: {
         <CoverPhoto image={scene.image} />
       </div>
     )
-  if (scene.kind === 'framed')
-    return (
-      <div data-layer={key} className={`${base} bg-basalt`} style={{ display: 'none' }}>
-        <Frame image={scene.image}>
-          <img {...lazy(scene.image.wide.src)} alt="" decoding="async" className="block h-full w-full object-cover" />
-        </Frame>
-      </div>
-    )
   if (scene.kind === 'compare')
     return (
-      <div data-layer={key} className={`${base} bg-basalt`} style={{ display: 'none' }}>
-        <Frame image={scene.before}>
-          <img {...lazy(scene.before.wide.src)} alt="" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
-          <img {...lazy(scene.after.wide.src)} data-after="" alt="" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
-          <span data-wipe="" aria-hidden="true" className="absolute inset-y-0 left-0 w-0.5 -translate-x-1/2 bg-sun opacity-0 shadow-[0_0_12px_rgb(0_0_0/0.5)]" />
-        </Frame>
+      <div data-layer={key} className={base} style={{ display: 'none' }}>
+        <CoverPhoto image={scene.before} />
+        {/* The clip is on a full-screen box, so the wipe crosses the screen, not the moving photo */}
+        <div data-after="" className="absolute inset-0 overflow-hidden" style={{ clipPath: 'inset(0 100% 0 0)' }}>
+          <CoverPhoto image={scene.after} />
+        </div>
+        <span data-wipe="" aria-hidden="true" className="absolute inset-y-0 left-0 w-0.5 -translate-x-1/2 bg-sun opacity-0 shadow-[0_0_12px_rgb(0_0_0/0.5)]" />
       </div>
     )
   if (scene.kind === 'black') return <div data-layer={key} className={`${base} bg-black`} style={{ display: 'none' }} />

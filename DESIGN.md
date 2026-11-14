@@ -27,12 +27,12 @@ The Moon chapters will use black sky, bright grey ground and gold foil.
 - A chapter is a page that scrolls. Behind the words is a sticky full-screen backdrop (`src/components/story/Backdrop.tsx`). Each step has one scene:
   - **rover:** the 3D model on a real panorama. Used for the title and the last step only.
   - **photo:** a real NASA photo filling the screen and travelling across it.
-  - **framed:** a small photo shown sharp at its own size.
-  - **compare:** a scroll-driven wipe between two photos.
+  - **compare:** two photos of the same view filling the screen, with a scroll-driven wipe from one to the other.
   - **black.**
-- The next scene fades in over the current one between steps. Scenes that share a photo keep travelling across it.
-- 1024 px and wider: words travel up the left side over a dark scrim. Framed photos sit on the right.
-- Narrower: the backdrop fills the screen and its lower part is darkened. Words are read there, and each part of the words fades out before it passes the middle of the screen. Framed photos sit in the top third. Nothing is ever layered on top of the words.
+- Every photo fills the screen; no framed pictures. The next scene dissolves in over the current one across most of the scroll between two steps, and both keep moving while they cross. Scenes that share a photo keep travelling across it.
+- At the end of the story the picture sinks into the page's dark ground before the next section, so there is never a hard edge.
+- 1024 px and wider: words travel up the left side over a dark scrim.
+- Narrower: the backdrop fills the screen and its lower part is darkened. Words are read there, and each part of the words fades out before it passes the middle of the screen. Nothing is ever layered on top of the words.
 - No fixed chrome except the story counter (e.g. "Day 48 on Mars"). No progress bar, no next button.
 
 ## Motion
@@ -40,7 +40,6 @@ The Moon chapters will use black sky, bright grey ground and gold foil.
 - Everything in a chapter is scrubbed to the scrollbar and runs backwards on the way up:
   - photo pans and zooms;
   - scene cross-fades;
-  - framed-photo reveals;
   - the before/after wipe;
   - the 3D camera;
   - dust;

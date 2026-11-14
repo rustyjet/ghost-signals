@@ -133,6 +133,17 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
         .fromTo(chrome.querySelectorAll('[data-day],[data-topshade]'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25 }, 0.45)
         .fromTo(chrome.querySelectorAll('[data-scrim]'), { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.3)
 
+      gsap.to(chrome.querySelector('[data-endshade]'), {
+        opacity: 1,
+        ease: 'none',
+        scrollTrigger: { trigger: root, start: 'bottom 125%', end: 'bottom 100%', scrub: true },
+      })
+      gsap.to(chrome.querySelector('[data-counter]'), {
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: { trigger: root, start: 'bottom 120%', end: 'bottom 100%', scrub: true },
+      })
+
       if (!reduced) {
         blocks.forEach((block) => {
           const heading = block.querySelector<HTMLElement>('[data-heading]')
@@ -221,7 +232,9 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
   return (
     <section ref={rootRef} aria-label={`The story of ${chapter.name}`} className="relative">
       {/* The screen behind the words. Sticky, full screen, never above the words. */}
-      <div className="pointer-events-none sticky top-0 z-0 h-0">
+      {/* Full height with a matching negative margin: it lets go exactly where the story ends, instead of
+          hanging over the next section. */}
+      <div className="pointer-events-none sticky top-0 z-0 -mb-[100svh] h-[100svh]">
         <div ref={chromeRef} data-silent="false" className="group/chrome absolute inset-x-0 top-0 h-[100svh]">
           <Backdrop
             shots={shots}
@@ -251,8 +264,10 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
             aria-hidden="true"
             className="invisible absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/55 to-transparent opacity-0"
           />
+          {/* The end: the picture sinks into the page's own dark, so the next section follows without an edge */}
+          <div data-endshade="" aria-hidden="true" className="absolute inset-0 bg-basalt opacity-0" />
 
-          <div className="absolute left-5 top-5 font-display text-[clamp(0.95rem,4.8vw,1.125rem)] font-bold leading-tight md:left-10 md:text-lg lg:top-8 lg:text-2xl">
+          <div data-counter="" className="absolute left-5 top-5 font-display text-[clamp(0.95rem,4.8vw,1.125rem)] font-bold leading-tight md:left-10 md:text-lg lg:top-8 lg:text-2xl">
             <p data-intro-only="" className="text-ink">
               {chapter.place}
             </p>
@@ -331,7 +346,8 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
             </div>
           </article>
         ))}
-        <div aria-hidden="true" className="h-[40svh] lg:h-[20svh]" />
+        {/* Room after the last words, so the rover is seen alone before the picture sinks into the dark */}
+        <div aria-hidden="true" className="h-[70svh] lg:h-[60svh]" />
       </div>
     </section>
   )
@@ -340,7 +356,7 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
 /** Screen readers hear what the picture behind the words shows. */
 function SceneDescription({ scene }: { scene: Chapter['steps'][number]['scene'] }) {
   const alt =
-    scene.kind === 'photo' || scene.kind === 'framed'
+    scene.kind === 'photo'
       ? scene.image.alt
       : scene.kind === 'compare'
         ? `${scene.before.alt} Then: ${scene.after.alt}`

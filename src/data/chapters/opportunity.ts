@@ -44,21 +44,21 @@ const purgatory: SceneImage = {
 }
 const sky2007: SceneImage = {
   id: 'sky-2007',
-  wide: { src: P + 'sky-2007.webp', w: 800, h: 533 },
+  wide: { src: P + 'sky-2007.webp', w: 800, h: 430 },
   alt: 'Five views of the same horizon from 14 June to 15 July 2007. The sky turns from pale to dark brown as the dust storm thickens.',
   credit: 'NASA/JPL-Caltech/Cornell',
   name: 'The sky darkening, sols 1,205 to 1,235',
 }
 const dusty: SceneImage = {
   id: 'selfie-dusty',
-  wide: { src: P + 'selfie-dusty.webp', w: 1200, h: 1015 },
+  wide: { src: P + 'selfie-dusty.webp', w: 2400, h: 2031 },
   alt: "Opportunity's self-portrait in January 2014, looking down on its solar panels coated in reddish dust.",
   credit: 'NASA/JPL-Caltech/Cornell/ASU (PIA17759)',
   name: 'Dusty self-portrait, January 2014',
 }
 const clean: SceneImage = {
   id: 'selfie-clean',
-  wide: { src: P + 'selfie-clean.webp', w: 1200, h: 1015 },
+  wide: { src: P + 'selfie-clean.webp', w: 2400, h: 2031 },
   alt: "Opportunity's self-portrait in March 2014, after the wind: the solar panels are dark and clean again.",
   credit: 'NASA/JPL-Caltech/Cornell/ASU (PIA18079)',
   name: 'Clean self-portrait, March 2014',
@@ -137,7 +137,14 @@ export const opportunity: Chapter = {
       heading: 'The ground had berries.',
       body: 'Tiny grey balls lay everywhere. They are hematite, a mineral that forms in water. Mars was once wet.',
       storm: 0,
-      scene: { kind: 'framed', image: berries, reveal: 'top', from: { x: 0.5, y: 0.5, zoom: 1 }, to: { x: 0.55, y: 0.4, zoom: 1.2 } },
+      scene: {
+        kind: 'photo',
+        image: berries,
+        // The brushed circle sits right of the words on wide screens, and in the middle on phones.
+        from: { x: 0.1, y: 0.35, zoom: 1.12 },
+        to: { x: 0.22, y: 0.6, zoom: 1.3 },
+        narrow: [{ x: 0.38, y: 0.5, zoom: 1 }, { x: 0.42, y: 0.5, zoom: 1.2 }],
+      },
     },
     {
       spine: 91,
@@ -161,7 +168,7 @@ export const opportunity: Chapter = {
       heading: '2007. The sky went dark.',
       body: 'A dust storm hid the Sun. My power fell to 128 watt‑hours a day, so I stopped driving and waited.',
       storm: 0.8,
-      scene: { kind: 'framed', image: sky2007, reveal: 'left' },
+      scene: { kind: 'photo', image: sky2007, from: { x: 0, y: 0.4, zoom: 1.15 }, to: { x: 1, y: 0.4, zoom: 1.4 } },
     },
     {
       spine: 3611,
@@ -169,7 +176,7 @@ export const opportunity: Chapter = {
       heading: 'The wind cleaned me.',
       body: 'Dust kept settling on my solar panels. In March 2014 the wind blew most of it off, and my power went up.',
       storm: 0,
-      scene: { kind: 'compare', before: dusty, after: clean },
+      scene: { kind: 'compare', before: dusty, after: clean, from: { x: 0.5, y: 0.2, zoom: 1.22 }, to: { x: 0.5, y: 0.5, zoom: 1.3 }, narrow: [{ x: 0.5, y: 0.6, zoom: 1.28 }, { x: 0.5, y: 0.6, zoom: 1.36 }] },
     },
     {
       spine: 3968,

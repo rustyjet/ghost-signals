@@ -53,12 +53,10 @@ export interface Camera {
 export type Scene =
   /** The 3D model standing on a real panorama under a Mars sky. */
   | { kind: 'rover'; ground: SceneImage; from: Camera; to: Camera }
-  /** A photo filling the screen, travelling across it. */
-  | { kind: 'photo'; image: SceneImage; from: View; to: View }
-  /** A small photo shown sharp at its own size on dark ground, opened by the scroll. */
-  | { kind: 'framed'; image: SceneImage; reveal: 'left' | 'top' | 'none'; from?: View; to?: View }
-  /** Two photos of the same view; a wipe moves from `before` to `after` with the scroll. */
-  | { kind: 'compare'; before: SceneImage; after: SceneImage }
+  /** A photo filling the screen, travelling across it. `narrow` replaces from/to under 1024 px. */
+  | { kind: 'photo'; image: SceneImage; from: View; to: View; narrow?: [View, View] }
+  /** Two photos of the same view filling the screen; a wipe crosses it from `before` to `after` with the scroll. */
+  | { kind: 'compare'; before: SceneImage; after: SceneImage; from: View; to: View; narrow?: [View, View] }
   /** Nothing: the signal is gone. */
   | { kind: 'black' }
 
