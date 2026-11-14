@@ -30,6 +30,24 @@ export interface QuickFact {
   value: string
 }
 
+/**
+ * One screen of the pinned scroll scene. It shows either a story beat or a part of the machine,
+ * and tells the camera and sky where to be.
+ */
+export interface SceneStep {
+  kind: 'title' | 'beat' | 'part'
+  /** Beat heading or hotspot id. Unused for the title step. */
+  ref?: string
+  /** Where in the mission we are, shown top-left. Must be a sourced date or figure. */
+  marker: string
+  /** model-viewer camera-orbit, e.g. "-35deg 70deg 4m" */
+  orbit: string
+  /** model-viewer camera-target "x y z" in metres, or "auto" */
+  target: string
+  /** 0 = clear sky, 1 = full dust storm */
+  storm: number
+}
+
 export type InteractionId = 'dust-storm' | 'laser-ranging' | 'rotor-lift' | 'quake-spotter'
 
 export interface Chapter {
@@ -45,6 +63,10 @@ export interface Chapter {
   photo?: { src: string; alt: string; credit: string }
   hotspots: Hotspot[]
   beats: StoryBeat[]
+  /** The scroll scene, in order. */
+  scene: SceneStep[]
+  /** One line under the name on the title screen. */
+  tagline: string
   interaction?: InteractionId
   learned: string
   stillMatters: string

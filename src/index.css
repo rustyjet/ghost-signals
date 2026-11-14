@@ -1,41 +1,36 @@
 @import 'tailwindcss';
+@import 'lenis/dist/lenis.css';
 
-/* Design tokens: a 1970s field kit. Paper, ink, one red, one accent per world. */
+/*
+  Colour comes from the places in the story, not from a theme.
+  Mars: butterscotch daytime sky that goes dark in a dust storm, basalt ground, a pale sun.
+*/
 @theme {
-  --color-paper: #f2e8d5;
-  --color-paper-deep: #e6d8bc;
-  --color-card: #fbf6ea;
-  --color-ink: #1c1a17;
-  --color-ink-soft: #4a453d;
-  --color-red: #e03c1f; /* large type and graphics only */
-  --color-red-text: #b02a12; /* body-size red text, passes AA on paper */
-  --color-mustard: #e2a72e;
-  --color-moon: #4f6b7d;
-  --color-mars: #a84a24;
-  --color-deep: #56468a;
+  --color-mars-sky: #c4925e;
+  --color-mars-horizon: #e2bd8f;
+  --color-mars-storm: #2e1b12;
+  --color-mars-storm-horizon: #5b3826;
+  --color-basalt: #241812;
+  --color-sun: #f2e2c2;
+  --color-frost: #a8c6d6;
+  --color-ink: #1f140e;
 
   --font-display: 'Bricolage Grotesque Variable', 'Arial Black', sans-serif;
   --font-body: 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
-
-  --shadow-hard: 4px 4px 0 var(--color-ink);
-  --shadow-hard-sm: 2px 2px 0 var(--color-ink);
 }
 
 html {
-  background: var(--color-paper);
-  color: var(--color-ink);
+  background: var(--color-basalt);
+  color: var(--color-sun);
   font-family: var(--font-body);
   font-size: 18px;
   line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
   min-height: 100dvh;
-  overflow-x: clip; /* tilted cards must never cause sideways scrolling on phones */
-  /* faint paper grain, drawn with CSS so there is no image to load */
-  background-image: radial-gradient(rgb(28 26 23 / 0.05) 1px, transparent 1px);
-  background-size: 6px 6px;
+  overflow-x: clip;
 }
 
 h1,
@@ -43,51 +38,13 @@ h2,
 h3 {
   font-family: var(--font-display);
   font-weight: 800;
-  line-height: 1.02;
-  letter-spacing: -0.02em;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-ink);
-  outline-offset: 3px;
-}
-
-/* Rubber-stamp label used for statuses, chapter numbers and data tags */
-.stamp {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-/* Paper card with a hard offset shadow, like a printed index card */
-.kit-card {
-  background: var(--color-card);
-  border: 2px solid var(--color-ink);
-  box-shadow: var(--shadow-hard);
-}
-
-.kit-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1.1rem;
-  font-family: var(--font-display);
-  font-weight: 700;
-  background: var(--color-ink);
-  color: var(--color-paper);
-  border: 2px solid var(--color-ink);
-  box-shadow: var(--shadow-hard-sm);
-  transition: transform 80ms ease-out, box-shadow 80ms ease-out;
-}
-.kit-button:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0 var(--color-red);
-}
-.kit-button:active {
-  transform: translate(2px, 2px);
-  box-shadow: none;
+  outline: 3px solid currentColor;
+  outline-offset: 4px;
 }
 
 @media (prefers-reduced-motion: reduce) {

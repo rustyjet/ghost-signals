@@ -4,44 +4,31 @@ Entry for the challenge *Abandoned but not Forgotten: Storytelling about NASA's 
 
 ## What it is
 
-An interactive website for ages ~9–14. The player is a new operator at a listening station: drag a radio dial through static, lock on to a silent NASA machine, and hear its story in its own voice.
+A scroll-driven web story for ages ~9–14. Scrolling is travelling: the start page is a journey outward from Earth past the Moon and Mars, and each silent NASA machine is a stop. Inside a chapter, the real NASA 3D model is pinned full-screen while scrolling moves the camera, changes the sky, and brings in one thought at a time (`src/components/StoryScene.tsx`, driven by each chapter's `scene` steps).
 
-Every chapter uses one template with five parts:
+## Chapters
 
-1. 3D model with numbered pins (what each part did) and first-person story beats
-2. "Try it" interaction showing how the hardware worked
-3. What we learned (the science)
-4. Still matters (what it led to today)
-5. Quick facts + sources
-
-Finishing a chapter earns a mission patch; all patches unlock the Fleet Log page.
-
-## Chapters, in build order
-
-1. Opportunity — dust-storm power game (the one real game)
+1. Opportunity — scroll scene + "Last Light" dust-storm game (full scene, two levers)
 2. Apollo 11 descent stage + laser retroreflector — laser-ranging toy
 3. Ingenuity — rotor lift toy (Earth air vs. Mars air)
-4. InSight — spot the marsquake
-5. Sojourner — story first, drive-planning puzzle if time allows
-6. Pioneer 10 — stretch, story only
+4. InSight, Sojourner — short stops on the journey, no full chapter
+5. Pioneer 10 — only if time remains
 
 ## Rules that must not be broken
 
-- **Accuracy.** No number or historical claim goes in the app from memory. It needs a checked row in `docs/FACTS.md` with a NASA/NSSDCA source. Narration is labelled as imagined. No invented quotes.
-- **No generic AI look.** Banned: dark navy with neon glow, gradient headline text, glass-blur cards, emoji as icons, centred hero with "Get started", filler lines like "inspiring the next generation", AI-generated images.
-- **Style is a 1970s field kit:** paper, black ink, one red, hard offset shadows, stamps, sticker patches, physical short motion. Tokens live in `src/index.css`; use them instead of new colours.
+- **Accuracy.** No number or historical claim goes in the app from memory. It needs a checked row in `docs/FACTS.md` with a NASA/NSSDCA source. Narration is labelled as imagined. No invented quotes. Scene markers (dates, distances) follow the same rule.
+- **Design process.** Load the `frontend-design` skill before any UI work and check the choice against its AI-tells list. Build one screen, screenshot it in Chrome at desktop and phone width, critique it, and fix it before copying the pattern anywhere else. Show the user at checkpoints.
+- **Banned (read as AI-made):** cream paper with terracotta accents, all-caps or monospace labels above headings, "A · B · C" meta strings, numbered cards that aren't a real sequence, identical boxes with the same shadow, fade-up on every section, dark navy with neon glow, glass-blur cards, emoji icons, filler lines, AI-generated images.
+- **Look:** colour comes from the real place (Mars: butterscotch sky → storm brown, basalt ground, pale sun; Moon: black sky, bright grey ground, gold foil). Bricolage Grotesque very large for display, Atkinson Hyperlegible for reading. Tokens live in `src/index.css`.
+- **Motion:** tied to scroll position (GSAP ScrollTrigger + Lenis, see `src/scroll/smoothScroll.ts`, use the `gsap-scrolltrigger` skill). One orchestrated moment per screen. Games use the `game-feel` skill: state shown in the scene, not in bars.
 - **Writing:** short, concrete, real moments. Written for a ten-year-old, without talking down.
-- **Accessibility from the start:** keyboard-operable, visible focus, alt text, reduced-motion respected, AA contrast, works at phone width, nothing carried by sound alone.
+- **Accessibility:** keyboard-operable, visible focus, alt text, reduced motion respected (Lenis off, still dust), readable contrast, works at phone width, nothing carried by sound alone.
 
 ## Stack
 
-Vite + React + TypeScript + Tailwind v4 (static site, `HashRouter`). 3D via the `<model-viewer>` web component with NASA `.glb` files in `public/models/`; a NASA photo is the fallback. No Three.js scene, no game library. All content lives in `src/data/chapters/*.ts` (typed by `src/data/types.ts`).
+Vite + React + TypeScript + Tailwind v4 (static site, `HashRouter`). GSAP ScrollTrigger + Lenis for scroll. 3D via `<model-viewer>` with NASA `.glb` files in `public/models/` (Draco decoder bundled in `public/draco/`). Chapters are lazy-loaded. Content lives in `src/data/chapters/*.ts` (typed by `src/data/types.ts`).
 
 Commands: `npm run dev`, `npm run build`.
-
-## Cut order if behind
-
-Pioneer 10 → Sojourner puzzle → sound effects → InSight interaction → pins on later models.
 
 ## Submission notes
 
