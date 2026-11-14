@@ -10,7 +10,9 @@ Sources are abbreviated below:
 - **END** = NASA Science, "NASA's Opportunity Rover Mission on Mars Comes to End" — https://science.nasa.gov/missions/mer/nasas-opportunity-rover-mission-on-mars-comes-to-end/
 - **NSSDCA** = https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2003-032A
 - **BERRY** = JPL, "Mineral in Mars 'Berries' Adds to Water Story" — https://www.jpl.nasa.gov/news/mineral-in-mars-berries-adds-to-water-story/
-- **STORM07** = JPL, "Mars Rovers Survive Dust Storms, Ready for Next Objectives" — https://www.jpl.nasa.gov/news/mars-rovers-survive-dust-storms-ready-for-next-objectives/
+- **STORM07** = JPL, "Mars Rovers Survive Dust Storms, Ready for Next Objectives" — https://www.jpl.nasa.gov/news/mars-rovers-survive-dust-storms-ready-for-next-objectives/ (JPL resets automated requests; read through search summaries only)
+- **APOD07** = NASA APOD, 25 July 2007, "Global Dust Storms Threaten Mars Rovers" — https://science.nasa.gov/image-article/apod-2007-july-25-global-dust-storms-threaten-mars-rovers/ (read directly 14 Nov 2026: "Earth controllers have programmed the rovers to restrict movements and to use as little power as possible")
+- **TEN18** = NASA Science, "10 Things: Massive Dust Storm on Mars" — https://science.nasa.gov/solar-system/planets/mars/10-things-massive-dust-storm-on-mars/ (read directly: in 2007 "Power levels reached critical lows, but engineers nursed the rover back to health when sunlight returned"; "This isn't the first time Opportunity has had to wait out a massive storm")
 
 "Checked" = the claim was read on that page during the build (14 Nov 2026). **Recheck** = taken from a search-result summary of that page, not read directly; a human should open the page and confirm before submission.
 
@@ -28,12 +30,12 @@ Sources are abbreviated below:
 | Opportunity | Mast about 1.4 m above the wheel bases | NSSDCA | Checked |
 | Opportunity | Top speed about 3.75 cm/s | NSSDCA | Checked |
 | Opportunity | July 2007 dust storm: power down to 128 watt-hours (per sol) | MP | Checked |
-| Opportunity | 2007: low-energy regimen — no driving, few observations, reduced communication | STORM07 | Recheck |
+| Opportunity | 2007: movements restricted, as little power as possible; the rover waited out the storm | APOD07, TEN18 | Checked (replaces the search-summary row; the app now says "moved as little as I could") |
 | Opportunity | Wind cleaned dust off the solar panels | MP | Checked |
 | Opportunity | Found hematite, a mineral that forms in water, at the landing site | END | Checked |
-| Opportunity | Mössbauer spectrometer identified hematite as the main iron mineral in the spherules ("blueberries") | BERRY | Recheck |
-| Opportunity | Blueberries average about 4 mm across | Astrobiology / JPL search summary | Recheck |
-| Opportunity | The water was acidic (and salty), harder for life | NASA search summaries | Recheck |
+| Opportunity | Mössbauer spectrometer identified hematite as the main iron mineral in the spherules ("blueberries") | BERRY | Not used in the app |
+| Opportunity | Blueberries average about 4 mm across | APOD (see step 3 below) | Checked (row 3 below) |
+| Opportunity | The water was acidic (and salty), harder for life | NASA search summaries | Not used in the app |
 | Opportunity | Evidence Mars may once have been able to sustain microbial life | MP | Checked |
 | Opportunity | Endeavour Crater about 22 km across; strong indications of ancient water there | MP, END | Checked |
 | Opportunity | Mars-wide storm June 2018; could not recharge batteries | MP, END | Checked |
@@ -42,7 +44,7 @@ Sources are abbreviated below:
 | Opportunity | Mission declared complete 13 Feb 2019 | MP | Checked |
 | Opportunity | Final resting place: western limb of Perseverance Valley | END | Checked |
 | Opportunity | More than 217,000 images, 15 full 360° colour panoramas | END | Checked |
-| Opportunity | "My battery is low and it's getting dark" came from a journalist, not the rover | General knowledge | **Recheck — find a source before submission** |
+| Opportunity | "My battery is low and it's getting dark" came from a journalist, not the rover | General knowledge | Not used in the app (kept as a trap: never quote it as the rover's words) |
 
 ## Story script v2 (rover's own voice) — checked 14 Nov 2026
 
@@ -89,7 +91,7 @@ More sources:
 | 6 | Day 1,235 = 15 July 2007, last frame of NASA's darkening-sky series | DARK07 (dates), Planetary Society 31 Jul 2007 (sol numbers for those dates) | Checked |
 | 6 | Dust blocked 99 percent of direct sunlight | DARK07 | Checked |
 | 6 | Power fell to 128 watt-hours (a day) | MP, STORM07B | Checked |
-| 6 | Stopped driving and waited | STORM07 ("no driving"), STORM07B (stopped science and most operations) | Checked |
+| 6 | "Moved as little as I could and waited" | APOD07 ("restrict movements … use as little power as possible"), TEN18 ("wait out a massive storm") | Checked |
 | 7 | Day 3,611 = 22 March 2014, first sol of the self-portrait after the cleaning | CLEAN14 | Checked |
 | 7 | Wind (not dust devils) cleaned much of the dust off the panels in March 2014 | CLEAN14 | Checked |
 | 7 | More than 620 watt-hours a day by mid-April 2014 (under 375 in January) | CLEAN14 | Checked |
@@ -135,12 +137,12 @@ The game's numbers (battery, warmth, dust, 40 days, power costs) are game units,
 
 | Where | Claim | Source | Checked |
 |-------|-------|--------|---------|
-| Win ending | July 2007: the team stopped driving and waited | STORM07, STORM07B | Checked (same as step 6) |
+| Win ending | July 2007: the team kept the rover as still as they could and waited | APOD07, TEN18 | Checked (same as step 6) |
 | Win ending | Power fell to 128 watt-hours a day | MP, STORM07B | Checked (same as step 6) |
-| Win ending | Opportunity made it through the 2007 storm | STORM07 ("Mars Rovers Survive Dust Storms") | Checked |
+| Win ending | Opportunity made it through the 2007 storm | TEN18 ("nursed the rover back to health"), STORM07 title | Checked |
 | Loss ending | June 2018 storm covered all of Mars; panels could not recharge the batteries | MP, END | Checked |
 | Loss ending | Last signal reached Earth on 10 June 2018 | MP, NSSDCA | Checked |
-| Loss ending | In 2007 the team got it through a storm like this by stopping and waiting | STORM07 | Checked |
+| Loss ending | In 2007 the team got it through a storm like this by keeping still and waiting | APOD07, TEN18 ("engineers nursed the rover back to health when sunlight returned") | Checked |
 | Scene | The deck photos are the two 2014 self-portraits (PIA17759 dusty, PIA18079 clean), used to show dust building up and blowing off | PIA17759, PIA18079 | Shown as a game picture, not a dated moment |
 
 ### Home page (14 Nov 2026)

@@ -452,12 +452,12 @@ function Ending({
       </h2>
       <p className="mt-4 max-w-[40ch] text-lg leading-snug text-sun lg:text-xl">
         {won
-          ? `You sent home ${state.data} packets of science. This is close to what happened in July 2007: the team stopped driving and waited. Opportunity’s power fell to 128 watt-hours a day, and it made it through.`
+          ? `You sent home ${state.data} packets of science. This is close to what happened in July 2007: the team kept the rover as still as they could and waited. Opportunity’s power fell to 128 watt-hours a day, and it made it through.`
           : `Day ${state.sol} was the end of your rover. The real one met a storm that covered all of Mars in June 2018. Its panels could not recharge its batteries, and its last signal reached Earth on 10 June 2018.`}
       </p>
       {!won && (
         <p className="mt-3 max-w-[40ch] text-base text-sun/80">
-          In 2007 the team got it through a storm like this one by stopping and waiting.
+          In 2007 the team got it through a storm like this one by keeping still and waiting.
         </p>
       )}
       <button

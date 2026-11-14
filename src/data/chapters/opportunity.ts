@@ -166,7 +166,7 @@ export const opportunity: Chapter = {
       spine: 1235,
       figure: { value: 99, unit: '%', label: 'of direct sunlight blocked by dust' },
       heading: '2007. The sky went dark.',
-      body: 'A dust storm hid the Sun. My power fell to 128 watt‑hours a day, so I stopped driving and waited.',
+      body: 'A dust storm hid the Sun. My power fell to 128 watt‑hours a day, so I moved as little as I could and waited.',
       storm: 0.8,
       scene: { kind: 'photo', image: sky2007, from: { x: 0, y: 0.4, zoom: 1.15 }, to: { x: 1, y: 0.4, zoom: 1.4 } },
     },
