@@ -4,7 +4,7 @@ Entry for the challenge *Abandoned but not Forgotten: Storytelling about NASA's 
 
 ## What it is
 
-A scroll-driven web story for ages ~9–14. Scrolling is travelling: the start page is a journey outward from Earth past the Moon and Mars, and each silent NASA machine is a stop. Inside a chapter, the page really scrolls: the real NASA 3D model stays on screen (CSS sticky) over a real NASA panorama, while the words travel up past it and the camera, sky, day counter, numbers and text reveals all follow the scrollbar (`src/components/StoryScene.tsx`, driven by each chapter's `steps`). Product and design context for the impeccable skill: `PRODUCT.md`, `DESIGN.md`.
+A scroll-driven web story for ages ~9–14. Scrolling is travelling: the start page is a journey outward from Earth past the Moon and Mars, and each silent NASA machine is a stop. Inside a chapter, the page really scrolls. Behind the words is a full-screen backdrop that changes with the story. The 3D model opens and closes a chapter, and real NASA photos carry everything between. The pictures, numbers, text reveals and the day counter all follow the scrollbar (`src/components/StoryScene.tsx` and `src/components/story/Backdrop.tsx`, driven by each step's `scene`). On phones, words never go under or over another layer: they fade out before the middle of the screen. Product and design context for the impeccable skill: `PRODUCT.md`, `DESIGN.md`.
 
 ## Chapters
 

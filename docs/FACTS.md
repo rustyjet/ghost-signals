@@ -104,6 +104,23 @@ More sources:
 | 11 | More than a thousand commands over an eight-month recovery effort; last commands late on 12 Feb 2019 | END | Checked |
 | 12 | 45.16 km driven; final place the western limb of Perseverance Valley; last contact on sol 5,111 | MP, END, LAST | Checked |
 
+### What the photos claim (photo-led version, 14 Nov 2026)
+
+Each photo is shown with the step it belongs to, so the picture itself is a claim about that moment.
+
+| Step | Photo shows | Source | Checked |
+|------|-------------|--------|---------|
+| 1–2 | Eagle crater with the lander and the tracks out of it (sols 58 and 60) | PIA05755 caption | Checked |
+| 3 | The "Berry Bowl" rock with spherules, brushed spot | PIA05634 caption (BOWL) | Checked |
+| 4 | Endurance crater's rim from about 70 m, sol 93 (shown with day 91, two sols earlier) | PIA05847 caption | Checked via search summary |
+| 5 | Purgatory Dune ripples and the ruts from being stuck, sols 456–464 | PIA07216 caption | Checked |
+| 6 | Sky darkening, sols 1,205–1,235 (sol numbers printed on NASA's image) | DARK07 | Checked |
+| 7 | Dusty panels January 2014, clean panels March 2014 | PIA17759, PIA18079 captions | Checked |
+| 8 | Route from Eagle crater to Endeavour's rim at marathon distance | MARA | Checked |
+| 9 | Rim above Perseverance Valley, June 2017, taken during a front-wheel steering stall | PIA21723 caption | Checked |
+| 10 | Last image, sol 5,111, noisy and incomplete | LAST | Checked |
+| 12 | Perseverance Valley, last panorama | LEGACY | Checked |
+
 **Cut for lack of a NASA source:** the story that Billie Holiday's "I'll Be Seeing You" was played as the last wake-up song (reported by the Planetary Society and news outlets, not found on a NASA page). The "hair dryer" comparison was dropped. The dust step says "wind", not "whirlwind" or "dust devil", because NASA credits wind and does not tie the cleanings to dust devils.
 
 ## Known traps

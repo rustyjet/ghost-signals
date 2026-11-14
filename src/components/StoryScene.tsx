@@ -1,93 +1,79 @@
-import '@google/model-viewer'
 import type { ModelViewerElement } from '@google/model-viewer'
 import { useEffect, useRef, useState } from 'react'
-import type { Chapter, Figure, Photo } from '../data/types'
+import type { Chapter, Figure } from '../data/types'
 import { gsap, isNarrow, prefersReducedMotion, ScrollTrigger, SplitText, useGSAP } from '../scroll/smoothScroll'
-import DustField from './DustField'
+import Backdrop, { makeBackdropController, type Shot } from './story/Backdrop'
 
 const fmt = (n: number, decimals = 0) =>
   n.toLocaleString('en-GB', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
-/** The camera holds while a step is being read, then travels to the next shot. */
+/** The counter holds while a step is being read, then rolls on to the next value. */
 const hold = (t: number) => {
   const u = clamp01((t - 0.18) / 0.64)
   return u * u * (3 - 2 * u)
 }
 
-type Vec3 = [number, number, number]
-interface Shot {
-  theta: number
-  phi: number
-  radius: number
-  target: Vec3 | null // null = the model's own centre
-  storm: number
-  day: number
-  ground: number
-  silent: boolean
-}
-
-function toShot(
-  s: { orbit: string; target: string; storm: number; ground?: number; silent?: boolean },
-  day: number,
-): Shot {
-  const [theta, phi, radius] = s.orbit.split(/\s+/).map(parseFloat)
-  const target = s.target === 'auto' ? null : (s.target.split(/\s+/).map(parseFloat) as Vec3)
-  return { theta, phi, radius, target, storm: s.storm, day, ground: s.ground ?? 0, silent: !!s.silent }
-}
-
-/** Where on screen a step's words sit when that step is "being read". Phones read below the machine. */
-const focusLine = () => (isNarrow() ? 0.76 : 0.5)
+/** Where on screen a step's words sit when that step is "being read". Phones read in the lower part. */
+const focusLine = () => (isNarrow() ? 0.74 : 0.5)
 
 /**
- * The chapter story as a page that really scrolls. The machine stays on screen (sticky) while the
- * words travel up past it. Everything is scrubbed to the scrollbar and runs backwards on the way up:
- * the camera, the sky, the ground, the day counter, each counting number and each heading's line reveal.
+ * The chapter story as a page that really scrolls. A full-screen backdrop (the 3D machine at the start
+ * and end, real NASA photos between) stays behind the words, which travel up past it. Everything is
+ * scrubbed to the scrollbar and runs backwards on the way up.
  */
 export default function StoryScene({ chapter }: { chapter: Chapter }) {
   const reduced = prefersReducedMotion()
   const rootRef = useRef<HTMLElement>(null)
-  const stageRef = useRef<HTMLDivElement>(null)
+  const backdropRef = useRef<HTMLDivElement>(null)
+  const chromeRef = useRef<HTMLDivElement>(null)
   const modelRef = useRef<ModelViewerElement>(null)
-  const groundRefs = useRef<(HTMLImageElement | null)[]>([])
   const dayRef = useRef<HTMLSpanElement>(null)
   const stormRef = useRef(chapter.title.storm)
-  const autoTarget = useRef<Vec3>([0, 0.5, 0])
+  const autoTarget = useRef<[number, number, number]>([0, 0.5, 0])
   const refresh = useRef<() => void>(() => {})
   const [loaded, setLoaded] = useState(false)
 
+  const shots: Shot[] = [chapter.title, ...chapter.steps]
   const firstDay = chapter.steps[0]?.spine ?? 0
 
   useGSAP(
     () => {
       const root = rootRef.current
-      const stage = stageRef.current
-      if (!root || !stage) return
-      const shots = [toShot(chapter.title, firstDay), ...chapter.steps.map((s) => toShot(s, s.spine))]
+      const backdrop = backdropRef.current
+      const chrome = chromeRef.current
+      if (!root || !backdrop || !chrome) return
+      const n = shots.length
+      const days = [firstDay, ...chapter.steps.map((s) => s.spine)]
+      const silents = [false, ...chapter.steps.map((s) => !!s.silent)]
       const blocks = gsap.utils.toArray<HTMLElement>('[data-block]', root)
+      const scenes = makeBackdropController(backdrop, shots, {
+        reduced,
+        model: () => modelRef.current,
+        autoTarget: () => autoTarget.current,
+        stormRef,
+      })
 
-      // Scroll positions at which each shot is fully "on": the top of the scene for the title, then
-      // the point where each step's words (number, heading, body) cross the reading line.
+      // Scroll positions where each shot is "on": the top of the story for the title, the point where
+      // each step's words cross the reading line, and finally the end of the story.
       let centres: number[] = []
       const measure = () => {
         const y = window.scrollY
         const vh = window.innerHeight
+        const box = root.getBoundingClientRect()
         centres = [
-          root.getBoundingClientRect().top + y,
+          box.top + y,
           ...blocks.map((b) => {
             const r = (b.querySelector('[data-words]') ?? b).getBoundingClientRect()
             return r.top + y + r.height / 2 - focusLine() * vh
           }),
+          box.bottom + y - vh,
         ]
       }
 
-      let lastOrbit = ''
-      let lastTarget = ''
       let lastDay = -1
-      let lastStorm = -1
       let lastSilent: boolean | null = null
-      const lastGround: string[] = []
       const apply = () => {
         if (centres.length < 2) return
         const y = window.scrollY
@@ -95,101 +81,57 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
         while (i < centres.length - 2 && y >= centres[i + 1]) i++
         const span = centres[i + 1] - centres[i]
         const raw = span > 0 ? clamp01((y - centres[i]) / span) : 0
+        scenes.apply(i + raw)
+
+        // The day counter: shots only, so it stops at the last step.
+        const a = Math.min(i, n - 1)
+        const b = Math.min(i + 1, n - 1)
         const t = reduced ? Math.round(raw) : hold(raw)
-        const a = shots[i]
-        const b = shots[i + 1]
-
-        const narrow = isNarrow()
-        const theta = lerp(a.theta, b.theta, t)
-        const radius = lerp(a.radius, b.radius, t) * (narrow ? 1.3 : 1)
-        const orbit = `${theta.toFixed(2)}deg ${lerp(a.phi, b.phi, t).toFixed(2)}deg ${radius.toFixed(3)}m`
-        const ta = a.target ?? autoTarget.current
-        const tb = b.target ?? autoTarget.current
-        const target = ta.map((v, k) => `${lerp(v, tb[k], t).toFixed(3)}m`).join(' ')
-        const mv = modelRef.current
-        if (mv && (orbit !== lastOrbit || target !== lastTarget)) {
-          lastOrbit = orbit
-          lastTarget = target
-          mv.cameraOrbit = orbit
-          mv.cameraTarget = target
-          if (reduced) mv.jumpCameraToGoal()
-        }
-
-        // The ground photo slides a little as the camera swings round, so the machine sits in a place.
-        // When the story moves somewhere else, the next real panorama fades in over the last one.
-        const pan = `translate3d(calc(-50% + ${(-theta * (narrow ? 2 : 5)).toFixed(1)}px), 0, 0)`
-        groundRefs.current.forEach((img, g) => {
-          if (!img) return
-          const op = a.ground === b.ground ? (g === a.ground ? 1 : 0) : g === a.ground ? 1 - t : g === b.ground ? t : 0
-          const key = `${pan}|${op.toFixed(3)}`
-          if (key === lastGround[g]) return
-          lastGround[g] = key
-          img.style.transform = pan
-          img.style.opacity = op.toFixed(3)
-        })
-
-        const storm = lerp(a.storm, b.storm, raw)
-        stormRef.current = storm
-        if (Math.abs(storm - lastStorm) > 0.002) {
-          lastStorm = storm
-          stage.style.setProperty('--storm', storm.toFixed(3))
-          stage.dataset.dark = storm > 0.42 ? 'true' : 'false'
-          // Less sunlight reaches the machine too.
-          if (mv) mv.exposure = 1.05 - storm * 0.55
-        }
-
-        const day = Math.round(lerp(a.day, b.day, t))
+        const day = Math.round(lerp(days[a], days[b], t))
         if (dayRef.current && day !== lastDay) {
           lastDay = day
           dayRef.current.textContent = fmt(day)
         }
-        const silent = t > 0.5 ? b.silent : a.silent
+        const silent = t > 0.5 ? silents[b] : silents[a]
         if (silent !== lastSilent) {
           lastSilent = silent
-          stage.dataset.silent = silent ? 'true' : 'false'
+          chrome.dataset.silent = silent ? 'true' : 'false'
         }
       }
 
+      refresh.current = () => {
+        scenes.layout()
+        measure()
+        apply()
+      }
       ScrollTrigger.create({
         trigger: root,
         start: 'top bottom',
         end: 'bottom top',
-        onRefresh: () => {
-          measure()
-          apply()
-        },
+        onRefresh: refresh.current,
         onUpdate: apply,
       })
-      refresh.current = () => {
-        measure()
-        apply()
-      }
+      refresh.current()
 
       // The name: letters rise once on arrival, then scrolling lifts them away one by one.
-      const titleEl = root.querySelector<HTMLElement>('[data-title]')
+      const titleEl = backdrop.querySelector<HTMLElement>('[data-title]')
       const title = titleEl ? SplitText.create(titleEl, { type: 'chars', mask: 'chars' }) : null
       if (title && !reduced)
         gsap.from(title.chars, { yPercent: 110, duration: 0.8, ease: 'expo.out', stagger: 0.025, delay: 0.15 })
 
       const intro = gsap.timeline({
-        scrollTrigger: {
-          trigger: root,
-          start: 'top top',
-          end: '+=60%',
-          scrub: reduced ? true : 0.4,
-        },
+        scrollTrigger: { trigger: root, start: 'top top', end: '+=60%', scrub: reduced ? true : 0.4 },
       })
       if (title) {
         if (reduced) intro.to(titleEl, { opacity: 0, duration: 0.5 }, 0)
-        // The letters' masks drift up and fade one after another. Fixed values (no per-letter measuring)
-        // so a refresh mid-scroll can never leave letters stranded on screen.
+        // Fixed values (no per-letter measuring), so a refresh mid-scroll can never strand a letter.
         else intro.to(title.masks, { yPercent: -60, opacity: 0, duration: 0.4, ease: 'power1.inOut', stagger: 0.025 }, 0)
       }
       intro
-        .to(stage.querySelectorAll('[data-intro-only]'), { autoAlpha: 0, duration: 0.25 }, 0)
+        .to(chrome.querySelectorAll('[data-intro-only]'), { autoAlpha: 0, duration: 0.25 }, 0)
         .to(root.querySelector('[data-tagline]'), { autoAlpha: 0, duration: 0.3 }, 0.05)
-        .fromTo(stage.querySelector('[data-day]'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25 }, 0.45)
-        .fromTo(stage.querySelector('[data-scrim]'), { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.3)
+        .fromTo(chrome.querySelectorAll('[data-day],[data-topshade]'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25 }, 0.45)
+        .fromTo(chrome.querySelectorAll('[data-scrim]'), { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.3)
 
       if (!reduced) {
         blocks.forEach((block) => {
@@ -197,7 +139,6 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
           const figure = block.querySelector<HTMLElement>('[data-figure]')
           const num = block.querySelector<HTMLElement>('[data-num]')
           const body = block.querySelectorAll('[data-body]')
-          const photo = block.querySelector<HTMLElement>('[data-photo]')
           if (!heading) return
           SplitText.create(heading, {
             type: 'lines',
@@ -240,33 +181,18 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
               return tl
             },
           })
-
-          // A real photo opens from the top, like a picture being developed line by line.
-          if (photo)
-            gsap.fromTo(
-              photo,
-              { clipPath: 'inset(0% 0% 100% 0%)' },
-              {
-                clipPath: 'inset(0% 0% 0% 0%)',
-                ease: 'power2.out',
-                scrollTrigger: { trigger: photo, start: 'top 96%', end: 'top 62%', scrub: 0.5 },
-              },
-            )
         })
       }
 
-      // Wide screens: each part of the words fades on its own before it reaches the day counter.
-      // (Phones need nothing here: the machine's panel has a soft lower edge the words dissolve into.)
+      // Each part of the words fades on its own before it gets high on the screen: on phones before
+      // the middle (the picture owns the top half), on wide screens before the day counter.
       const mm = gsap.matchMedia()
-      mm.add('(min-width: 1024px)', () => {
+      const fadeAll = (start: string, end: string) =>
         gsap.utils.toArray<HTMLElement>('[data-fade]', root).forEach((el) =>
-          gsap.to(el, {
-            opacity: 0,
-            ease: 'none',
-            scrollTrigger: { trigger: el, start: 'top 24%', end: 'top 8%', scrub: true },
-          }),
+          gsap.to(el, { opacity: 0, ease: 'none', scrollTrigger: { trigger: el, start, end, scrub: true } }),
         )
-      })
+      mm.add('(min-width: 1024px)', () => fadeAll('top 24%', 'top 8%'))
+      mm.add('(max-width: 1023px)', () => fadeAll('top 50%', 'top 36%'))
 
       if (import.meta.env.DEV) {
         // Used by the dev frames page to put every frame on the same step.
@@ -294,105 +220,54 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
 
   return (
     <section ref={rootRef} aria-label={`The story of ${chapter.name}`} className="relative">
-      {/* The stage stays on screen for the whole story. On phones it is a panel at the top that sits
-          above the words; its lower edge is masked soft, so words rising into it dissolve rather than
-          being cut. On wide screens it fills the screen behind the words. */}
-      <div className="pointer-events-none sticky top-0 z-20 h-0 lg:z-0">
-        <div
-          ref={stageRef}
-          data-dark="false"
-          data-silent="false"
-          className="group/stage absolute inset-x-0 top-0 h-[57svh] overflow-hidden [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)] [@media(max-height:700px)]:h-[53svh] lg:h-[100svh] lg:[mask-image:none] lg:[@media(max-height:700px)]:h-[100svh]"
-          style={
-            {
-              '--storm': chapter.title.storm,
-              background: `linear-gradient(to bottom,
-                color-mix(in oklab, var(--color-mars-sky), var(--color-mars-storm) calc(var(--storm) * 100%)) 0%,
-                color-mix(in oklab, var(--color-mars-horizon), var(--color-mars-storm-horizon) calc(var(--storm) * 100%)) 100%)`,
-            } as React.CSSProperties
-          }
-        >
-          {/* The ground: Opportunity's own panoramas of where it was */}
-          <div className="absolute inset-x-0 bottom-0 h-[46%] lg:h-[44%]">
-            {chapter.grounds.map((g, i) => (
-              <picture key={g.wide}>
-                <source media="(min-width: 1024px)" srcSet={g.wide} />
-                <img
-                  ref={(el) => {
-                    groundRefs.current[i] = el
-                  }}
-                  src={g.narrow}
-                  alt=""
-                  decoding="async"
-                  fetchPriority={i === 0 ? 'high' : 'low'}
-                  className="absolute bottom-0 left-1/2 h-full w-auto max-w-none [mask-image:linear-gradient(to_bottom,transparent,black_18%)]"
-                  style={{ transform: 'translate3d(-50%, 0, 0)', opacity: i === 0 ? 1 : 0 }}
-                />
-              </picture>
-            ))}
-            <div aria-hidden="true" className="absolute inset-0 bg-mars-storm" style={{ opacity: 'calc(var(--storm) * 0.75)' }} />
-          </div>
-
-          <DustField stormRef={stormRef} className="absolute inset-0 h-full w-full" />
-
-          {/* The name, huge, behind the machine */}
-          <h1
-            data-title=""
-            // nowrap: the letters are split into separate boxes, which would otherwise let the word break anywhere.
-            // The letter masks get extra room so descenders and tall letters are not clipped.
-            className="absolute inset-x-5 top-[12%] whitespace-nowrap text-[clamp(2.5rem,13.2vw,15rem)] leading-[0.9] text-ink md:inset-x-10 lg:top-[13%] lg:text-[clamp(3.6rem,15vw,15rem)] [&>div]:-mb-[0.3em] [&>div]:-mt-[0.12em] [&>div]:pb-[0.3em] [&>div]:pt-[0.12em]"
-          >
-            {chapter.name}
-          </h1>
-
-          <model-viewer
-            ref={modelRef}
-            src={chapter.model.src}
-            alt={chapter.model.alt}
-            camera-orbit={chapter.title.orbit}
-            camera-target={chapter.title.target}
-            interpolation-decay="45"
-            disable-zoom=""
-            shadow-intensity="1.1"
-            shadow-softness="0.9"
-            exposure="1.05"
-            tone-mapping="neutral"
-            environment-image="neutral"
-            style={{ position: 'absolute', background: 'transparent', pointerEvents: 'none' }}
-            class={`inset-x-0 bottom-[24%] top-[12%] h-auto w-full transition-opacity duration-500 lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[62%] ${loaded ? 'opacity-100' : 'opacity-0'}`}
+      {/* The screen behind the words. Sticky, full screen, never above the words. */}
+      <div className="pointer-events-none sticky top-0 z-0 h-0">
+        <div ref={chromeRef} data-silent="false" className="group/chrome absolute inset-x-0 top-0 h-[100svh]">
+          <Backdrop
+            shots={shots}
+            model={chapter.model}
+            modelRef={modelRef}
+            stormRef={stormRef}
+            title={chapter.name}
+            loaded={loaded}
+            rootRef={backdropRef}
           />
-          {!loaded && (
-            <p className="absolute bottom-[20%] right-5 text-sm text-ink lg:bottom-[12%] lg:right-10">Receiving {chapter.name}&hellip;</p>
-          )}
 
-          {/* Wide screens: the left side darkens once the story starts, so light words read over sky and ground */}
+          {/* Wide screens: the left side darkens once the story starts, so light words read over any picture */}
           <div
             data-scrim=""
             aria-hidden="true"
             className="absolute inset-y-0 left-0 hidden w-[64%] bg-[linear-gradient(to_right,rgb(36_24_18/0.94)_0%,rgb(36_24_18/0.82)_40%,transparent)] opacity-0 lg:block"
           />
+          {/* Phones: the lower part of the picture darkens; the words are read there */}
+          <div
+            data-scrim=""
+            aria-hidden="true"
+            className="absolute inset-x-0 bottom-0 h-[64%] opacity-0 bg-[linear-gradient(to_bottom,transparent_0%,rgb(36_24_18/0.82)_32%,rgb(36_24_18/0.94)_100%)] lg:hidden"
+          />
+          {/* Top edge: a little shade so the day counter reads on any picture */}
+          <div
+            data-topshade=""
+            aria-hidden="true"
+            className="invisible absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/55 to-transparent opacity-0"
+          />
 
-          {/* Top-left: where we are, then the running day counter (which stops when the machine goes silent) */}
-          <div className="absolute left-5 top-5 font-display text-lg font-bold leading-tight md:left-10 lg:top-8 lg:text-2xl">
+          <div className="absolute left-5 top-5 font-display text-[clamp(0.95rem,4.8vw,1.125rem)] font-bold leading-tight md:left-10 md:text-lg lg:top-8 lg:text-2xl">
             <p data-intro-only="" className="text-ink">
               {chapter.place}
             </p>
-            <p
-              data-day=""
-              aria-hidden="true"
-              className="invisible absolute left-0 top-0 whitespace-nowrap text-ink opacity-0 group-data-[dark=true]/stage:text-sun lg:text-sun"
-            >
+            <p data-day="" aria-hidden="true" className="invisible absolute left-0 top-0 whitespace-nowrap text-sun opacity-0">
               {chapter.spine.before}{' '}
               <span ref={dayRef} className="tabular-nums">
                 {fmt(firstDay)}
               </span>{' '}
               {/* Both endings share one grid cell, so swapping them never moves the number */}
               <span className="inline-grid">
-                <span className="[grid-area:1/1] transition-opacity duration-300 group-data-[silent=true]/stage:opacity-0">
+                <span className="[grid-area:1/1] transition-opacity duration-300 group-data-[silent=true]/chrome:opacity-0">
                   {chapter.spine.after}
                 </span>
                 {chapter.spine.silentAfter && (
-                  <span className="opacity-0 [grid-area:1/1] transition-opacity duration-300 group-data-[silent=true]/stage:opacity-100">
+                  <span className="opacity-0 [grid-area:1/1] transition-opacity duration-300 group-data-[silent=true]/chrome:opacity-100">
                     {chapter.spine.silentAfter}
                   </span>
                 )}
@@ -412,11 +287,12 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
       {/* The words. They scroll like any page. */}
       <div className="relative z-10">
         <header className="relative h-[100svh]">
+          <h1 className="sr-only">{chapter.name}</h1>
           <div
             data-tagline=""
-            className="absolute inset-x-5 top-[57svh] md:inset-x-10 [@media(max-height:700px)]:top-[53svh] lg:top-[calc(13%+clamp(3.6rem,15vw,15rem)*0.98)] lg:[@media(max-height:700px)]:top-[calc(13%+clamp(3.6rem,15vw,15rem)*0.98)]"
+            className="absolute inset-x-5 bottom-[9svh] md:inset-x-10 lg:bottom-auto lg:top-[calc(13%+clamp(3.6rem,15vw,15rem)*0.98)]"
           >
-            <p className="max-w-[24ch] font-display text-[clamp(1.4rem,6.4vw,2.25rem)] font-bold leading-tight text-sun lg:max-w-[26ch] lg:font-body lg:text-2xl lg:font-normal lg:text-ink">
+            <p className="max-w-[24ch] font-display text-[clamp(1.4rem,6.4vw,2.25rem)] font-bold leading-tight text-sun [text-shadow:0_1px_14px_rgb(0_0_0/0.65)] lg:max-w-[26ch] lg:[text-shadow:none] lg:font-body lg:text-2xl lg:font-normal lg:text-ink">
               {chapter.tagline}
             </p>
             {/* Phones: the way home sits under the opening line rather than crowding the top */}
@@ -430,12 +306,11 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
         </header>
 
         {chapter.steps.map((s) => (
-          <article key={s.heading} className="flex min-h-[64svh] items-start px-5 md:px-10 lg:min-h-[100svh] lg:items-center">
+          <article key={s.heading} className="flex min-h-[70svh] items-start px-5 md:px-10 lg:min-h-[100svh] lg:items-center">
             <div data-block="" className="w-full max-w-[34rem] text-sun lg:w-[min(32rem,36vw)]">
               <div data-words="">
                 <p className="sr-only">
-                  {chapter.spine.before} {fmt(s.spine)}{' '}
-                  {s.silent && chapter.spine.silentAfter ? chapter.spine.silentAfter : chapter.spine.after}.
+                  {chapter.spine.before} {fmt(s.spine)} {s.silent && chapter.spine.silentAfter ? chapter.spine.silentAfter : chapter.spine.after}.
                 </p>
                 {s.figure && <FigureView figure={s.figure} />}
                 <h2
@@ -445,24 +320,41 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
                 >
                   {s.heading}
                 </h2>
-                <p data-body="" data-fade="" className="mt-3 max-w-[36ch] text-base leading-snug text-sun/90 md:text-xl md:leading-relaxed lg:mt-4">
-                  {s.body}
-                </p>
+                {/* Entrance and exit animate different elements, so the two fades never fight over one opacity */}
+                <div data-fade="">
+                  <p data-body="" className="mt-3 max-w-[36ch] text-base leading-snug text-sun/90 md:text-xl md:leading-relaxed lg:mt-4">
+                    {s.body}
+                  </p>
+                </div>
+                <SceneDescription scene={s.scene} />
               </div>
-              {s.photo && <StepPhoto photo={s.photo} />}
             </div>
           </article>
         ))}
-        <div aria-hidden="true" className="h-[30svh] lg:h-[10svh]" />
+        <div aria-hidden="true" className="h-[40svh] lg:h-[20svh]" />
       </div>
     </section>
   )
 }
 
+/** Screen readers hear what the picture behind the words shows. */
+function SceneDescription({ scene }: { scene: Chapter['steps'][number]['scene'] }) {
+  const alt =
+    scene.kind === 'photo' || scene.kind === 'framed'
+      ? scene.image.alt
+      : scene.kind === 'compare'
+        ? `${scene.before.alt} Then: ${scene.after.alt}`
+        : scene.kind === 'rover'
+          ? scene.ground.alt
+          : 'The screen is black.'
+  return <p className="sr-only">Picture: {alt}</p>
+}
+
 function FigureView({ figure }: { figure: Figure }) {
   const d = figure.decimals ?? 0
   return (
-    <div data-figure="" data-fade="">
+    <div data-fade="">
+    <div data-figure="">
       <p
         aria-label={`${fmt(figure.value, d)}${figure.unit ? ` ${figure.unit}` : ''}`}
         className="font-display font-extrabold leading-[0.85] tracking-[-0.035em] text-[clamp(3.2rem,16vw,4.6rem)] [@media(max-height:700px)]:text-[clamp(2.8rem,13vw,3.6rem)] md:text-[6.5rem] lg:text-[clamp(5rem,9vw,9.5rem)] lg:[@media(max-height:700px)]:text-[clamp(4rem,8vw,6.5rem)]"
@@ -478,20 +370,6 @@ function FigureView({ figure }: { figure: Figure }) {
       </p>
       <p className="mt-2 text-sm text-sun/80 md:text-lg">{figure.label}</p>
     </div>
-  )
-}
-
-/** A real NASA photo that belongs to this moment. Its credit is listed with the sources, not under it. */
-function StepPhoto({ photo }: { photo: Photo }) {
-  return (
-    <img
-      data-photo=""
-      data-fade=""
-      src={photo.src}
-      alt={photo.alt}
-      loading="lazy"
-      decoding="async"
-      className="mt-6 block h-auto w-full max-w-[17rem] rounded-md md:max-w-[20rem] lg:mt-7 lg:max-w-[18rem]"
-    />
+    </div>
   )
 }

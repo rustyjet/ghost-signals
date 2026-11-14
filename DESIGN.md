@@ -24,15 +24,29 @@ The Moon chapters will use black sky, bright grey ground and gold foil.
 
 ## Layout
 
-- A chapter is a page that scrolls. The stage (sky, real NASA panorama as ground, dust, 3D model, day counter) is `position: sticky`.
-- 1024 px and wider: stage fills the screen; words travel up the left side over a dark scrim; the model stands on the right 62%.
-- Narrower: the stage is a panel on the top 54% of the screen, above the words, which slide under its faded lower edge.
+- A chapter is a page that scrolls. Behind the words is a sticky full-screen backdrop (`src/components/story/Backdrop.tsx`). Each step has one scene:
+  - **rover:** the 3D model on a real panorama. Used for the title and the last step only.
+  - **photo:** a real NASA photo filling the screen and travelling across it.
+  - **framed:** a small photo shown sharp at its own size.
+  - **compare:** a scroll-driven wipe between two photos.
+  - **black.**
+- The next scene fades in over the current one between steps. Scenes that share a photo keep travelling across it.
+- 1024 px and wider: words travel up the left side over a dark scrim. Framed photos sit on the right.
+- Narrower: the backdrop fills the screen and its lower part is darkened. Words are read there, and each part of the words fades out before it passes the middle of the screen. Framed photos sit in the top third. Nothing is ever layered on top of the words.
 - No fixed chrome except the story counter (e.g. "Day 48 on Mars"). No progress bar, no next button.
 
 ## Motion
 
-- Everything in a chapter is scrubbed to the scrollbar and runs backwards on the way up: camera orbit, sky storm level, ground pan, day counter, each number counting from 0, heading lines rising out of masks, body following.
-- The camera holds while a step is being read and travels between steps.
+- Everything in a chapter is scrubbed to the scrollbar and runs backwards on the way up:
+  - photo pans and zooms;
+  - scene cross-fades;
+  - framed-photo reveals;
+  - the before/after wipe;
+  - the 3D camera;
+  - dust;
+  - the day counter;
+  - each number counting from 0;
+  - heading lines rising out of masks, with the body following.
 - One entrance on load: the title letters rise once (0.8 s, expo out, 25 ms stagger). Scrolling then lifts them away one by one.
 - Easing: ease-out curves (power3/expo out) for arrivals; no ease-in on interface motion.
 - Reduced motion: nothing travels; the camera cuts per step, numbers show final values, opacity changes stay.

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import StoryScene from '../components/StoryScene'
+import { sceneImages } from '../components/story/Backdrop'
 import { getChapter } from '../data/chapters'
 import type { Chapter as ChapterData } from '../data/types'
 
@@ -62,8 +63,7 @@ function Closing({ chapter }: { chapter: ChapterData }) {
 function Sources({ chapter }: { chapter: ChapterData }) {
   const pictures = [
     { what: `3D model of ${chapter.name}`, credit: chapter.model.credit },
-    ...chapter.grounds.map((g) => ({ what: g.name, credit: g.credit })),
-    ...chapter.steps.flatMap((s) => (s.photo ? [{ what: s.photo.name ?? s.photo.alt, credit: s.photo.credit }] : [])),
+    ...sceneImages([chapter.title.scene, ...chapter.steps.map((s) => s.scene)]).map((i) => ({ what: i.name, credit: i.credit })),
   ]
   return (
     <footer className="border-t border-sun/15 bg-basalt px-5 pb-16 pt-12 text-sun/80 md:px-10">
