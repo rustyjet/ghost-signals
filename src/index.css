@@ -32,6 +32,7 @@ html {
 
 body {
   min-height: 100dvh;
+  overflow-x: clip; /* tilted cards must never cause sideways scrolling on phones */
   /* faint paper grain, drawn with CSS so there is no image to load */
   background-image: radial-gradient(rgb(28 26 23 / 0.05) 1px, transparent 1px);
   background-size: 6px 6px;

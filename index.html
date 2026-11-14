@@ -8,6 +8,11 @@
       content="Tune in to the machines NASA left on the Moon, on Mars and in deep space, and hear what they found."
     />
     <title>Ghost Signals</title>
+    <script>
+      // Load the 3D mesh decoder from this site instead of Google's CDN, so the demo works offline.
+      self.ModelViewerElement = self.ModelViewerElement || {}
+      self.ModelViewerElement.dracoDecoderLocation = new URL('draco/', document.baseURI).href
+    </script>
   </head>
   <body>
     <div id="root"></div>

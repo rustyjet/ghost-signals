@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 // Placeholder hub: proves the fonts, colours and card style. The radio tuner replaces it in hours 8-10.
 export default function Hub() {
   return (
@@ -16,6 +18,9 @@ export default function Hub() {
       <section className="kit-card mt-10 p-5" aria-label="Build status">
         <p className="stamp text-ink-soft">Status</p>
         <p className="mt-1">The tuner is being wired up. First signal: Opportunity.</p>
+        <Link to="/signal/opportunity" className="kit-button mt-4">
+          Tune in to Opportunity
+        </Link>
       </section>
     </main>
   )

@@ -41,8 +41,8 @@ export interface Chapter {
   /** Dial position of this beacon on the hub tuner, 0-100. */
   frequency: number
   status: string
-  model?: { src: string; alt: string; credit: string }
-  photo: { src: string; alt: string; credit: string }
+  model?: { src: string; alt: string; credit: string; cameraOrbit?: string }
+  photo?: { src: string; alt: string; credit: string }
   hotspots: Hotspot[]
   beats: StoryBeat[]
   interaction?: InteractionId
