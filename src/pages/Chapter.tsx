@@ -100,7 +100,7 @@ function Sources({ chapter }: { chapter: ChapterData }) {
               </li>
             ))}
           </ul>
-          <p className="mt-6 text-base">The rover's voice is imagined. What it says happened.</p>
+          <p className="mt-6 text-base">{chapter.name}&rsquo;s voice is imagined. What it says happened.</p>
           <Link to="/" className="mt-6 inline-flex min-h-11 items-center font-display text-lg font-bold text-sun underline decoration-1 underline-offset-[6px]">
             Back to all the machines
           </Link>
