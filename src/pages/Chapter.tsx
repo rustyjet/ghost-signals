@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import StoryScene from '../components/StoryScene'
 import { getChapter } from '../data/chapters'
+import type { Chapter as ChapterData } from '../data/types'
 
 export default function Chapter() {
   const { slug } = useParams()
@@ -29,18 +30,76 @@ export default function Chapter() {
     <main>
       <StoryScene chapter={chapter} />
 
-      {/* Checkpoint: the game and closing sections are rebuilt next */}
-      <section className="grid min-h-[70dvh] place-items-center bg-basalt px-5 text-center">
+      {/* Checkpoint: the Last Light game is rebuilt here next */}
+      <section className="grid min-h-[60dvh] place-items-center bg-basalt px-5 text-center">
         <div>
-          <h2 className="text-5xl sm:text-7xl">Next: survive the storm.</h2>
-          <p className="mx-auto mt-4 max-w-[40ch] text-lg opacity-80">
-            The dust-storm game is being rebuilt as a full scene.
+          <h2 className="text-5xl sm:text-7xl">Your turn.</h2>
+          <p className="mx-auto mt-4 max-w-[36ch] text-lg text-sun/80">
+            A dust storm is coming. The game where you keep a rover alive through it is being built.
           </p>
-          <Link to="/" className="mt-8 inline-flex min-h-11 items-center text-lg underline decoration-1 underline-offset-[6px]">
+        </div>
+      </section>
+
+      {chapter.closing && <Closing chapter={chapter} />}
+      <Sources chapter={chapter} />
+    </main>
+  )
+}
+
+function Closing({ chapter }: { chapter: ChapterData }) {
+  const c = chapter.closing!
+  return (
+    <section className="bg-basalt px-5 py-24 md:px-10 lg:py-32">
+      <div className="mx-auto max-w-5xl">
+        <h2 className="max-w-[14ch] text-[clamp(2.6rem,9vw,6rem)]">{c.heading}</h2>
+        <p className="mt-6 max-w-[42ch] text-xl leading-relaxed text-sun/90 md:text-2xl">{c.body}</p>
+      </div>
+    </section>
+  )
+}
+
+/** Every page and picture the chapter used. Picture credits live here, not under the pictures. */
+function Sources({ chapter }: { chapter: ChapterData }) {
+  const pictures = [
+    { what: `3D model of ${chapter.name}`, credit: chapter.model.credit },
+    ...chapter.grounds.map((g) => ({ what: g.name, credit: g.credit })),
+    ...chapter.steps.flatMap((s) => (s.photo ? [{ what: s.photo.name ?? s.photo.alt, credit: s.photo.credit }] : [])),
+  ]
+  return (
+    <footer className="border-t border-sun/15 bg-basalt px-5 pb-16 pt-12 text-sun/80 md:px-10">
+      <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-[1.4fr_1fr]">
+        <div>
+          <h2 className="font-display text-2xl text-sun">Where every number comes from</h2>
+          <ul className="mt-4 space-y-1">
+            {chapter.sources.map((s) => (
+              <li key={s.url}>
+                <a
+                  href={s.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex min-h-11 items-center underline decoration-sun/30 underline-offset-4 transition-[text-decoration-color] duration-200 hover:decoration-sun"
+                >
+                  {s.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h2 className="font-display text-2xl text-sun">Pictures</h2>
+          <ul className="mt-4 space-y-3 text-base">
+            {pictures.map((p) => (
+              <li key={p.what + p.credit}>
+                {p.what}: {p.credit}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 text-base">The rover's voice is imagined. What it says happened.</p>
+          <Link to="/" className="mt-6 inline-flex min-h-11 items-center font-display text-lg font-bold text-sun underline decoration-1 underline-offset-[6px]">
             Back to all the machines
           </Link>
         </div>
-      </section>
-    </main>
+      </div>
+    </footer>
   )
 }

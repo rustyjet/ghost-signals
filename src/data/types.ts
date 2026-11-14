@@ -9,6 +9,8 @@ export interface Photo {
   src: string
   alt: string
   credit: string
+  /** Short name used in the picture credits, e.g. "My tracks out of the sand trap". */
+  name?: string
 }
 
 /** The big number on a step. It counts up from zero when the step arrives. */
@@ -39,7 +41,20 @@ export interface Step {
   target: string
   /** 0 = clear sky, 1 = full dust storm */
   storm: number
+  /** Index into the chapter's grounds: which real panorama the machine stands on. Defaults to 0. */
+  ground?: number
+  /** A real NASA photo shown with the words. */
   photo?: Photo
+}
+
+/** A real NASA panorama used as the ground behind the 3D model. */
+export interface Ground {
+  /** Wide crop for screens 1024 px and up, and a smaller one for phones. */
+  wide: string
+  narrow: string
+  credit: string
+  /** Short name used in the picture credits. */
+  name: string
 }
 
 export type InteractionId = 'dust-storm' | 'laser-ranging' | 'rotor-lift'
@@ -53,11 +68,14 @@ export interface Chapter {
   /** One line under the name on the title screen. */
   tagline: string
   /** How the running counter reads, e.g. { before: 'Day', after: 'on Mars' }. */
-  spine: { before: string; after: string }
+  spine: { before: string; after: string; /** Replaces `after` once the machine is silent. */ silentAfter?: string }
   /** Camera and sky for the title screen. */
   title: { orbit: string; target: string; storm: number }
   model: Photo
+  grounds: Ground[]
   steps: Step[]
   interaction?: InteractionId
+  /** What the machine leaves behind, after the story and the game. Facts follow the same rules. */
+  closing?: { heading: string; body: string }
   sources: Source[]
 }

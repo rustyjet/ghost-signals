@@ -67,6 +67,45 @@ More sources:
 
 "Day N on Mars" counts sols (Martian days), the same unit as the 90-day plan.
 
+## Story script v2, steps 4–12 — checked 14 Nov 2026
+
+More sources:
+
+- **PURG** = NASA Photojournal, "Looking Back at 'Purgatory Dune'" (PIA07999) — https://science.nasa.gov/photojournal/looking-back-at-purgatory-dune
+- **DARK07** = NASA Science, "A Darkened Mars Sky" — https://science.nasa.gov/resource/a-darkened-mars-sky/
+- **STORM07B** = JPL, "NASA Mars Rovers Braving Severe Dust Storms" (July 2007) — https://www.jpl.nasa.gov/news/nasa-mars-rovers-braving-severe-dust-storms (read through search summaries; the page resets automated requests)
+- **CLEAN14** = NASA Photojournal, "Self-Portrait by Freshly Cleaned Opportunity Mars Rover in March 2014" — https://science.nasa.gov/photojournal/self-portrait-by-freshly-cleaned-opportunity-mars-rover-in-march-2014
+- **MARA** = NASA Science, "Opportunity Rover's Full Marathon-Length Traverse" (PIA19154) — https://science.nasa.gov/resource/opportunity-rovers-full-marathon-length-traverse
+- **FLASH14** = JPL, "Opportunity Working in 'No-Flash' Mode for Now" (11 Dec 2014) — https://www.jpl.nasa.gov/news/opportunity-working-in-no-flash-mode-for-now/
+- **WALK17** = JPL, "Mars Rover Opportunity on Walkabout Near Rim" (June 2017) — https://www.jpl.nasa.gov/news/mars-rover-opportunity-on-walkabout-near-rim
+- **LEGACY** = NASA Photojournal, "Opportunity Legacy Pan (True Color)" (PIA22909) — https://science.nasa.gov/photojournal/opportunity-legacy-pan-true-color
+
+| Step | Claim | Source | Checked |
+|------|-------|--------|---------|
+| 4 | Prime mission (90 sols) ended; the rover kept working and driving | MP ("completed its three-month prime mission in April 2004"), END | Checked |
+| 5 | Day 446 (26 April 2005): wheels dug into a wind-shaped ripple | PURG | Checked |
+| 5 | Ripple about one-third metre (one foot) tall → shown as "about 30 cm" | PURG | Checked |
+| 5 | Getting out took more than five weeks of planning, testing and careful driving | PURG | Checked |
+| 6 | Day 1,235 = 15 July 2007, last frame of NASA's darkening-sky series | DARK07 (dates), Planetary Society 31 Jul 2007 (sol numbers for those dates) | Checked |
+| 6 | Dust blocked 99 percent of direct sunlight | DARK07 | Checked |
+| 6 | Power fell to 128 watt-hours (a day) | MP, STORM07B | Checked |
+| 6 | Stopped driving and waited | STORM07 ("no driving"), STORM07B (stopped science and most operations) | Checked |
+| 7 | Day 3,611 = 22 March 2014, first sol of the self-portrait after the cleaning | CLEAN14 | Checked |
+| 7 | Wind (not dust devils) cleaned much of the dust off the panels in March 2014 | CLEAN14 | Checked |
+| 7 | More than 620 watt-hours a day by mid-April 2014 (under 375 in January) | CLEAN14 | Checked |
+| 8 | Passed marathon distance on 24 March 2015, sol 3,968; 42.198 km total (marathon = 42.195 km) | MARA | Checked |
+| 8 | "11 years and two months": landed January 2004, marathon March 2015 | MP, MARA (our arithmetic) | Checked |
+| 8 | Endeavour crater about 22 km across; route ended on its rim | MP, MARA map | Checked |
+| 9 | Sol 5,000 in February 2018 → "14 years on Mars" (January 2004 to February 2018, our arithmetic) | JPL "Opportunity's First Selfie" (sol 5,000 self-portrait, Feb 2018) | Checked via search summary |
+| 9 | Neither front wheel used for steering: right-front steering out since 2005, left-front stalled June 2017 | WALK17 | Checked via search summary |
+| 9 | Flash memory "amnesia" events and resets; rover switched to a no-flash mode | FLASH14 | Checked via search summary |
+| 9–12 | Ground photo: Perseverance Valley, Opportunity's last panorama, sols 5,084–5,111 | LEGACY | Checked |
+| 10 | Day 5,111 (10 June 2018): global dust storm; last image, dark and incomplete | LAST, END | Checked |
+| 11 | More than a thousand commands over an eight-month recovery effort; last commands late on 12 Feb 2019 | END | Checked |
+| 12 | 45.16 km driven; final place the western limb of Perseverance Valley; last contact on sol 5,111 | MP, END, LAST | Checked |
+
+**Cut for lack of a NASA source:** the story that Billie Holiday's "I'll Be Seeing You" was played as the last wake-up song (reported by the Planetary Society and news outlets, not found on a NASA page). The "hair dryer" comparison was dropped. The dust step says "wind", not "whirlwind" or "dust devil", because NASA credits wind and does not tie the cleanings to dust devils.
+
 ## Known traps
 
 - Sojourner was the first rover **on Mars**, not the first wheeled vehicle on another world (Lunokhod 1 drove on the Moon in 1970).

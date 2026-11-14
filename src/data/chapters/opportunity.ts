@@ -1,20 +1,31 @@
 import type { Chapter } from '../types'
 
 // Script: see the approved plan. Every number here has a checked row in docs/FACTS.md.
-// The voice is the rover's own, first person. Steps 4-12 are added after the checkpoint.
+// The voice is the rover's own, first person.
 export const opportunity: Chapter = {
   slug: 'opportunity',
   name: 'Opportunity',
   world: 'mars',
   place: 'Meridiani Planum, Mars',
   tagline: 'Sent to Mars in 2003 to find out if it was ever wet.',
-  spine: { before: 'Day', after: 'on Mars' },
+  spine: { before: 'Day', after: 'on Mars', silentAfter: 'on Mars, then silence' },
   title: { orbit: '-35deg 78deg 7m', target: 'auto', storm: 0 },
   model: {
     src: 'models/opportunity.glb',
     alt: 'The Opportunity rover: six wheels, flat solar panels like wings, and a tall camera mast.',
     credit: 'NASA/JPL-Caltech',
   },
+  grounds: [
+    // Eagle crater, where Opportunity landed (PIA05755, sols 58 and 60)
+    { wide: 'photos/eagle-crater-wide.webp', narrow: 'photos/eagle-crater-narrow.webp', credit: 'NASA/JPL/Cornell (PIA05755)', name: 'Eagle crater, where I landed' },
+    // Perseverance Valley, its last panorama (PIA22909, sols 5,084 to 5,111)
+    {
+      wide: 'photos/perseverance-valley-wide.webp',
+      narrow: 'photos/perseverance-valley-narrow.webp',
+      credit: 'NASA/JPL-Caltech/Cornell/ASU (PIA22909)',
+      name: 'Perseverance Valley, my last panorama',
+    },
+  ],
   steps: [
     {
       spine: 1,
@@ -43,8 +54,117 @@ export const opportunity: Chapter = {
       target: '-0.05 0.4 0.68',
       storm: 0,
     },
+    {
+      spine: 91,
+      figure: { value: 91, unit: 'days', label: 'one more than planned' },
+      heading: 'Day 91.',
+      body: 'My ninety days were up. I was still working, so my team kept me driving.',
+      orbit: '-20deg 76deg 6.2m',
+      target: 'auto',
+      storm: 0,
+    },
+    {
+      spine: 446,
+      figure: { value: 30, unit: 'cm', label: 'tall: the sand ripple that trapped me' },
+      heading: 'Stuck in the sand.',
+      body: 'My wheels sank into a ripple about 30 centimetres tall. Getting out took more than five weeks of careful driving.',
+      orbit: '-80deg 90deg 3m',
+      target: 'auto',
+      storm: 0.05,
+      photo: {
+        src: 'photos/purgatory-tracks.webp',
+        alt: 'Black-and-white photo looking back from the rover: two deep, churned wheel tracks leading out of a sand ripple.',
+        credit: 'NASA/JPL (PIA07999)',
+        name: 'My tracks out of the sand trap',
+      },
+    },
+    {
+      spine: 1235,
+      figure: { value: 99, unit: '%', label: 'of direct sunlight blocked by dust' },
+      heading: '2007. The sky went dark.',
+      body: 'A dust storm hid the Sun. My power fell to 128 watt‑hours a day, so I stopped driving and waited.',
+      orbit: '160deg 72deg 5.4m',
+      target: 'auto',
+      storm: 0.8,
+    },
+    {
+      spine: 3611,
+      figure: { value: 620, unit: 'watt-hours', label: 'a day by April 2014, panels clean again' },
+      heading: 'The wind cleaned me.',
+      body: 'Dust kept settling on my solar panels. In March 2014 the wind blew most of it off, and my power went up.',
+      orbit: '0deg 22deg 4.4m',
+      target: 'auto',
+      storm: 0,
+    },
+    {
+      spine: 3968,
+      figure: { value: 42.195, decimals: 3, unit: 'km', label: 'a marathon, finished 24 March 2015' },
+      heading: 'I finished a marathon.',
+      body: 'It took me 11 years and two months. The finish line was the rim of Endeavour, a crater 22 kilometres wide.',
+      orbit: '90deg 80deg 5m',
+      target: 'auto',
+      storm: 0.05,
+      photo: {
+        src: 'photos/marathon-route.webp',
+        alt: 'Map from orbit with a yellow line showing my route from Eagle crater, past Victoria crater, to the rim of the huge Endeavour crater.',
+        credit: 'NASA/JPL-Caltech/MSSS/NMMNHS (PIA19154)',
+        name: 'Map of my marathon route',
+      },
+    },
+    {
+      spine: 5000,
+      figure: { value: 14, unit: 'years', label: 'on Mars by Day 5,000' },
+      heading: 'I was getting old.',
+      body: 'Two of my wheels could no longer steer. My memory kept forgetting things. I kept going.',
+      orbit: '40deg 80deg 3.7m',
+      target: '-0.05 0.45 0.3',
+      storm: 0.1,
+      ground: 1,
+    },
+    {
+      spine: 5111,
+      figure: { value: 5111, label: 'days on Mars' },
+      heading: 'June 2018. No light.',
+      body: 'A storm covered the whole planet. I took one last picture of the Sun. It came out dark, and it never finished sending.',
+      orbit: '-30deg 80deg 6.5m',
+      target: 'auto',
+      storm: 1,
+      ground: 1,
+      photo: {
+        src: 'photos/last-message.webp',
+        alt: 'My last picture: grey speckled noise where the Sun should be, and a black band where the rest of the image never arrived.',
+        credit: 'NASA/JPL-Caltech/Cornell/ASU (PIA22929)',
+        name: 'My last picture',
+      },
+    },
+    {
+      spine: 5111,
+      silent: true,
+      figure: { value: 1000, unit: '+', label: 'commands sent. No reply.' },
+      heading: 'They kept calling.',
+      body: 'For eight months my team tried to wake me. They sent their last commands on 12 February 2019.',
+      orbit: '-150deg 70deg 9m',
+      target: 'auto',
+      storm: 0.85,
+      ground: 1,
+    },
+    {
+      spine: 5111,
+      silent: true,
+      figure: { value: 45.16, decimals: 2, unit: 'km', label: 'driven in all' },
+      heading: "I'm still here.",
+      body: 'Parked on the western edge of Perseverance Valley. Built for 90 days. I worked for 5,111.',
+      orbit: '-40deg 78deg 7.5m',
+      target: 'auto',
+      storm: 0.15,
+      ground: 1,
+    },
   ],
   interaction: 'dust-storm',
+  closing: {
+    heading: 'What I found.',
+    body: 'Rocks that formed in water. Long ago Mars was wet, and it may once have been a place where tiny living things could survive.',
+  },
   sources: [
     { label: 'NASA Science: Opportunity mission page', url: 'https://science.nasa.gov/mission/mer-opportunity/' },
     {
@@ -63,6 +183,24 @@ export const opportunity: Chapter = {
       label: 'NASA APOD: A Berry Bowl of Martian Spherules',
       url: 'https://science.nasa.gov/image-article/apod-2025-june-22-a-berry-bowl-of-martian-spherules/',
     },
+    { label: "NASA Photojournal: Looking Back at 'Purgatory Dune'", url: 'https://science.nasa.gov/photojournal/looking-back-at-purgatory-dune' },
+    { label: 'NASA Science: A Darkened Mars Sky (2007)', url: 'https://science.nasa.gov/resource/a-darkened-mars-sky/' },
+    {
+      label: 'JPL: NASA Mars Rovers Braving Severe Dust Storms (2007)',
+      url: 'https://www.jpl.nasa.gov/news/nasa-mars-rovers-braving-severe-dust-storms',
+    },
+    {
+      label: 'NASA Photojournal: Self-Portrait by Freshly Cleaned Opportunity, March 2014',
+      url: 'https://science.nasa.gov/photojournal/self-portrait-by-freshly-cleaned-opportunity-mars-rover-in-march-2014',
+    },
+    {
+      label: "NASA Science: Opportunity Rover's Full Marathon-Length Traverse",
+      url: 'https://science.nasa.gov/resource/opportunity-rovers-full-marathon-length-traverse',
+    },
+    { label: 'JPL: Opportunity Working in "No-Flash" Mode for Now (2014)', url: 'https://www.jpl.nasa.gov/news/opportunity-working-in-no-flash-mode-for-now/' },
+    { label: 'JPL: Mars Rover Opportunity on Walkabout Near Rim (2017)', url: 'https://www.jpl.nasa.gov/news/mars-rover-opportunity-on-walkabout-near-rim/' },
+    { label: "NASA Photojournal: Opportunity's Last Message", url: 'https://science.nasa.gov/photojournal/opportunitys-last-message' },
+    { label: 'NASA Photojournal: Opportunity Legacy Pan (True Color)', url: 'https://science.nasa.gov/photojournal/opportunity-legacy-pan-true-color' },
     {
       label: 'NASA 3D Resources: Spirit and Opportunity Rover 3D model',
       url: 'https://science.nasa.gov/resource/spirit-and-opportunity-rover-3d-model/',
