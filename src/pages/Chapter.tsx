@@ -30,7 +30,7 @@ export default function Chapter() {
     <main>
       <Link
         to="/"
-        className="fixed right-5 top-5 z-20 rounded-full bg-basalt/70 px-4 py-2 text-sm text-sun backdrop-blur-sm hover:bg-basalt sm:right-10 sm:top-7"
+        className="fixed right-4 top-4 z-20 rounded-full bg-basalt/80 px-4 py-2.5 text-sm text-sun hover:bg-basalt sm:right-10 sm:top-7"
       >
         All signals
       </Link>

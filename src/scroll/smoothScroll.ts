@@ -4,6 +4,11 @@ import { useGSAP } from '@gsap/react'
 import Lenis from 'lenis'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
+// Phones resize the viewport when the address bar shows or hides; recalculating then makes pinned scenes jump.
+ScrollTrigger.config({ ignoreMobileResize: true })
+
+/** Narrow screens where the 3D model only gets the top half of the screen. */
+export const isNarrow = () => typeof window !== 'undefined' && window.innerWidth < 768
 
 export const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches

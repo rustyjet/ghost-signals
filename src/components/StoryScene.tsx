@@ -2,11 +2,20 @@ import '@google/model-viewer'
 import type { ModelViewerElement } from '@google/model-viewer'
 import { useEffect, useRef, useState } from 'react'
 import type { Chapter, SceneStep } from '../data/types'
-import { ScrollTrigger, useGSAP } from '../scroll/smoothScroll'
+import { isNarrow, ScrollTrigger, useGSAP } from '../scroll/smoothScroll'
 import DustField from './DustField'
 
 /** Scroll distance per step, as a share of the viewport height. */
 const STEP_VH = 95
+
+/**
+ * Camera shots are composed for a wide screen. On a phone the model only has a short, wide strip,
+ * so pull the camera back to keep the whole part in frame.
+ */
+function fitOrbit(orbit: string): string {
+  if (!isNarrow()) return orbit
+  return orbit.replace(/([\d.]+)m$/, (_, r: string) => `${(parseFloat(r) * 1.3).toFixed(2)}m`)
+}
 
 /**
  * The pinned scroll scene: the 3D machine stays on screen while scrolling moves the camera,
@@ -53,7 +62,7 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
   useEffect(() => {
     const mv = modelRef.current
     if (!mv) return
-    mv.cameraOrbit = steps[active].orbit
+    mv.cameraOrbit = fitOrbit(steps[active].orbit)
     mv.cameraTarget = steps[active].target
   }, [active, steps])
 
@@ -73,7 +82,7 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
       <div
         ref={pinRef}
         data-dark="false"
-        className="group/scene relative h-[100dvh] overflow-hidden"
+        className="group/scene relative h-[100svh] overflow-hidden"
         style={
           {
             '--storm': 0,
@@ -104,7 +113,7 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
 
         {/* The name, huge, behind the machine. Scrolling away from the title lifts it out of frame. */}
         <h1
-          className={`pointer-events-none absolute inset-x-5 top-[16%] text-[clamp(3.6rem,15vw,15rem)] leading-[0.82] text-ink transition-[opacity,transform] duration-700 ease-[cubic-bezier(.2,.7,.2,1)] sm:inset-x-10 ${
+          className={`pointer-events-none absolute inset-x-5 top-[15%] text-[clamp(2.5rem,14vw,15rem)] leading-[0.82] md:top-[16%] md:text-[clamp(3.6rem,15vw,15rem)] text-ink transition-[opacity,transform] duration-700 ease-[cubic-bezier(.2,.7,.2,1)] sm:inset-x-10 ${
             active === 0 ? 'translate-y-0 opacity-100' : '-translate-y-24 opacity-0'
           }`}
         >
@@ -126,7 +135,7 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
           tone-mapping="neutral"
           environment-image="neutral"
           style={{ position: 'absolute', background: 'transparent', pointerEvents: 'none' }}
-          class="inset-x-0 top-[5%] h-[48%] w-full md:inset-y-0 md:left-auto md:right-0 md:top-0 md:h-full md:w-[62%]"
+          class="inset-x-0 top-[9%] h-[50%] w-full [@media(max-height:700px)]:top-[8%] [@media(max-height:700px)]:h-[42%] md:inset-y-0 md:left-auto md:right-0 md:top-0 md:h-full md:w-[62%]"
         />
         {!loaded && (
           <p className="absolute right-6 top-6 text-sm opacity-70">Receiving {chapter.name}&hellip;</p>
@@ -155,7 +164,7 @@ function SceneText({ chapter, steps, active }: { chapter: Chapter; steps: SceneS
       {/* Where we are in the mission */}
       <p
         key={steps[active].marker}
-        className="absolute left-5 top-5 font-display text-xl font-bold sm:left-10 sm:top-8 sm:text-2xl"
+        className="absolute left-5 top-6 max-w-[calc(100%-9.5rem)] font-display text-lg font-bold leading-tight text-ink transition-colors duration-700 group-data-[dark=true]/scene:text-sun sm:left-10 sm:top-8 sm:max-w-none sm:text-2xl"
         aria-live="polite"
       >
         {steps[active].marker}
@@ -177,11 +186,16 @@ function SceneText({ chapter, steps, active }: { chapter: Chapter; steps: SceneS
           return (
             <div
               key="title"
-              className={`${base} inset-x-5 top-[calc(16%+clamp(3.6rem,15vw,15rem)*1.02)] sm:inset-x-10`}
+              className={`${base} inset-x-5 bottom-[9%] sm:inset-x-10 md:bottom-auto md:top-[calc(16%+clamp(3.6rem,15vw,15rem)*1.02)]`}
               aria-hidden={!on}
             >
-              <p className="max-w-[24ch] text-lg sm:text-2xl">{chapter.tagline}</p>
-              <p className="mt-3 text-base opacity-75">Scroll to follow the mission</p>
+              <p className="max-w-[24ch] font-display text-2xl font-bold leading-tight md:font-body md:text-2xl md:font-normal">
+                {chapter.tagline}
+              </p>
+              <p className="mt-3 text-base opacity-75">
+                <span className="pointer-coarse:hidden">Scroll</span>
+                <span className="hidden pointer-coarse:inline">Swipe up</span> to follow the mission
+              </p>
             </div>
           )
         }
@@ -198,8 +212,12 @@ function SceneText({ chapter, steps, active }: { chapter: Chapter; steps: SceneS
             className={`${base} inset-x-5 bottom-[7%] max-w-xl sm:inset-x-10 md:bottom-auto md:top-1/2 md:-mt-[9rem] md:max-w-[34rem]`}
           >
             {step.kind === 'part' && <p className="mb-2 text-base opacity-80">Look closer</p>}
-            <h2 className="text-[clamp(2.1rem,6vw,5.2rem)]">{heading}</h2>
-            <p className="mt-3 text-[0.95rem] leading-relaxed sm:mt-4 sm:text-xl">{text}</p>
+            <h2 className="text-[clamp(2rem,6vw,5.2rem)] [@media(max-height:700px)]:text-[1.85rem] md:[@media(max-height:700px)]:text-[clamp(2rem,6vw,5.2rem)]">
+              {heading}
+            </h2>
+            <p className="mt-3 text-[0.95rem] leading-relaxed [@media(max-height:700px)]:text-[0.88rem] [@media(max-height:700px)]:leading-snug sm:mt-4 sm:text-xl">
+              {text}
+            </p>
           </div>
         )
       })}

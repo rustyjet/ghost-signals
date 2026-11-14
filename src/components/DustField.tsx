@@ -28,7 +28,8 @@ export default function DustField({ stormRef, className }: Props) {
     const ctx = canvas?.getContext('2d')
     if (!canvas || !ctx) return
     const still = prefersReducedMotion()
-    const MAX = 420
+    // Scale the number of motes to the screen area so phones don't draw desktop-level dust.
+    const MAX = Math.round(Math.min(420, Math.max(120, (canvas.clientWidth * canvas.clientHeight) / 2600)))
     const motes: Mote[] = Array.from({ length: MAX }, () => spawn(Math.random()))
     let w = 0
     let h = 0
