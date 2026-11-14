@@ -20,6 +20,8 @@
   --color-on-sky: #1f140e;
   /* Warnings in the Last Light game: a hot, dusty orange that reads on basalt */
   --color-warn: #ff9e6e;
+  /* The ranging laser: the green NASA Goddard's beams show in the photo (eagle-laser.webp) */
+  --color-laser: #6dff8e;
 
   --font-display: 'Bricolage Grotesque Variable', 'Arial Black', sans-serif;
   --font-body: 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;

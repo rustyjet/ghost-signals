@@ -206,5 +206,6 @@ export const eagle: Chapter = {
     { label: 'NASA Science: Apollo 11 landing site from LRO', url: 'https://science.nasa.gov/resource/apollo-11-landing-site/' },
     { label: 'NASA History: 50 Years Ago, One Small Step, One Giant Leap', url: 'https://www.nasa.gov/history/50-years-ago-one-small-step-one-giant-leap/' },
     { label: 'NASA 3D Resources: Apollo Lunar Module', url: 'https://science.nasa.gov/3d-resources/apollo-lunar-module/' },
+    { label: "NASA's Scientific Visualization Studio: Apollo Landing Sites with Moon Phases", url: 'https://svs.gsfc.nasa.gov/4731' },
   ],
 }

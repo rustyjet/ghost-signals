@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import StoryScene from '../components/StoryScene'
 import LastLight from '../components/game/LastLight'
 import RotorLift from '../components/game/RotorLift'
+import LaserRanging from '../components/game/LaserRanging'
 import { sceneImages } from '../components/story/Backdrop'
 import { getChapter } from '../data/chapters'
 import type { Chapter as ChapterData } from '../data/types'
@@ -36,6 +37,7 @@ export default function Chapter() {
 
       {chapter.interaction === 'dust-storm' && <LastLight />}
       {chapter.interaction === 'rotor-lift' && <RotorLift />}
+      {chapter.interaction === 'laser-ranging' && <LaserRanging />}
 
       {chapter.closing && <Closing chapter={chapter} />}
       <Sources chapter={chapter} />
@@ -55,11 +57,19 @@ function Closing({ chapter }: { chapter: ChapterData }) {
   )
 }
 
+/** Pictures a game uses that no story step does. */
+const gamePictures: Partial<Record<NonNullable<ChapterData['interaction']>, { what: string; credit: string }[]>> = {
+  'laser-ranging': [
+    { what: 'The Moon in the laser game, with the Apollo landing sites', credit: "NASA's Scientific Visualization Studio, from LRO (SVS 4731)" },
+  ],
+}
+
 /** Every page and picture the chapter used. Picture credits live here, not under the pictures. */
 function Sources({ chapter }: { chapter: ChapterData }) {
   const pictures = [
     { what: `3D model of ${chapter.name}`, credit: chapter.model.credit },
     ...sceneImages([chapter.title.scene, ...chapter.steps.map((s) => s.scene)]).map((i) => ({ what: i.name, credit: i.credit })),
+    ...((chapter.interaction && gamePictures[chapter.interaction]) || []),
   ]
   return (
     <footer className="border-t border-sun/15 bg-basalt px-5 pb-16 pt-12 text-sun/80 md:px-10">

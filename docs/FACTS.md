@@ -249,3 +249,19 @@ Read by a research agent on 14 Nov 2026 (quotes below); the plaque wording was r
 | 9 | Plaque: "HERE MEN FROM THE PLANET EARTH FIRST SET FOOT UPON THE MOON JULY 1969, A.D. WE CAME IN PEACE FOR ALL MANKIND" (read off AS11-40-5899; NSSDCA's "on the Moon" is a misquote) | AS11-40-5899, NASA "50 Years Ago" page | Checked |
 | 10 | The mirrors need 0 watts ("require no power") | GIVING | Checked |
 | Photo 7 | The Goddard laser photo (2010) shows beams aimed at the Lunar Reconnaissance Orbiter, not Apollo 11's mirrors; the alt text says so and the words say "mirrors like mine" | GSFC_20171208_Archive_e001974 caption | Checked |
+
+### Find the mirrors (the Eagle laser game)
+
+How often light comes back in the game (35% of pulses at Apollo 11 and 14, 70% at Apollo 15, every third pulse at worst) is a game number, said on screen ("In the game, light comes back far more often than it really does"). The real claims:
+
+- **SVS4731** = NASA's Scientific Visualization Studio, "Apollo Landing Sites with Moon Phases" — https://svs.gsfc.nasa.gov/4731
+
+| Claim | Source | Checked |
+|-------|--------|---------|
+| The picture's numbers mark the six Apollo landing sites; Apollo 11 at 0.67416° N, 23.47314° E | SVS4731 (labelled still `apollo_sites_2k.jpg`) | Checked |
+| Site positions in the game are NASA's dots on that frame. Cross-check for Apollo 11: orthographic projection from the coordinates and the frame's sub-Earth point (2.116° S, 2.155° E) and position angle (358.193°) lands within 0.014 of the Moon's radius of NASA's dot | SVS4731 (frame data), our arithmetic | Checked (arithmetic ours) |
+| Mirrors were left by Apollo 11 and 14 (100 corner cubes each) and Apollo 15 (300); so Apollo 12, 16 and 17 left none ("There are five reflecting panels on the Moon": these three plus Lunokhod 1 and 2) | BEAMS, GIVING | Checked |
+| The light takes about 2.5 seconds there and back | BEAMS | Checked (same as step 7) |
+| The Moon is about 385,000 km away ("about 240,000 miles (385,000 kilometers)") | BEAMS | Checked |
+| Only 1 photon in 25 million launched from Earth reaches the Apollo 11 reflector (told as "1 bit of light in 25 million") | BEAMS | Checked |
+| Green laser light, as traditionally used | BEAMS ("visible green wavelength of light that scientists have traditionally used") | Checked |

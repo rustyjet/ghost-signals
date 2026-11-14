@@ -80,3 +80,10 @@ The Moon: a chapter page with `data-world="moon"` swaps the tokens: black sky to
 ## Bans
 
 Kickers/eyebrows above headings, all-caps or monospace labels, "A · B · C" meta strings, identical cards, glass blur, neon on navy, gradient text, emoji icons, drawn imitations of photographs, captions under images (credits go in the sources list), smooth-scroll libraries, scroll snapping.
+
+## The Find the mirrors game (Eagle)
+
+- One full screen after the Eagle story, on black: NASA's LRO near-side Moon with NASA's own numbered Apollo landing sites. Wide screens: the Moon on the right, the words bottom left. Phones: the Moon sized to the space above the words, measured from where they start, so nothing overlaps.
+- Tap (or click) a spot to fire; a mouse moves the aim ring first. Keyboard: the Moon is focusable, arrow keys aim (Shift for bigger steps), Enter or Space fires; the aim is announced ("Aiming at Apollo 11").
+- A pulse is a short green line climbing to the Moon over 1.25 s, a ring splashing where it lands, and, when light comes back, one green dot falling home along the same line. The stopwatch counts to 2.50 s; a catch shakes the view a little and the distance pops to 385,000 km. Mirrors that sent light back stay ringed in green.
+- Every green mark sits on a dark casing so it reads on the bright Moon. Reduced motion: the beam and the dot appear in place without travelling, and nothing shakes.
