@@ -39,7 +39,7 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
   const firstDay = chapter.steps[0]?.spine ?? 0
 
   useGSAP(
-    () => {
+    (_context, contextSafe) => {
       const root = rootRef.current
       const backdrop = backdropRef.current
       const chrome = chromeRef.current
@@ -113,20 +113,31 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
       })
       refresh.current()
 
-      // The name: letters rise once on arrival, then scrolling lifts them away one by one.
+      // The name: letters rise once on arrival, then scrolling lifts them away one by one. Split only
+      // once the display font has loaded, or the letter masks are measured on the fallback font and clip.
       const titleEl = backdrop.querySelector<HTMLElement>('[data-title]')
-      const title = titleEl ? SplitText.create(titleEl, { type: 'chars', mask: 'chars' }) : null
-      if (title && !reduced)
-        gsap.from(title.chars, { yPercent: 110, duration: 0.8, ease: 'expo.out', stagger: 0.025, delay: 0.15 })
+      if (titleEl && !reduced) {
+        document.fonts.ready.then(
+          contextSafe!(() => {
+            // Words as well as letters, so a long name can only break between words
+            const title = SplitText.create(titleEl, { type: 'words,chars', mask: 'chars' })
+            gsap.from(title.chars, { yPercent: 110, duration: 0.8, ease: 'expo.out', stagger: 0.025, delay: 0.1 })
+            // Fixed values (no per-letter measuring), so a refresh mid-scroll can never strand a letter.
+            gsap.to(title.masks, {
+              yPercent: -60,
+              opacity: 0,
+              ease: 'power1.inOut',
+              stagger: 0.025,
+              scrollTrigger: { trigger: root, start: 'top top', end: '+=40%', scrub: 0.4 },
+            })
+          }),
+        )
+      }
 
       const intro = gsap.timeline({
         scrollTrigger: { trigger: root, start: 'top top', end: '+=60%', scrub: reduced ? true : 0.4 },
       })
-      if (title) {
-        if (reduced) intro.to(titleEl, { opacity: 0, duration: 0.5 }, 0)
-        // Fixed values (no per-letter measuring), so a refresh mid-scroll can never strand a letter.
-        else intro.to(title.masks, { yPercent: -60, opacity: 0, duration: 0.4, ease: 'power1.inOut', stagger: 0.025 }, 0)
-      }
+      if (titleEl && reduced) intro.to(titleEl, { opacity: 0, duration: 0.5 }, 0)
       intro
         .to(chrome.querySelectorAll('[data-intro-only]'), { autoAlpha: 0, duration: 0.25 }, 0)
         .to(root.querySelector('[data-tagline]'), { autoAlpha: 0, duration: 0.3 }, 0.05)
