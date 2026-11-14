@@ -55,6 +55,19 @@ export interface Stop {
 
 const P = 'photos/'
 
+/** Where the start page's numbers come from (docs/FACTS.md, "Home page"). Listed in its footer. */
+export const journeySources = [
+  { label: 'NASA Science: Moon facts', url: 'https://science.nasa.gov/moon/facts/' },
+  { label: 'NASA: Hazard: Distance from Earth (Mars)', url: 'https://www.nasa.gov/hrp/hazard-distance-from-earth/' },
+  { label: 'NSSDCA: Apollo 11 Lunar Module', url: 'https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C' },
+  { label: 'NASA Science: Opportunity mission page', url: 'https://science.nasa.gov/mission/mer-opportunity/' },
+  { label: "NASA: After Three Years on Mars, NASA's Ingenuity Helicopter Mission Ends", url: 'https://www.nasa.gov/news-release/after-three-years-on-mars-nasas-ingenuity-helicopter-mission-ends/' },
+  { label: 'NASA: NASA Retires InSight Mars Lander Mission After Years of Science', url: 'https://www.nasa.gov/missions/insight/nasa-retires-insight-mars-lander-mission-after-years-of-science/' },
+  { label: "NASA Photojournal: Opportunity's Last Message (PIA22929)", url: 'https://science.nasa.gov/photojournal/opportunitys-last-message' },
+  { label: 'NASA Science: Mars Pathfinder', url: 'https://science.nasa.gov/mission/mars-pathfinder/' },
+  { label: 'NASA Photojournal: Sojourner on Mars (PIA01122)', url: 'https://photojournal.jpl.nasa.gov/catalog/PIA01122' },
+]
+
 export const globes: Record<Globe, GlobeImage> = {
   earth: {
     src: P + 'earth.webp',

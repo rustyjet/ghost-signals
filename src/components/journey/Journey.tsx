@@ -197,8 +197,10 @@ export default function Journey() {
   )
 
   return (
-    <section ref={rootRef} aria-label="A trip from Earth to the Moon and Mars" className="relative bg-black">
-      {/* The view out of the window: sticky, full screen, behind the words */}
+    <section ref={rootRef} aria-label="A trip from Earth to the Moon and Mars" className="relative bg-black [overflow:clip]">
+      {/* The view out of the window: sticky, full screen, behind the words. Its negative margin would let it hang a
+          screen past the section and cover the footer; the section's clip (not a scroll container, so sticky still
+          works) ends it where the journey ends. */}
       <div aria-hidden="true" className="pointer-events-none sticky top-0 z-0 -mb-[100svh] h-[100svh] overflow-hidden">
         {GLOBES.map((g) => (
           <img
@@ -291,19 +293,16 @@ export default function Journey() {
                       </p>
                     </div>
                   )}
-                  {s.machine && (
+                  {/* Short stops (InSight, Sojourner) have no chapter, so no button and no promise of one */}
+                  {chapter && (
                     <div data-fade="" className="mt-6">
                       <div data-rise="">
-                        {chapter ? (
-                          <Link
-                            to={`/signal/${chapter.slug}`}
-                            className="inline-flex min-h-12 items-center rounded-full bg-sun px-6 font-display text-lg font-extrabold text-ink transition-transform duration-150 ease-out hover:bg-[#fff1d6] active:scale-[0.97]"
-                          >
-                            Hear its story
-                          </Link>
-                        ) : (
-                          <p className="text-base text-sun/70">Its story is on the way.</p>
-                        )}
+                        <Link
+                          to={`/signal/${chapter.slug}`}
+                          className="inline-flex min-h-12 items-center rounded-full bg-sun px-6 font-display text-lg font-extrabold text-ink transition-transform duration-150 ease-out hover:bg-[#fff1d6] active:scale-[0.97]"
+                        >
+                          Hear its story
+                        </Link>
                       </div>
                     </div>
                   )}
@@ -313,7 +312,8 @@ export default function Journey() {
             </article>
           )
         })}
-        <div aria-hidden="true" className="h-[40svh]" />
+        {/* The last photo sinks into black before the footer, so the trip never ends on a hard edge */}
+        <div aria-hidden="true" className="h-[40svh] bg-gradient-to-b from-transparent to-black" />
       </div>
     </section>
   )
