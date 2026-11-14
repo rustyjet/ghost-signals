@@ -2,14 +2,13 @@ import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import StoryScene from '../components/StoryScene'
 import { getChapter } from '../data/chapters'
-import { scrollToTop } from '../scroll/smoothScroll'
 
 export default function Chapter() {
   const { slug } = useParams()
   const chapter = getChapter(slug)
 
   useEffect(() => {
-    scrollToTop()
+    window.scrollTo(0, 0)
     if (chapter) document.title = `${chapter.name} · Ghost Signals`
   }, [chapter])
 
@@ -28,13 +27,6 @@ export default function Chapter() {
 
   return (
     <main>
-      <Link
-        to="/"
-        className="fixed right-4 top-4 z-20 rounded-full bg-basalt/80 px-4 py-2.5 text-sm text-sun hover:bg-basalt sm:right-10 sm:top-7"
-      >
-        All signals
-      </Link>
-
       <StoryScene chapter={chapter} />
 
       {/* Checkpoint: the game and closing sections are rebuilt next */}
@@ -44,6 +36,9 @@ export default function Chapter() {
           <p className="mx-auto mt-4 max-w-[40ch] text-lg opacity-80">
             The dust-storm game is being rebuilt as a full scene.
           </p>
+          <Link to="/" className="mt-8 inline-flex min-h-11 items-center text-lg underline decoration-1 underline-offset-[6px]">
+            Back to all the machines
+          </Link>
         </div>
       </section>
     </main>

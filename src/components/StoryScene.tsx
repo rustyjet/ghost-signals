@@ -3,324 +3,414 @@ import type { ModelViewerElement } from '@google/model-viewer'
 import { useEffect, useRef, useState } from 'react'
 import type { Chapter, Figure } from '../data/types'
 import { gsap, isNarrow, prefersReducedMotion, ScrollTrigger, SplitText, useGSAP } from '../scroll/smoothScroll'
-import { stepPx, useStepScroll } from '../scroll/useStepScroll'
 import DustField from './DustField'
 
 const fmt = (n: number, decimals = 0) =>
   n.toLocaleString('en-GB', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
 
-/**
- * Camera shots are composed for a wide screen. On a phone the model only has a short, wide strip,
- * so pull the camera back to keep the whole part in frame.
- */
-function fitOrbit(orbit: string): string {
-  if (!isNarrow()) return orbit
-  return orbit.replace(/([\d.]+)m$/, (_, r: string) => `${(parseFloat(r) * 1.3).toFixed(2)}m`)
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t
+/** The camera holds while a step is being read, then travels to the next shot. */
+const hold = (t: number) => {
+  const u = clamp01((t - 0.18) / 0.64)
+  return u * u * (3 - 2 * u)
 }
 
+type Vec3 = [number, number, number]
+interface Shot {
+  theta: number
+  phi: number
+  radius: number
+  target: Vec3 | null // null = the model's own centre
+  storm: number
+  day: number
+}
+
+function toShot(s: { orbit: string; target: string; storm: number }, day: number): Shot {
+  const [theta, phi, radius] = s.orbit.split(/\s+/).map(parseFloat)
+  const target = s.target === 'auto' ? null : (s.target.split(/\s+/).map(parseFloat) as Vec3)
+  return { theta, phi, radius, target, storm: s.storm, day }
+}
+
+/** Where on screen a step's words sit when that step is "being read". Phones read below the machine. */
+const focusLine = () => (isNarrow() ? 0.77 : 0.5)
+
+/**
+ * The chapter story as a page that really scrolls. The machine stays on screen (sticky) while the
+ * words travel up past it. Everything is scrubbed to the scrollbar and runs backwards on the way up:
+ * the camera, the sky, the day counter, each counting number and each heading's line reveal.
+ */
 export default function StoryScene({ chapter }: { chapter: Chapter }) {
-  return prefersReducedMotion() ? <StaticStory chapter={chapter} /> : <PinnedStory chapter={chapter} />
-}
-
-/**
- * The pinned story: the machine stays on screen. One flick moves one step; each step brings a
- * counting number, a heading that rises in line by line, and a short body.
- */
-function PinnedStory({ chapter }: { chapter: Chapter }) {
-  const rootRef = useRef<HTMLDivElement>(null)
+  const reduced = prefersReducedMotion()
+  const rootRef = useRef<HTMLElement>(null)
+  const stageRef = useRef<HTMLDivElement>(null)
   const modelRef = useRef<ModelViewerElement>(null)
-  const spineNumRef = useRef<HTMLSpanElement>(null)
-  const triggerRef = useRef<ScrollTrigger | null>(null)
-  const splits = useRef<Record<number, SplitText>>({})
-  const titleSplit = useRef<SplitText | null>(null)
-  const prevActive = useRef(-1)
-  const spineValue = useRef(0)
+  const photoRef = useRef<HTMLImageElement>(null)
+  const dayRef = useRef<HTMLSpanElement>(null)
   const stormRef = useRef(chapter.title.storm)
-  const [active, setActive] = useState(0)
+  const autoTarget = useRef<Vec3>([0, 0.5, 0])
+  const refresh = useRef<() => void>(() => {})
   const [loaded, setLoaded] = useState(false)
 
-  const shots = [chapter.title, ...chapter.steps]
-  const count = shots.length
-  const nav = useStepScroll(triggerRef, count)
-  const step = active > 0 ? chapter.steps[active - 1] : undefined
+  const firstDay = chapter.steps[0]?.spine ?? 0
 
   useGSAP(
     () => {
-      const el = rootRef.current
-      if (!el) return
-      triggerRef.current = ScrollTrigger.create({
-        trigger: el,
-        pin: true,
-        start: 'top top',
-        end: () => `+=${(count - 1) * stepPx()}`,
-        invalidateOnRefresh: true,
-        onUpdate: (self) => {
-          // The sky blends continuously between steps while the page glides.
-          const f = self.progress * (count - 1)
-          const i = Math.floor(f)
-          const j = Math.min(count - 1, i + 1)
-          const storm = shots[i].storm + (shots[j].storm - shots[i].storm) * (f - i)
-          stormRef.current = storm
-          el.style.setProperty('--storm', storm.toFixed(3))
-          el.dataset.dark = storm > 0.42 ? 'true' : 'false'
-          el.style.setProperty('--progress', self.progress.toFixed(4))
-          setActive(Math.round(f))
+      const root = rootRef.current
+      const stage = stageRef.current
+      if (!root || !stage) return
+      const shots = [toShot(chapter.title, firstDay), ...chapter.steps.map((s) => toShot(s, s.spine))]
+      const blocks = gsap.utils.toArray<HTMLElement>('[data-block]', root)
+
+      // Scroll positions at which each shot is fully "on": the top of the scene for the title,
+      // then the point where each block of words crosses the reading line.
+      let centres: number[] = []
+      const measure = () => {
+        const y = window.scrollY
+        const vh = window.innerHeight
+        centres = [
+          root.getBoundingClientRect().top + y,
+          ...blocks.map((b) => {
+            const r = b.getBoundingClientRect()
+            return r.top + y + r.height / 2 - focusLine() * vh
+          }),
+        ]
+      }
+
+      let lastOrbit = ''
+      let lastTarget = ''
+      let lastDay = -1
+      let lastStorm = -1
+      let lastPan = ''
+      const apply = () => {
+        if (centres.length < 2) return
+        const y = window.scrollY
+        let i = 0
+        while (i < centres.length - 2 && y >= centres[i + 1]) i++
+        const span = centres[i + 1] - centres[i]
+        const raw = span > 0 ? clamp01((y - centres[i]) / span) : 0
+        const t = reduced ? Math.round(raw) : hold(raw)
+        const a = shots[i]
+        const b = shots[i + 1]
+
+        const narrow = isNarrow()
+        const theta = lerp(a.theta, b.theta, t)
+        const radius = lerp(a.radius, b.radius, t) * (narrow ? 1.3 : 1)
+        const orbit = `${theta.toFixed(2)}deg ${lerp(a.phi, b.phi, t).toFixed(2)}deg ${radius.toFixed(3)}m`
+        const ta = a.target ?? autoTarget.current
+        const tb = b.target ?? autoTarget.current
+        const target = ta.map((v, k) => `${lerp(v, tb[k], t).toFixed(3)}m`).join(' ')
+        const mv = modelRef.current
+        if (mv && (orbit !== lastOrbit || target !== lastTarget)) {
+          lastOrbit = orbit
+          lastTarget = target
+          mv.cameraOrbit = orbit
+          mv.cameraTarget = target
+          if (reduced) mv.jumpCameraToGoal()
+        }
+
+        // The ground photo slides a little as the camera swings round, so the machine sits in a place.
+        const pan = `translate3d(calc(-50% + ${(-theta * (narrow ? 2 : 5)).toFixed(1)}px), 0, 0)`
+        if (photoRef.current && pan !== lastPan) {
+          lastPan = pan
+          photoRef.current.style.transform = pan
+        }
+
+        const storm = lerp(a.storm, b.storm, raw)
+        stormRef.current = storm
+        if (Math.abs(storm - lastStorm) > 0.002) {
+          lastStorm = storm
+          stage.style.setProperty('--storm', storm.toFixed(3))
+          stage.dataset.dark = storm > 0.42 ? 'true' : 'false'
+        }
+
+        const day = Math.round(lerp(a.day, b.day, t))
+        if (dayRef.current && day !== lastDay) {
+          lastDay = day
+          dayRef.current.textContent = fmt(day)
+        }
+      }
+
+      ScrollTrigger.create({
+        trigger: root,
+        start: 'top bottom',
+        end: 'bottom top',
+        onRefresh: () => {
+          measure()
+          apply()
+        },
+        onUpdate: apply,
+      })
+      refresh.current = () => {
+        measure()
+        apply()
+      }
+
+      // The name: letters rise once on arrival, then scrolling lifts them away one by one.
+      const titleEl = root.querySelector<HTMLElement>('[data-title]')
+      const title = titleEl ? SplitText.create(titleEl, { type: 'chars', mask: 'chars' }) : null
+      if (title && !reduced)
+        gsap.from(title.chars, { yPercent: 110, duration: 0.8, ease: 'expo.out', stagger: 0.025, delay: 0.15 })
+
+      const intro = gsap.timeline({
+        scrollTrigger: {
+          trigger: root,
+          start: 'top top',
+          end: () => `+=${Math.round(window.innerHeight * 0.6)}`,
+          scrub: reduced ? true : 0.4,
+          invalidateOnRefresh: true,
         },
       })
+      if (title) {
+        if (reduced) intro.to(titleEl, { opacity: 0, duration: 0.5 }, 0)
+        else
+          intro.to(
+            title.chars,
+            {
+              // Lift each letter clear of its (padded) mask.
+              y: (_: number, el: HTMLElement) => -(el.parentElement?.offsetHeight ?? el.offsetHeight) * 1.2,
+              duration: 0.5,
+              ease: 'power2.inOut',
+              stagger: 0.02,
+            },
+            0,
+          )
+      }
+      intro
+        .to(stage.querySelectorAll('[data-intro-only]'), { autoAlpha: 0, duration: 0.25 }, 0)
+        .to(root.querySelector('[data-tagline]'), { autoAlpha: 0, duration: 0.3 }, 0.05)
+        .fromTo(stage.querySelector('[data-day]'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25 }, 0.45)
+        .fromTo(stage.querySelector('[data-scrim]'), { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0.3)
 
-      // Headings rise in line by line from behind a mask. autoSplit re-splits after fonts load or a resize.
-      el.querySelectorAll<HTMLElement>('[data-heading]').forEach((h) => {
-        const index = Number(h.closest<HTMLElement>('[data-panel]')?.dataset.index)
-        SplitText.create(h, {
-          type: 'lines',
-          mask: 'lines',
-          autoSplit: true,
-          onSplit: (self) => {
-            splits.current[index] = self
-          },
+      if (!reduced) {
+        blocks.forEach((block) => {
+          const heading = block.querySelector<HTMLElement>('[data-heading]')
+          const figure = block.querySelector<HTMLElement>('[data-figure]')
+          const num = block.querySelector<HTMLElement>('[data-num]')
+          const body = block.querySelectorAll('[data-body]')
+          if (!heading) return
+          SplitText.create(heading, {
+            type: 'lines',
+            mask: 'lines',
+            autoSplit: true,
+            // Returning the timeline lets SplitText rebuild it (keeping its progress) after a re-split.
+            onSplit: (self) => {
+              const tl = gsap.timeline({
+                scrollTrigger: {
+                  trigger: block,
+                  start: () => (isNarrow() ? 'top 98%' : 'top 92%'),
+                  end: () => (isNarrow() ? 'top 66%' : 'top 46%'),
+                  scrub: 0.5,
+                  invalidateOnRefresh: true,
+                },
+              })
+              if (figure) tl.from(figure, { yPercent: 35, opacity: 0, duration: 0.45, ease: 'power3.out' }, 0)
+              if (num) {
+                const value = Number(num.dataset.value)
+                const decimals = Number(num.dataset.decimals)
+                const counter = { v: 0 }
+                let shown = fmt(0, decimals)
+                num.textContent = shown
+                tl.to(
+                  counter,
+                  {
+                    v: value,
+                    duration: 0.75,
+                    ease: 'power2.out',
+                    onUpdate: () => {
+                      const s = fmt(counter.v, decimals)
+                      if (s !== shown) num.textContent = shown = s
+                    },
+                  },
+                  0,
+                )
+              }
+              tl.from(self.lines, { yPercent: 110, duration: 0.5, ease: 'power3.out', stagger: 0.07 }, 0.15)
+              tl.from(body, { opacity: 0, y: 14, duration: 0.4, ease: 'power2.out' }, 0.42)
+              return tl
+            },
+          })
         })
-      })
-      const title = el.querySelector<HTMLElement>('[data-title]')
-      if (title) titleSplit.current = SplitText.create(title, { type: 'chars' })
+      }
 
-      gsap.set(el.querySelectorAll('[data-panel]'), { autoAlpha: 0 })
+      // Wide screens: words fade before they reach the day counter at the top.
+      const mm = gsap.matchMedia()
+      mm.add('(min-width: 1024px)', () => {
+        blocks.forEach((block) =>
+          gsap.to(block, {
+            opacity: 0,
+            ease: 'none',
+            scrollTrigger: { trigger: block, start: 'top 24%', end: 'top 4%', scrub: true },
+          }),
+        )
+      })
 
       if (import.meta.env.DEV) {
-        // Used by the dev frames page to jump every frame to the same step.
+        // Used by the dev frames page to put every frame on the same step.
         ;(window as unknown as { __step?: (i: number) => void }).__step = (i: number) =>
-          window.scrollTo(0, (triggerRef.current?.start ?? 0) + i * stepPx())
+          window.scrollTo(0, Math.max(0, centres[Math.min(i, centres.length - 1)] ?? 0))
       }
+      return () => mm.revert()
     },
     { scope: rootRef, dependencies: [chapter.slug] },
   )
-
-  // One orchestrated moment per step.
-  useGSAP(
-    () => {
-      const el = rootRef.current
-      if (!el) return
-      const panels = Array.from(el.querySelectorAll<HTMLElement>('[data-panel]'))
-      const prev = prevActive.current
-      prevActive.current = active
-
-      panels.forEach((p, i) => {
-        if (i === active) return
-        gsap.to(p, { autoAlpha: 0, y: i < active ? -28 : 28, duration: 0.22, ease: 'power2.in', overwrite: true })
-      })
-
-      // The giant name only belongs to the title screen.
-      const titleChars = titleSplit.current?.chars ?? []
-      if (active === 0) {
-        if (prev !== 0)
-          gsap.fromTo(
-            titleChars,
-            { yPercent: 60, autoAlpha: 0 },
-            { yPercent: 0, autoAlpha: 1, duration: 0.9, ease: 'power4.out', stagger: 0.035, overwrite: true },
-          )
-      } else if (prev === 0 || prev === -1) {
-        gsap.to(titleChars, { yPercent: -40, autoAlpha: 0, duration: 0.3, ease: 'power2.in', stagger: 0.01, overwrite: true })
-      }
-
-      const panel = panels[active]
-      if (!panel) return
-      gsap.killTweensOf(panel)
-      const tl = gsap.timeline({ delay: prev === -1 ? 0.35 : 0.2 })
-      tl.set(panel, { autoAlpha: 1, y: 0 })
-
-      const figure = panel.querySelector<HTMLElement>('[data-figure]')
-      const num = panel.querySelector<HTMLElement>('[data-num]')
-      if (figure && num) {
-        const target = Number(num.dataset.value)
-        const decimals = Number(num.dataset.decimals)
-        const counter = { v: 0 }
-        num.textContent = fmt(0, decimals)
-        tl.fromTo(figure, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 0)
-        tl.to(
-          counter,
-          { v: target, duration: 1.2, ease: 'power3.out', onUpdate: () => (num.textContent = fmt(counter.v, decimals)) },
-          0,
-        )
-      }
-
-      const lines = splits.current[active]?.lines
-      if (lines?.length)
-        tl.fromTo(lines, { yPercent: 110 }, { yPercent: 0, duration: 0.85, ease: 'power4.out', stagger: 0.09 }, 0.12)
-
-      const body = panel.querySelectorAll('[data-body]')
-      tl.fromTo(body, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out', stagger: 0.08 }, 0.35)
-
-      // The running counter rolls from where it was to where the story is now.
-      const spineNum = spineNumRef.current
-      const target = active > 0 ? chapter.steps[active - 1].spine : spineValue.current
-      if (spineNum && target !== spineValue.current) {
-        const roll = { v: spineValue.current }
-        spineValue.current = target
-        gsap.to(roll, {
-          v: target,
-          duration: target - roll.v > 100 ? 1.6 : 0.7,
-          ease: 'power2.out',
-          overwrite: true,
-          onUpdate: () => (spineNum.textContent = fmt(roll.v)),
-        })
-      }
-    },
-    { scope: rootRef, dependencies: [active] },
-  )
-
-  // Move the camera when the step changes; model-viewer eases between positions itself.
-  useEffect(() => {
-    const mv = modelRef.current
-    if (!mv) return
-    mv.cameraOrbit = fitOrbit(shots[active].orbit)
-    mv.cameraTarget = shots[active].target
-  }, [active, shots])
 
   useEffect(() => {
     const mv = modelRef.current
     if (!mv) return
     const onLoad = () => {
+      const c = mv.getBoundingBoxCenter()
+      autoTarget.current = [c.x, c.y, c.z]
       setLoaded(true)
+      refresh.current()
       ScrollTrigger.refresh()
     }
     mv.addEventListener('load', onLoad)
     return () => mv.removeEventListener('load', onLoad)
   }, [])
 
-  const atEnd = active === count - 1
-
   return (
-    <section aria-label={`The story of ${chapter.name}`}>
-      <div
-        ref={rootRef}
-        data-step-scene=""
-        data-dark="false"
-        className="group/scene relative h-[100svh] overflow-hidden"
-        style={
-          {
-            '--storm': chapter.title.storm,
-            background: `linear-gradient(to bottom,
-              color-mix(in oklab, var(--color-mars-sky), var(--color-mars-storm) calc(var(--storm) * 100%)) 0%,
-              color-mix(in oklab, var(--color-mars-horizon), var(--color-mars-storm-horizon) calc(var(--storm) * 100%)) 72%)`,
-          } as React.CSSProperties
-        }
-      >
-        {/* The Sun: a pale disc that fades and shrinks behind the dust */}
+    <section ref={rootRef} aria-label={`The story of ${chapter.name}`} className="relative">
+      {/* The stage stays on screen for the whole story. On phones it is a panel at the top that sits
+          above the words, which slide under its faded edge; on wide screens it fills the screen behind them. */}
+      <div className="pointer-events-none sticky top-0 z-20 h-0 lg:z-0">
         <div
-          aria-hidden="true"
-          className="absolute right-[18%] top-[12%] h-20 w-20 rounded-full bg-sun sm:h-28 sm:w-28"
-          style={{
-            opacity: 'calc(1 - var(--storm) * 0.85)',
-            boxShadow: '0 0 calc(80px - var(--storm) * 70px) calc(20px - var(--storm) * 18px) var(--color-sun)',
-            transform: 'scale(calc(1 - var(--storm) * 0.35))',
-          }}
-        />
-
-        <DustField stormRef={stormRef} className="absolute inset-0 h-full w-full" />
-
-        <svg aria-hidden="true" viewBox="0 0 1440 260" preserveAspectRatio="none" className="absolute bottom-0 h-[30%] w-full">
-          <path d="M0 120 C 220 70 360 110 560 90 S 980 40 1180 80 S 1380 70 1440 60 V260 H0Z" fill="#5a3a26" opacity="0.7" />
-          <path d="M0 170 C 260 130 420 160 700 145 S 1150 120 1440 140 V260 H0Z" fill="var(--color-basalt)" />
-        </svg>
-
-        {/* The name, huge, behind the machine */}
-        <h1
-          data-title=""
-          className="pointer-events-none absolute inset-x-5 top-[15%] text-[clamp(2.5rem,14vw,15rem)] leading-[0.82] text-ink lg:inset-x-10 lg:top-[16%] lg:text-[clamp(3.6rem,15vw,15rem)]"
+          ref={stageRef}
+          data-dark="false"
+          className="group/stage absolute inset-x-0 top-0 h-[54svh] overflow-hidden [@media(max-height:700px)]:h-[50svh] lg:h-[100svh] lg:[@media(max-height:700px)]:h-[100svh]"
+          style={
+            {
+              '--storm': chapter.title.storm,
+              background: `linear-gradient(to bottom,
+                color-mix(in oklab, var(--color-mars-sky), var(--color-mars-storm) calc(var(--storm) * 100%)) 0%,
+                color-mix(in oklab, var(--color-mars-horizon), var(--color-mars-storm-horizon) calc(var(--storm) * 100%)) 100%)`,
+            } as React.CSSProperties
+          }
         >
-          {chapter.name}
-        </h1>
-
-        <model-viewer
-          ref={modelRef}
-          src={chapter.model.src}
-          alt={chapter.model.alt}
-          camera-orbit={fitOrbit(chapter.title.orbit)}
-          camera-target={chapter.title.target}
-          interpolation-decay="140"
-          disable-zoom=""
-          shadow-intensity="1.2"
-          shadow-softness="0.8"
-          exposure="1.05"
-          tone-mapping="neutral"
-          environment-image="neutral"
-          style={{ position: 'absolute', background: 'transparent', pointerEvents: 'none' }}
-          // Stacked layout: fade the bottom of the model so close-ups never end in a hard cut.
-          class="inset-x-0 top-[8%] h-[46%] w-full [mask-image:linear-gradient(to_bottom,black_72%,transparent)] [@media(max-height:700px)]:top-[7%] [@media(max-height:700px)]:h-[40%] md:top-[9%] md:h-[50%] lg:[mask-image:none] lg:inset-y-0 lg:left-auto lg:right-0 lg:top-0 lg:h-full lg:w-[60%] lg:[@media(max-height:700px)]:top-0 lg:[@media(max-height:700px)]:h-full"
-        />
-        {!loaded && <p className="absolute right-6 top-20 text-sm opacity-70">Receiving {chapter.name}&hellip;</p>}
-
-        {/* Phones: the words sit under the machine on dark ground */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-basalt via-basalt/90 to-transparent lg:hidden"
-        />
-
-        {/* Top-left: where we are, then the running counter */}
-        <div className="pointer-events-none absolute left-5 top-6 max-w-[calc(100%-9rem)] font-display text-lg font-bold leading-tight text-ink transition-colors duration-700 group-data-[dark=true]/scene:text-sun lg:left-10 lg:top-8 lg:max-w-none lg:text-2xl">
-          <p className={`transition-opacity duration-500 ${active === 0 ? 'opacity-100' : 'opacity-0'}`}>{chapter.place}</p>
-          <p
-            className={`absolute left-0 top-0 whitespace-nowrap transition-opacity duration-500 ${active === 0 ? 'opacity-0' : 'opacity-100'}`}
-            aria-live="polite"
-            aria-label={step ? `${chapter.spine.before} ${fmt(step.spine)} ${chapter.spine.after}` : undefined}
-          >
-            <span aria-hidden="true">
-              {chapter.spine.before} <span ref={spineNumRef} className="tabular-nums">0</span> {chapter.spine.after}
-            </span>
-          </p>
-        </div>
-
-        {/* Words */}
-        <div className="pointer-events-none absolute inset-0 text-sun lg:text-ink lg:group-data-[dark=true]/scene:text-sun">
-          <div
-            data-panel=""
-            data-index={0}
-            className="absolute inset-x-5 bottom-24 md:inset-x-10 md:bottom-28 lg:bottom-auto lg:top-[calc(16%+clamp(3.6rem,15vw,15rem)*1.02)]"
-          >
-            <p data-body="" className="max-w-[24ch] font-display text-2xl font-bold leading-tight md:text-4xl lg:font-body lg:text-2xl lg:font-normal">
-              {chapter.tagline}
-            </p>
-            <p data-body="" className="mt-3 text-base opacity-75">
-              <span className="pointer-coarse:hidden">Scroll to begin</span>
-              <span className="hidden pointer-coarse:inline">Swipe up to begin</span>
-            </p>
+          {/* The ground: Opportunity's own panorama of Eagle crater, where it landed */}
+          <div className="absolute inset-x-0 bottom-0 h-[42%] lg:h-[44%]">
+            <picture>
+              <source media="(min-width: 1024px)" srcSet="photos/eagle-crater-wide.webp" />
+              <img
+                ref={photoRef}
+                src="photos/eagle-crater-narrow.webp"
+                alt=""
+                decoding="async"
+                className="absolute bottom-0 left-1/2 h-full w-auto max-w-none [mask-image:linear-gradient(to_bottom,transparent,black_18%)]"
+                style={{ transform: 'translate3d(-50%, 0, 0)' }}
+              />
+            </picture>
+            <div aria-hidden="true" className="absolute inset-0 bg-mars-storm" style={{ opacity: 'calc(var(--storm) * 0.75)' }} />
           </div>
 
-          {chapter.steps.map((s, i) => (
-            <div
-              key={s.heading}
-              data-panel=""
-              data-index={i + 1}
-              // Centred with flexbox, not translate: GSAP animates this panel's transform and would erase a CSS translate.
-              className="absolute inset-x-5 bottom-24 md:inset-x-10 md:bottom-28 lg:inset-x-auto lg:inset-y-0 lg:left-10 lg:flex lg:w-[min(32rem,34vw)] lg:flex-col lg:justify-center"
+          <DustField stormRef={stormRef} className="absolute inset-0 h-full w-full" />
+
+          {/* The name, huge, behind the machine */}
+          <h1
+            data-title=""
+            // nowrap: the letters are split into separate boxes, which would otherwise let the word break anywhere.
+            // The letter masks get extra room so descenders and tall letters are not clipped.
+            className="absolute inset-x-5 top-[13%] whitespace-nowrap [&>div]:-mb-[0.3em] [&>div]:-mt-[0.12em] [&>div]:pb-[0.3em] [&>div]:pt-[0.12em] text-[clamp(2.5rem,13.2vw,15rem)] leading-[0.9] text-ink md:inset-x-10 lg:top-[13%] lg:text-[clamp(3.6rem,15vw,15rem)]"
+          >
+            {chapter.name}
+          </h1>
+
+          <model-viewer
+            ref={modelRef}
+            src={chapter.model.src}
+            alt={chapter.model.alt}
+            camera-orbit={chapter.title.orbit}
+            camera-target={chapter.title.target}
+            interpolation-decay="45"
+            disable-zoom=""
+            shadow-intensity="1.1"
+            shadow-softness="0.9"
+            exposure="1.05"
+            tone-mapping="neutral"
+            environment-image="neutral"
+            style={{ position: 'absolute', background: 'transparent', pointerEvents: 'none' }}
+            class={`inset-x-0 bottom-[6%] top-[14%] h-auto w-full transition-opacity duration-500 lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[62%] ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          />
+          {!loaded && (
+            <p className="absolute bottom-[12%] right-5 text-sm text-ink lg:right-10">Receiving {chapter.name}&hellip;</p>
+          )}
+
+          {/* Wide screens: the left side darkens once the story starts, so light words read over sky and ground */}
+          <div
+            data-scrim=""
+            aria-hidden="true"
+            className="absolute inset-y-0 left-0 hidden w-[64%] bg-[linear-gradient(to_right,rgb(36_24_18/0.94)_0%,rgb(36_24_18/0.82)_40%,transparent)] opacity-0 lg:block"
+          />
+          {/* Phones: the panel's lower edge fades into the ground the words scroll on */}
+          <div aria-hidden="true" className="absolute inset-x-0 -bottom-px h-[30%] bg-linear-to-b from-transparent via-basalt/70 via-55% to-basalt lg:hidden" />
+
+          {/* Top-left: where we are, then the running day counter */}
+          <div className="absolute left-5 top-5 font-display text-lg font-bold leading-tight md:left-10 lg:top-8 lg:text-2xl">
+            <p data-intro-only="" className="text-ink">
+              {chapter.place}
+            </p>
+            <p
+              data-day=""
+              aria-hidden="true"
+              className="invisible absolute left-0 top-0 whitespace-nowrap text-ink opacity-0 group-data-[dark=true]/stage:text-sun lg:text-sun"
             >
+              {chapter.spine.before}{' '}
+              <span ref={dayRef} className="tabular-nums">
+                {fmt(firstDay)}
+              </span>{' '}
+              {chapter.spine.after}
+            </p>
+          </div>
+          <a
+            href="#/"
+            data-intro-only=""
+            className="pointer-events-auto absolute right-8 top-5 hidden min-h-11 items-center px-2 font-display text-2xl font-bold text-ink underline decoration-transparent decoration-2 underline-offset-4 transition-[text-decoration-color] duration-200 hover:decoration-current lg:inline-flex"
+          >
+            Ghost Signals
+          </a>
+        </div>
+      </div>
+
+      {/* The words. They scroll like any page. */}
+      <div className="relative z-10">
+        <header className="relative h-[100svh]">
+          <div
+            data-tagline=""
+            className="absolute inset-x-5 top-[57svh] md:inset-x-10 [@media(max-height:700px)]:top-[53svh] lg:top-[calc(13%+clamp(3.6rem,15vw,15rem)*0.98)] lg:[@media(max-height:700px)]:top-[calc(13%+clamp(3.6rem,15vw,15rem)*0.98)]"
+          >
+            <p className="max-w-[24ch] font-display text-[clamp(1.4rem,6.4vw,2.25rem)] font-bold leading-tight text-sun lg:max-w-[26ch] lg:font-body lg:text-2xl lg:font-normal lg:text-ink">
+              {chapter.tagline}
+            </p>
+            {/* Phones: the way home sits under the opening line rather than crowding the top */}
+            <a
+              href="#/"
+              className="mt-4 inline-flex min-h-11 items-center font-display text-lg font-bold text-sun/80 underline decoration-1 underline-offset-[6px] lg:hidden"
+            >
+              Ghost Signals
+            </a>
+          </div>
+        </header>
+
+        {chapter.steps.map((s) => (
+          <article key={s.heading} className="flex min-h-[66svh] items-start px-5 md:px-10 lg:min-h-[100svh] lg:items-center">
+            <div data-block="" className="w-full max-w-[34rem] text-sun lg:w-[min(32rem,36vw)]">
+              <p className="sr-only">
+                {chapter.spine.before} {fmt(s.spine)} {chapter.spine.after}.
+              </p>
               {s.figure && <FigureView figure={s.figure} />}
               <h2
                 data-heading=""
-                className="mt-4 text-[clamp(1.55rem,6.5vw,2.1rem)] leading-[1.12] md:text-[2.8rem] lg:mt-8 lg:text-[clamp(2rem,2.9vw,3.2rem)]"
+                className="mt-4 text-[clamp(1.6rem,6.6vw,2.2rem)] [&>div]:-mb-[0.12em] [&>div]:pb-[0.12em] leading-[1.08] md:text-[2.8rem] lg:mt-7 lg:text-[clamp(2rem,2.9vw,3.2rem)]"
               >
                 {s.heading}
               </h2>
-              <p data-body="" className="mt-3 max-w-[36ch] text-base leading-snug md:text-xl md:leading-relaxed lg:mt-4 lg:text-xl">
+              <p data-body="" className="mt-3 max-w-[36ch] text-base leading-snug text-sun/90 md:text-xl md:leading-relaxed lg:mt-4">
                 {s.body}
               </p>
             </div>
-          ))}
-        </div>
-
-        <button
-          type="button"
-          onClick={() => nav.go(atEnd ? count : nav.current() + 1)}
-          aria-label={atEnd ? 'Continue below' : 'Next part of the story'}
-          className="absolute bottom-5 right-5 z-10 grid h-12 w-12 place-items-center rounded-full bg-sun text-ink shadow-[0_4px_20px_rgb(0_0_0/0.25)] transition-transform hover:scale-105 active:scale-95 lg:bottom-8 lg:right-10 lg:h-14 lg:w-14"
-        >
-          <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </button>
-
-        <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1 bg-black/20">
-          <div className="h-full origin-left bg-sun" style={{ transform: 'scaleX(var(--progress, 0))' }} />
-        </div>
+          </article>
+        ))}
+        <div aria-hidden="true" className="h-[30svh] lg:h-[10svh]" />
       </div>
     </section>
   )
@@ -332,7 +422,7 @@ function FigureView({ figure }: { figure: Figure }) {
     <div data-figure="">
       <p
         aria-label={`${fmt(figure.value, d)}${figure.unit ? ` ${figure.unit}` : ''}`}
-        className="font-display font-extrabold leading-[0.85] tracking-[-0.04em] text-[clamp(3.2rem,16vw,4.6rem)] [@media(max-height:700px)]:text-[clamp(2.8rem,13vw,3.6rem)] md:text-[6.5rem] lg:text-[clamp(5rem,9vw,9.5rem)] lg:[@media(max-height:700px)]:text-[clamp(4rem,8vw,6.5rem)]"
+        className="font-display font-extrabold leading-[0.85] tracking-[-0.035em] text-[clamp(3.2rem,16vw,4.6rem)] [@media(max-height:700px)]:text-[clamp(2.8rem,13vw,3.6rem)] md:text-[6.5rem] lg:text-[clamp(5rem,9vw,9.5rem)] lg:[@media(max-height:700px)]:text-[clamp(4rem,8vw,6.5rem)]"
       >
         <span aria-hidden="true" data-num="" data-value={figure.value} data-decimals={d} className="tabular-nums">
           {fmt(figure.value, d)}
@@ -343,40 +433,7 @@ function FigureView({ figure }: { figure: Figure }) {
           </span>
         )}
       </p>
-      <p className="mt-2 text-sm opacity-80 md:text-lg">{figure.label}</p>
+      <p className="mt-2 text-sm text-sun/80 md:text-lg">{figure.label}</p>
     </div>
-  )
-}
-
-/** Reduced motion: the same story as a plain, readable column. Nothing moves. */
-function StaticStory({ chapter }: { chapter: Chapter }) {
-  return (
-    <section aria-label={`The story of ${chapter.name}`} className="bg-basalt px-5 pb-16 pt-20 md:px-10">
-      <div className="mx-auto max-w-3xl">
-        <p className="font-display text-xl font-bold">{chapter.place}</p>
-        <h1 className="mt-4 text-[clamp(3rem,12vw,8rem)] leading-[0.85]">{chapter.name}</h1>
-        <p className="mt-4 max-w-[30ch] text-xl">{chapter.tagline}</p>
-        <model-viewer
-          src={chapter.model.src}
-          alt={chapter.model.alt}
-          camera-orbit={chapter.title.orbit}
-          disable-zoom=""
-          camera-controls=""
-          style={{ display: 'block', width: '100%', height: '50vh', marginTop: '2rem', background: 'transparent' }}
-        />
-        <ol className="mt-10 space-y-14">
-          {chapter.steps.map((s) => (
-            <li key={s.heading}>
-              <p className="font-display font-bold opacity-80">
-                {chapter.spine.before} {fmt(s.spine)} {chapter.spine.after}
-              </p>
-              {s.figure && <FigureView figure={s.figure} />}
-              <h2 className="mt-4 text-3xl">{s.heading}</h2>
-              <p className="mt-3 max-w-[40ch] text-lg">{s.body}</p>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </section>
   )
 }

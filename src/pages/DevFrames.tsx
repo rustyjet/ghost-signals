@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 // Dev only: one route at several screen sizes side by side, all jumped to the same story step.
 // Open /#/dev/frames?path=/signal/opportunity. Desktop is checked in the normal window.
 const SIZES = [
+  { w: 320, h: 568, name: 'Smallest phone' },
   { w: 360, h: 640, name: 'Small phone' },
   { w: 390, h: 844, name: 'Phone' },
   { w: 768, h: 1024, name: 'Tablet' },
