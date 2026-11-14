@@ -1,22 +1,27 @@
-import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import Journey, { journeyPictures } from '../components/journey/Journey'
 
-// Temporary start page. The "scroll away from Earth" journey replaces it after the Opportunity checkpoint.
+/** The start page: a trip out from Earth to the machines, then the credits. */
 export default function Hub() {
+  useEffect(() => {
+    document.title = 'Ghost Signals'
+  }, [])
+
   return (
-    <main className="grid min-h-[100dvh] place-items-center px-5">
-      <div className="max-w-3xl">
-        <h1 className="text-[clamp(3.5rem,12vw,10rem)] leading-[0.85]">Ghost Signals</h1>
-        <p className="mt-6 max-w-[38ch] text-xl opacity-85">
-          Some of NASA&rsquo;s machines never came home. They are still out there, on the Moon, on
-          Mars and far beyond.
-        </p>
-        <Link
-          to="/signal/opportunity"
-          className="mt-10 inline-block rounded-full bg-sun px-7 py-3 font-display text-lg font-bold text-ink hover:bg-mars-horizon"
-        >
-          Find Opportunity on Mars
-        </Link>
-      </div>
+    <main className="bg-black">
+      <Journey />
+      <footer className="border-t border-sun/15 bg-black px-5 pb-16 pt-12 text-sun/80 md:px-10">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="font-display text-2xl text-sun">Pictures</h2>
+          <ul className="mt-4 grid gap-x-10 gap-y-2 text-base md:grid-cols-2">
+            {journeyPictures().map((p) => (
+              <li key={p.what}>
+                {p.what}: {p.credit}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </footer>
     </main>
   )
 }

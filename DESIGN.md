@@ -36,6 +36,13 @@ The Moon chapters will use black sky, bright grey ground and gold foil.
 - Narrower: the backdrop fills the screen and its lower part is darkened. Words are read there, and each part of the words fades out before it passes the middle of the screen. Nothing is ever layered on top of the words.
 - No fixed chrome except the story counter (e.g. "Day 48 on Mars"). No progress bar, no next button.
 
+## The start page
+
+- A trip outward from Earth (`src/components/journey/Journey.tsx`, stops in `src/data/journey.ts`). The page is pure black space; the real globes (Apollo 17 Earth, Apollo 11 Moon, Viking Mars) sit in a sticky layer, blended with `lighten` so their black edges vanish.
+- Scrolling moves between stops: Earth shrinks behind, the Moon grows and passes, Mars grows. At each machine its NASA photo fills the screen. The corner counter is the distance from Earth, travelling on a log scale so it races after the Moon.
+- Photos with black mosaic gaps (InSight) are shown whole on black instead of filling the screen. Each photo can have its own phone crop (`narrowFocus`) to keep mosaic holes off screen.
+- Same text rules as a chapter: words left on wide screens, low on phones, fading before the middle.
+
 ## The Last Light game
 
 - One full screen after the story, on Opportunity's real deck (the 2014 self-portraits). The state is in the picture, not in bars:

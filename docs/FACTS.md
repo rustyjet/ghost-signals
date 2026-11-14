@@ -142,3 +142,28 @@ The game's numbers (battery, warmth, dust, 40 days, power costs) are game units,
 | Loss ending | Last signal reached Earth on 10 June 2018 | MP, NSSDCA | Checked |
 | Loss ending | In 2007 the team got it through a storm like this by stopping and waiting | STORM07 | Checked |
 | Scene | The deck photos are the two 2014 self-portraits (PIA17759 dusty, PIA18079 clean), used to show dust building up and blowing off | PIA17759, PIA18079 | Shown as a game picture, not a dated moment |
+
+### Home page (14 Nov 2026)
+
+Sources were read by a research agent on 14 Nov 2026; the exact sentences are quoted.
+
+- **MOON** = NASA Science, Moon facts — https://science.nasa.gov/moon/facts/ and NSSDCA Moon fact sheet — https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html
+- **MARSDIST** = NASA, "Hazard: Distance from Earth" — https://www.nasa.gov/hrp/hazard-distance-from-earth/ and NSSDCA Mars fact sheet — https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html
+- **A11LM** = NSSDCA, Apollo 11 Lunar Module — https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C; NASA Science, Apollo 11 landing site — https://science.nasa.gov/resource/apollo-11-landing-site
+- **INGEND** = NASA, "After Three Years on Mars, NASA's Ingenuity Helicopter Mission Ends" — https://www.nasa.gov/news-release/after-three-years-on-mars-nasas-ingenuity-helicopter-mission-ends/
+- **INSEND** = NASA, "NASA Retires InSight Mars Lander Mission After Years of Science" — https://www.nasa.gov/missions/insight/nasa-retires-insight-mars-lander-mission-after-years-of-science/
+- **PATH** = NASA Science, Mars Pathfinder — https://science.nasa.gov/mission/mars-pathfinder/; PIA01122 caption
+
+| Claim | Source | Checked |
+|-------|--------|---------|
+| The Moon is on average 384,400 km from Earth ("an average of 238,855 miles (384,400 kilometers) away") | MOON | Checked |
+| Mars is on average about 225 million km from Earth: NASA says "on average, 140 million miles"; 140 million × 1.609 = 225 million km is our conversion. Label says "on average" | MARSDIST | Checked (conversion ours) |
+| Mars is nearly 600 times farther than the Moon: 225,000,000 ÷ 384,400 ≈ 585 (our arithmetic on the two averages) | MOON, MARSDIST | Checked (arithmetic ours) |
+| Eagle's descent stage stayed on the Moon ("was left behind on the Moon"); the ascent stage took the crew back up | A11LM | Checked |
+| People have walked on the Moon and left things behind (Apollo 11's descent stage) | A11LM | Checked |
+| Opportunity was built for 90 sols ("designed to have a lifetime of 90 sols") and worked to sol 5,111 | MP; LAST (sol 5,111) | Checked |
+| Ingenuity: "up to five experimental test flights"; "performed 72 flights" | INGEND | Checked |
+| InSight "detected 1,319 marsquakes" | INSEND | Checked |
+| Sojourner was the first rover on Mars ("the first-ever robotic rover, Sojourner, to the Martian surface") | PATH | Checked |
+| Sojourner: "spent 83 days of a planned seven-day mission" → "Planned for a week, it lasted 83 days" | PIA01122 caption | Checked |
+| Four of the story's machines are on Mars (Opportunity, Ingenuity, InSight, Sojourner) | chapters above | Checked |
