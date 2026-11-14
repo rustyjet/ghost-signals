@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import StoryScene from '../components/StoryScene'
 import LastLight from '../components/game/LastLight'
+import RotorLift from '../components/game/RotorLift'
 import { sceneImages } from '../components/story/Backdrop'
 import { getChapter } from '../data/chapters'
 import type { Chapter as ChapterData } from '../data/types'
@@ -34,6 +35,7 @@ export default function Chapter() {
       <StoryScene key={chapter.slug} chapter={chapter} />
 
       {chapter.interaction === 'dust-storm' && <LastLight />}
+      {chapter.interaction === 'rotor-lift' && <RotorLift />}
 
       {chapter.closing && <Closing chapter={chapter} />}
       <Sources chapter={chapter} />

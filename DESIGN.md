@@ -55,6 +55,13 @@ The Moon chapters will use black sky, bright grey ground and gold foil.
 - Two big switches (up is on): Heaters and Radio. The game pauses itself when it scrolls out of view or the tab is hidden.
 - The deck rises out of the story's dark on scroll (scrubbed), so there is no hard edge between the story and the game.
 
+## The Lift off game (Ingenuity)
+
+- One full screen after the Ingenuity story: the 3D helicopter on the Jezero ground under the Mars sky. Its two rotors (separate parts in NASA's model) really turn, in opposite directions, at a speed the eye can follow.
+- One big **Hold to spin** button (touch, mouse, space bar): holding speeds the blades up, letting go slows them. A **Mars air / Earth air** switch. The speed and height are big numbers; a news line says what happened.
+- In the scene: dust kicked up near the ground, the shadow shrinking, the ground dropping away as the camera follows the climb, a 3 m band that lights and counts while you hover. Small shake at lift-off, bigger on a hard landing.
+- Phones: the ground line sits just above the controls, measured from where they actually end up.
+
 ## Motion
 
 - Everything in a chapter is scrubbed to the scrollbar and runs backwards on the way up:

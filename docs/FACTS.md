@@ -202,3 +202,17 @@ Read by a research agent on 14 Nov 2026 (quotes below); winter row read directly
 | 9 | "flew more than 14 times farther than planned" (Jan 2024 wording; NASA's Dec 2024 report says "more than 30 times") | IEND | Checked (Jan 2024 figure used) |
 | 9 | "Then the team said goodbye": JPL "Team Says Goodbye … for Now" | BYE | Checked |
 | 10 | Stationary testbed: "wake up daily", "take a picture of the surface with its color camera", "collect temperature data"; "memory could potentially hold about 20 years' worth of daily data" (shown as what the memory can hold, not how long it will last) | BYE | Checked |
+
+### Lift off (the Ingenuity rotor game)
+
+Game numbers (spin-up rate, top speed, drag, the 2.5–3.5 m band) are game units; the screen says so. What the game teaches, and why:
+
+- **LIFT** = NASA Glenn Research Center, "Lift Equation" — https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/lift-equation/ ("Lift depends on the density of the air, the square of the velocity, …")
+
+| Claim | Source | Checked |
+|-------|--------|---------|
+| Lift grows with air density and with speed squared, so the game uses lift ∝ density × (rpm)² | LIFT | Checked |
+| Mars air about 1% as dense as Earth's → "Earth air" is 100× denser, so the same lift needs 1/10 the blade speed (√100 = 10, our arithmetic) | QF, LIFT | Checked (arithmetic ours) |
+| It lifts off in Mars air at about 2,400 turns a minute (game calibrated to NASA's "around 2,400 rpm") | SIX | Checked |
+| Mars gravity 3.7 m/s² ("About 38% as strong as Earth's": 0.38 × 9.81) | QF | Checked |
+| Hovering at 3 metres, as on 19 April 2021 | FIRST | Checked |
