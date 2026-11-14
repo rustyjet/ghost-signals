@@ -60,3 +60,16 @@ NASA content is generally not subject to copyright in the United States; NASA's 
 | `ingenuity-blade-shadow.webp` | Shadow of the damaged rotor blade after flight 72 (PIA26243) | NASA/JPL-Caltech | https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia26/pia26243/PIA26243.jpg | 2400 px. |
 | `ingenuity-final-airfield.webp` | Perseverance spots Ingenuity at its final airfield, 4 Feb 2024 (PIA26236) | NASA/JPL-Caltech/ASU/MSSS | https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia26/pia26236/PIA26236.jpg | Black mosaic edges cropped; 2800 px. |
 
+## Eagle chapter photos (downloaded 14 Nov 2026)
+
+| File | What | Credit | Source | Changes |
+|---|---|---|---|---|
+| `tranquility-ground-wide.webp`, `tranquility-ground-narrow.webp` | Tranquility Base panorama, frames AS11-40-5881 to 5891, stitched by NASA JSC | NASA/JSC (jsc2007e045375) | https://images.nasa.gov/details/jsc2007e045375 | Right part only (craters, no lunar module, so it never doubles the 3D model); sky trimmed; 5200 px and 2400 px wide. |
+| `eagle-orbit.webp` | Eagle in lunar orbit, from Columbia | NASA/JSC (AS11-44-6581) | https://images.nasa.gov/details/as11-44-6581 | 2400 px. |
+| `eagle-window.webp` | View from the LM's right window after landing | NASA/JSC (AS11-37-5458) | https://images.nasa.gov/details/as11-37-5458 | 2400 px. |
+| `eagle-bootprint.webp` | Bootprint in lunar soil | NASA/JSC (AS11-40-5878) | https://images.nasa.gov/details/as11-40-5878 | 2400 px. |
+| `eagle-easep.webp` | Aldrin with the Passive Seismic Experiment; mirrors, flag and LM behind | NASA/JSC (AS11-40-5948) | https://images.nasa.gov/details/as11-40-5948 | 2400 px. |
+| `eagle-ascent.webp` | The ascent stage returning to Columbia, Earth behind | NASA/JSC (AS11-44-6642) | https://images.nasa.gov/details/as11-44-6642 | WebP only. |
+| `eagle-laser.webp` | Laser beams toward the Moon from NASA Goddard's laser ranging facility, 18 Sep 2010 (aimed at LRO) | NASA/GSFC/Debbie Mccallum (GSFC_20171208_Archive_e001974) | https://images.nasa.gov/details/GSFC_20171208_Archive_e001974 | WebP only. |
+| `eagle-plaque.webp` | The plaque on the descent-stage ladder strut, on the Moon | NASA/JSC (AS11-40-5899) | https://images.nasa.gov/details/as11-40-5899 | 2400 px. |
+| `moon.webp` (reused) | Full Moon from Apollo 11 on the way home | NASA/JSC (AS11-44-6667) | https://images.nasa.gov/details/as11-44-6667 | See home page row. |

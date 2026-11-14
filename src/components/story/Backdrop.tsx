@@ -1,6 +1,6 @@
 import '@google/model-viewer'
 import type { ModelViewerElement } from '@google/model-viewer'
-import type { Model, Scene, SceneImage, View } from '../../data/types'
+import type { Model, Scene, SceneImage, View, World } from '../../data/types'
 import { isNarrow } from '../../scroll/smoothScroll'
 import DustField from '../DustField'
 
@@ -69,6 +69,40 @@ export function makeBackdropController(
   let lastStorm = -1
   let lastOrbit = ''
   let lastTarget = ''
+  let lastHide: number | undefined
+
+  /** Show or hide the parts of the 3D model above a height, by reaching into model-viewer's scene. */
+  const hideAbove = (mv: ModelViewerElement, above: number | undefined) => {
+    if (above === lastHide) return
+    type Obj = {
+      isMesh?: boolean
+      visible: boolean
+      geometry?: { boundingBox: { min: Vec; max: Vec } | null; computeBoundingBox(): void }
+      matrixWorld: { elements: number[] }
+      traverse(cb: (o: Obj) => void): void
+    }
+    type Vec = { x: number; y: number; z: number }
+    const sym = Object.getOwnPropertySymbols(mv).find((s) => s.description === 'scene')
+    const scene = sym ? (mv as unknown as Record<symbol, Obj & { queueRender(): void }>)[sym] : null
+    if (!scene) return
+    let touched = 0
+    scene.traverse((o) => {
+      if (!o.isMesh || !o.geometry) return
+      if (!o.geometry.boundingBox) o.geometry.computeBoundingBox()
+      const b = o.geometry.boundingBox
+      if (!b) return
+      const e = o.matrixWorld.elements
+      const cx = (b.min.x + b.max.x) / 2
+      const cy = (b.min.y + b.max.y) / 2
+      const cz = (b.min.z + b.max.z) / 2
+      const y = e[1] * cx + e[5] * cy + e[9] * cz + e[13]
+      o.visible = above === undefined || y <= above
+      touched++
+    })
+    if (!touched) return // not loaded yet: try again on the next frame
+    lastHide = above
+    scene.queueRender()
+  }
 
   /** Size every cover photo to just cover the screen; travel is then pure transforms. */
   const layout = () => {
@@ -151,6 +185,7 @@ export function makeBackdropController(
       const tb = parseTarget(scene.to.target) ?? opts.autoTarget()
       const target = ta.map((v, k) => `${lerp(v, tb[k], c).toFixed(3)}m`).join(' ')
       const mv = opts.model()
+      if (mv) hideAbove(mv, scene.hideAbove)
       if (mv && (orbit !== lastOrbit || target !== lastTarget)) {
         lastOrbit = orbit
         lastTarget = target
@@ -159,9 +194,12 @@ export function makeBackdropController(
         if (opts.reduced) mv.jumpCameraToGoal()
       }
       // The ground slides a little as the camera swings round, so the machine stands somewhere.
-      layer.querySelectorAll<HTMLElement>('[data-ground] img').forEach((img, i) =>
-        set(img, 'transform', `translate3d(calc(-50% + ${(-theta * (narrow ? 2 : 5)).toFixed(1)}px), 0, 0)`, `${id}gp${i}`),
-      )
+      // Never further than the strip's spare width, so its edge never shows.
+      layer.querySelectorAll<HTMLImageElement>('[data-ground] img').forEach((img, i) => {
+        const spare = Math.max(0, (img.offsetWidth - vw) / 2)
+        const shift = Math.max(-spare, Math.min(spare, -theta * (narrow ? 2 : 5)))
+        set(img, 'transform', `translate3d(calc(-50% + ${shift.toFixed(1)}px), 0, 0)`, `${id}gp${i}`)
+      })
     }
   }
 
@@ -283,8 +321,8 @@ function Layer({ scene, shots, model, modelRef, title, loaded }: {
       style={{
         display: 'none',
         background: `linear-gradient(to bottom,
-          color-mix(in oklab, var(--color-mars-sky), var(--color-mars-storm) calc(var(--storm) * 100%)) 0%,
-          color-mix(in oklab, var(--color-mars-horizon), var(--color-mars-storm-horizon) calc(var(--storm) * 100%)) 100%)`,
+          color-mix(in oklab, var(--color-sky), var(--color-mars-storm) calc(var(--storm) * 100%)) 0%,
+          color-mix(in oklab, var(--color-horizon), var(--color-mars-storm-horizon) calc(var(--storm) * 100%)) 100%)`,
       }}
     >
       <div className="absolute inset-x-0 bottom-0 h-[52%] lg:h-[44%]">
@@ -298,7 +336,7 @@ function Layer({ scene, shots, model, modelRef, title, loaded }: {
                   {...lazy(g.wide.src)}
                   alt=""
                   decoding="async"
-                  className="absolute bottom-0 left-1/2 h-full w-auto max-w-none [mask-image:linear-gradient(to_bottom,transparent,black_18%)]"
+                  className="absolute bottom-0 left-1/2 h-full w-auto min-w-full max-w-none object-cover object-bottom [mask-image:linear-gradient(to_bottom,transparent,black_18%)]"
                   style={{ transform: 'translate3d(-50%, 0, 0)' }}
                 />
               </picture>
@@ -311,7 +349,7 @@ function Layer({ scene, shots, model, modelRef, title, loaded }: {
       <div
         data-ground-title=""
         aria-hidden="true"
-        className="absolute inset-x-5 top-[12%] whitespace-nowrap font-display text-[clamp(2.5rem,13.2vw,15rem)] font-extrabold leading-[0.9] tracking-[-0.03em] text-ink md:inset-x-10 lg:top-[13%] lg:text-[clamp(3.6rem,15vw,15rem)]"
+        className="absolute inset-x-5 top-[12%] whitespace-nowrap font-display text-[clamp(2.5rem,13.2vw,15rem)] font-extrabold leading-[0.9] tracking-[-0.03em] text-on-sky md:inset-x-10 lg:top-[13%] lg:text-[clamp(3.6rem,15vw,15rem)]"
       >
         <span data-title="" className="block [&>div]:-mb-[0.3em] [&>div]:-mt-[0.12em] [&>div]:pb-[0.3em] [&>div]:pt-[0.12em]">
           {title}
@@ -333,7 +371,7 @@ function Layer({ scene, shots, model, modelRef, title, loaded }: {
         style={{ position: 'absolute', background: 'transparent', pointerEvents: 'none' }}
         class={`inset-x-0 bottom-[38%] top-[14%] h-auto w-full transition-opacity duration-500 lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[62%] ${loaded ? 'opacity-100' : 'opacity-0'}`}
       />
-      {!loaded && <p className="absolute bottom-[34%] right-5 text-sm text-ink lg:bottom-[12%] lg:right-10">Receiving {title}&hellip;</p>}
+      {!loaded && <p className="absolute bottom-[34%] right-5 text-sm text-on-sky lg:bottom-[12%] lg:right-10">Receiving {title}&hellip;</p>}
     </div>
   )
 }
@@ -347,6 +385,7 @@ export default function Backdrop(props: {
   title: string
   loaded: boolean
   rootRef: React.RefObject<HTMLDivElement | null>
+  world: World
 }) {
   const { shots, stormRef, rootRef } = props
   const seen = new Set<string>()
@@ -361,7 +400,8 @@ export default function Backdrop(props: {
       {layers.map((s) => (
         <Layer key={sceneKey(s.scene)} scene={s.scene} {...props} />
       ))}
-      <DustField stormRef={stormRef} className="pointer-events-none absolute inset-0 z-10 h-full w-full" />
+      {/* No air on the Moon, so no dust in it */}
+      {props.world !== 'moon' && <DustField stormRef={stormRef} className="pointer-events-none absolute inset-0 z-10 h-full w-full" />}
     </div>
   )
 }

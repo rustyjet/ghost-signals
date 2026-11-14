@@ -257,19 +257,20 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
             title={chapter.name}
             loaded={loaded}
             rootRef={backdropRef}
+            world={chapter.world}
           />
 
           {/* Wide screens: the left side darkens once the story starts, so light words read over any picture */}
           <div
             data-scrim=""
             aria-hidden="true"
-            className="absolute inset-y-0 left-0 hidden w-[64%] bg-[linear-gradient(to_right,rgb(36_24_18/0.94)_0%,rgb(36_24_18/0.82)_40%,transparent)] opacity-0 lg:block"
+            className="absolute inset-y-0 left-0 hidden w-[64%] bg-[linear-gradient(to_right,color-mix(in_srgb,var(--color-basalt)_94%,transparent)_0%,color-mix(in_srgb,var(--color-basalt)_82%,transparent)_40%,transparent)] opacity-0 lg:block"
           />
           {/* Phones: the lower part of the picture darkens; the words are read there */}
           <div
             data-scrim=""
             aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 h-[64%] opacity-0 bg-[linear-gradient(to_bottom,transparent_0%,rgb(36_24_18/0.82)_32%,rgb(36_24_18/0.94)_100%)] lg:hidden"
+            className="absolute inset-x-0 bottom-0 h-[64%] opacity-0 bg-[linear-gradient(to_bottom,transparent_0%,color-mix(in_srgb,var(--color-basalt)_82%,transparent)_32%,color-mix(in_srgb,var(--color-basalt)_94%,transparent)_100%)] lg:hidden"
           />
           {/* Top edge: a little shade so the day counter reads on any picture */}
           <div
@@ -281,7 +282,7 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
           <div data-endshade="" aria-hidden="true" className="absolute inset-0 bg-basalt opacity-0" />
 
           <div data-counter="" className="absolute left-5 top-5 font-display text-[clamp(0.95rem,4.8vw,1.125rem)] font-bold leading-tight md:left-10 md:text-lg lg:top-8 lg:text-2xl">
-            <p data-intro-only="" className="text-ink">
+            <p data-intro-only="" className="text-on-sky">
               {chapter.place}
             </p>
             <p data-day="" aria-hidden="true" className="invisible absolute left-0 top-0 whitespace-nowrap text-sun opacity-0">
@@ -305,7 +306,7 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
           <a
             href="#/"
             data-intro-only=""
-            className="pointer-events-auto absolute right-8 top-5 hidden min-h-11 items-center px-2 font-display text-2xl font-bold text-ink underline decoration-transparent decoration-2 underline-offset-4 transition-[text-decoration-color] duration-200 hover:decoration-current lg:inline-flex"
+            className="pointer-events-auto absolute right-8 top-5 hidden min-h-11 items-center px-2 font-display text-2xl font-bold text-on-sky underline decoration-transparent decoration-2 underline-offset-4 transition-[text-decoration-color] duration-200 hover:decoration-current lg:inline-flex"
           >
             Ghost Signals
           </a>
@@ -320,7 +321,7 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
             data-tagline=""
             className="absolute inset-x-5 bottom-[9svh] md:inset-x-10 lg:bottom-auto lg:top-[calc(13%+clamp(3.6rem,15vw,15rem)*0.98)]"
           >
-            <p className="max-w-[24ch] font-display text-[clamp(1.4rem,6.4vw,2.25rem)] font-bold leading-tight text-sun [text-shadow:0_1px_14px_rgb(0_0_0/0.65)] lg:max-w-[26ch] lg:[text-shadow:none] lg:font-body lg:text-2xl lg:font-normal lg:text-ink">
+            <p className="max-w-[24ch] font-display text-[clamp(1.4rem,6.4vw,2.25rem)] font-bold leading-tight text-sun [text-shadow:0_1px_14px_rgb(0_0_0/0.65)] lg:max-w-[26ch] lg:[text-shadow:none] lg:font-body lg:text-2xl lg:font-normal lg:text-on-sky">
               {chapter.tagline}
             </p>
             {/* Phones: the way home sits under the opening line rather than crowding the top */}

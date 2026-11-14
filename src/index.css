@@ -13,11 +13,25 @@
   --color-sun: #f2e2c2;
   --color-frost: #a8c6d6;
   --color-ink: #1f140e;
+
+  /* The sky behind a chapter's title and its lettering. Mars by default; the Moon overrides below. */
+  --color-sky: #c4925e;
+  --color-horizon: #e2bd8f;
+  --color-on-sky: #1f140e;
   /* Warnings in the Last Light game: a hot, dusty orange that reads on basalt */
   --color-warn: #ff9e6e;
 
   --font-display: 'Bricolage Grotesque Variable', 'Arial Black', sans-serif;
   --font-body: 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
+}
+
+/* The Moon: a black sky to the horizon, light lettering on it, and a near-black ground (the dark
+   lunar maria are basalt too). Set by data-world on the chapter page. */
+[data-world='moon'] {
+  --color-sky: #000;
+  --color-horizon: #000;
+  --color-on-sky: #f2e2c2;
+  --color-basalt: #121212;
 }
 
 html {

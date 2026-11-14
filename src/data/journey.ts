@@ -108,6 +108,7 @@ export const stops: Stop[] = [
     km: 384400,
     machine: {
       name: 'Eagle',
+      slug: 'eagle',
       photo: {
         src: P + 'eagle.webp',
         w: 2000,

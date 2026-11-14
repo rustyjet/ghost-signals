@@ -30,7 +30,7 @@ export default function Chapter() {
   }
 
   return (
-    <main>
+    <main data-world={chapter.world}>
       {/* Keyed, so moving between chapters builds a fresh story (the title's letters are split in place) */}
       <StoryScene key={chapter.slug} chapter={chapter} />
 

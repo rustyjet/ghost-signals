@@ -15,7 +15,7 @@ The visual world is the real place each machine stands in. Tokens live in `src/i
 | frost | `#a8c6d6` | Cold, reserved for the Last Light game |
 | warn | `#ff9e6e` | Low battery in the Last Light game (always with a word, never colour alone) |
 
-The Moon chapters will use black sky, bright grey ground and gold foil.
+The Moon: a chapter page with `data-world="moon"` swaps the tokens: black sky to the horizon (`--color-sky`, `--color-horizon`), light lettering on it (`--color-on-sky`), a near-black ground under the words (`--color-basalt`), and no dust in the air. The grey ground and gold foil come from the real photos and the 3D model.
 
 ## Type
 

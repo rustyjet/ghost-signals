@@ -216,3 +216,36 @@ Game numbers (spin-up rate, top speed, drag, the 2.5–3.5 m band) are game unit
 | It lifts off in Mars air at about 2,400 turns a minute (game calibrated to NASA's "around 2,400 rpm") | SIX | Checked |
 | Mars gravity 3.7 m/s² ("About 38% as strong as Earth's": 0.38 × 9.81) | QF | Checked |
 | Hovering at 3 metres, as on 19 April 2021 | FIRST | Checked |
+
+### Eagle (14 Nov 2026)
+
+Read by a research agent on 14 Nov 2026 (quotes below); the plaque wording was read off the photo AS11-40-5899 itself, and the moonwalk time on NASA's mission overview.
+
+- **A11LM** = NSSDCA Apollo 11 LM / EASEP — https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C
+- **A11SITE** = NSSDCA Apollo 11 landing site — https://nssdc.gsfc.nasa.gov/planetary/lunar/apollo11info.html
+- **SP350** = NASA SP-350, Apollo Expeditions to the Moon, ch. 11.4 — https://www.nasa.gov/wp-content/uploads/static/history/SP-350/ch-11-4.html
+- **ALSJL** / **ALSJS** = Apollo Lunar Surface Journal (NASA copies), Apollo 11 landing / summary — https://www.nasa.gov/wp-content/uploads/static/history/alsj/a11/a11.landing.html , …/a11.summary.html
+- **FLAGS** = ALSJ (NASA copy), "Condition of the Apollo flags" (J. Fincannon) — https://www.nasa.gov/wp-content/uploads/static/history/alsj/ApolloFlags-Condition.html
+- **OVR** = NASA History, Apollo 11 Mission Overview — https://www.nasa.gov/history/apollo-11-mission-overview/
+- **GIVING** = NASA, "The Apollo Experiment That Keeps On Giving" (24 Jul 2019) — https://www.nasa.gov/solar-system/the-apollo-experiment-that-keeps-on-giving/
+- **BEAMS** = NASA, "Laser Beams Reflected Between Earth and Moon Boost Science" — https://www.nasa.gov/missions/laser-beams-reflected-between-earth-and-moon-boost-science/
+- **LROSITE** = NASA Science, Apollo 11 landing site (LRO) — https://science.nasa.gov/resource/apollo-11-landing-site/
+
+| Step | Claim | Source | Checked |
+|------|-------|--------|---------|
+| Title | The descent stage "was left behind on the Moon"; landing site the Sea of Tranquility | A11LM, A11SITE | Checked |
+| Counter | "Day N on the Moon", day 1 = 20 July 1969 UTC (landing 20:17:40 UT). Moonwalk: launch 9:32 a.m. EDT 16 July + 109 h 42 min (OVR) = 21 July UTC → day 2 (our arithmetic). Lift-off 21 July → day 2. EASEP stopped accepting commands 27 August → day 39. Last steps: today's day, computed from the date (20,937 on 14 Nov 2026) | A11LM, OVR | Checked (arithmetic ours) |
+| 1 | Alarm 1202: the computer "has been called upon to do too many things at once"; CAPCOM "We're Go on that alarm" | SP350, ALSJL | Checked |
+| 2 | "Houston, Tranquility Base here. The Eagle has landed"; 20 July 1969 | SP350, A11LM | Checked |
+| 2 | "about 45 seconds of fuel left … the smallest margin of all the Apollo landings" (post-mission analysis; other NASA pages say 30 s — the ALSJ post-flight figure is used, with "about") | ALSJS | Checked |
+| 3 | Moonwalk "Two hours and thirty one minutes" (151 min); "footprint trails" visible from orbit | ALSJS, LROSITE | Checked |
+| 3 | They climbed down the ladder (the plaque is "attached to the ladder on the landing gear strut on the descent stage") | AS11-40-5899 caption | Checked |
+| 4 | "100 quartz glass prisms (called corner cubes)"; "reflect light back toward its source"; "require no power" | GIVING | Checked |
+| 5 | "after 21 hours, 36 minutes on the lunar surface"; descent stage "served as a platform for launching the ascent stage" | A11LM | Checked |
+| 5 | Flag fell over: Aldrin's own account ("I looked up long enough to see the flag fall over", quoted in FLAGS) — told as what Buzz remembered | FLAGS | Checked (as his memory) |
+| 6 | Seismometer solar powered ("two solar panels to provide power"); "27 August 1969 … the EASEP no longer accepted commands" | A11LM | Checked |
+| 7 | Laser light round trip "about 2.5 seconds on average"; the array "continues to return fresh data to this day" (2019) | BEAMS, GIVING | Checked |
+| 8 | Earth and Moon drifting apart "at the rate that fingernails grow, or 1.5 inches (3.8 centimeters) per year" | BEAMS | Checked |
+| 9 | Plaque: "HERE MEN FROM THE PLANET EARTH FIRST SET FOOT UPON THE MOON JULY 1969, A.D. WE CAME IN PEACE FOR ALL MANKIND" (read off AS11-40-5899; NSSDCA's "on the Moon" is a misquote) | AS11-40-5899, NASA "50 Years Ago" page | Checked |
+| 10 | The mirrors need 0 watts ("require no power") | GIVING | Checked |
+| Photo 7 | The Goddard laser photo (2010) shows beams aimed at the Lunar Reconnaissance Orbiter, not Apollo 11's mirrors; the alt text says so and the words say "mirrors like mine" | GSFC_20171208_Archive_e001974 caption | Checked |

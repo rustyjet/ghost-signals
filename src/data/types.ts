@@ -51,8 +51,11 @@ export interface Camera {
 
 /** What fills the screen behind the words for one step. Scrolling moves it from `from` to `to`. */
 export type Scene =
-  /** The 3D model standing on a real panorama under a Mars sky. */
-  | { kind: 'rover'; ground: SceneImage; from: Camera; to: Camera }
+  /**
+   * The 3D model standing on a real panorama under the world's sky. `hideAbove` hides every part of the
+   * model whose centre is higher than that many metres (Eagle without its ascent stage, after it left).
+   */
+  | { kind: 'rover'; ground: SceneImage; from: Camera; to: Camera; hideAbove?: number }
   /** A photo filling the screen, travelling across it. `narrow` replaces from/to under 1024 px. */
   | { kind: 'photo'; image: SceneImage; from: View; to: View; narrow?: [View, View] }
   /** Two photos of the same view filling the screen; a wipe crosses it from `before` to `after` with the scroll. */
