@@ -218,8 +218,8 @@ export const stops: Stop[] = [
       name: 'Sojourner',
       photo: {
         src: P + 'sojourner.webp',
-        w: 2552,
-        h: 2350,
+        w: 1276,
+        h: 1175,
         alt: 'The small six-wheeled Sojourner rover, with a flat solar panel on top, among rocks on Mars.',
         credit: 'NASA/JPL, photographed by the Pathfinder lander (PIA01122)',
         name: 'Sojourner on Mars, 1997',
