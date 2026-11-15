@@ -208,22 +208,17 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
         })
       }
 
-      // Each part of the words fades on its own before it gets high on the screen: on phones before
-      // the middle (the picture owns the top half), on wide screens before the day counter.
-      const mm = gsap.matchMedia()
-      const fadeAll = (start: string, end: string) =>
-        gsap.utils.toArray<HTMLElement>('[data-fade]', root).forEach((el) =>
-          gsap.to(el, { opacity: 0, ease: 'none', scrollTrigger: { trigger: el, start, end, scrub: true } }),
-        )
-      mm.add('(min-width: 1024px)', () => fadeAll('top 24%', 'top 8%'))
-      mm.add('(max-width: 1023px)', () => fadeAll('top 50%', 'top 36%'))
+      // Each part of the words fades on its own near the top of the screen, before the day counter. On phones
+      // they pass over the picture on the way up; their shadow (data-words) keeps them readable there.
+      gsap.utils.toArray<HTMLElement>('[data-fade]', root).forEach((el) =>
+        gsap.to(el, { opacity: 0, ease: 'none', scrollTrigger: { trigger: el, start: 'top 24%', end: 'top 8%', scrub: true } }),
+      )
 
       if (import.meta.env.DEV) {
         // Used by the dev frames page to put every frame on the same step.
         ;(window as unknown as { __step?: (i: number) => void }).__step = (i: number) =>
           window.scrollTo(0, Math.max(0, centres[Math.min(i, centres.length - 1)] ?? 0))
       }
-      return () => mm.revert()
     },
     { scope: rootRef, dependencies: [chapter.slug] },
   )
@@ -338,7 +333,9 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
         {chapter.steps.map((s) => (
           <article key={s.heading} className="flex min-h-stage-70 items-start justify-center px-5 md:px-10 lg:min-h-stage-100 lg:items-center">
             <div data-block="" className="w-full max-w-[34rem] text-center text-sun lg:w-[min(36rem,42vw)]">
-              <div data-words="">
+              {/* Phones: the dark only covers the lower part, so the words carry a shadow (as the opening line
+                  does) for the stretch where they rise over the picture */}
+              <div data-words="" className="[text-shadow:0_1px_14px_rgb(0_0_0/0.65)] lg:[text-shadow:none]">
                 <p className="sr-only">
                   {chapter.spine.before} {fmt(s.spine)} {s.silent && chapter.spine.silentAfter ? chapter.spine.silentAfter : chapter.spine.after}.
                 </p>
