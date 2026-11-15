@@ -26,27 +26,29 @@ const STORM = "20, 12, 8";
 const OUT = Easing.bezier(0.16, 1, 0.3, 1);
 const T = 9; // crossfade frames
 
-const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
+export const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 const { fontFamily: INTER } = loadInter("normal", { weights: ["400", "500", "700"], subsets: ["latin"] });
 const ACCENT = "#3d7bff";
 
 /** Headline whose words rise out of a mask one after another, then a body line fades up. */
-const Caption: React.FC<{
+export const Caption: React.FC<{
   head: string;
   body: string;
-  align?: "bottom" | "top-right";
+  align?: "bottom" | "top-right" | "top-left" | "bottom-right";
   delay?: number;
-}> = ({ head, body, align = "bottom", delay = 6 }) => {
+  maxWidth?: number;
+}> = ({ head, body, align = "bottom", delay = 6, maxWidth = 1250 }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
-  const top = align === "top-right";
+  const top = align.startsWith("top");
+  const right = align.endsWith("right");
   // Narrator card: a neutral typeface and a white card, so it never reads as part of the site.
   return (
     <div
       style={{
         position: "absolute",
-        left: top ? undefined : 80,
-        right: top ? 80 : undefined,
+        left: right ? undefined : 80,
+        right: right ? 80 : undefined,
         bottom: top ? undefined : 80,
         top: top ? 150 : undefined,
         display: "flex",
@@ -62,7 +64,7 @@ const Caption: React.FC<{
       <div
         style={{
           padding: "26px 40px 28px 30px",
-          maxWidth: 1250,
+          maxWidth,
           translate: interpolate(frame, [delay + 4, delay + 18], ["-16px 0px", "0px 0px"], { ...clamp, easing: OUT }),
           opacity: interpolate(frame, [delay + 4, delay + 16], [0, 1], clamp),
         }}
@@ -80,7 +82,7 @@ const Caption: React.FC<{
 
 
 /** Screen recording with a slow push-in and a scrim so the words read. */
-const Clip: React.FC<{ src: string; from?: number; rate?: number }> = ({ src, from = 0, rate = 1 }) => {
+export const Clip: React.FC<{ src: string; from?: number; rate?: number }> = ({ src, from = 0, rate = 1 }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   return (
@@ -110,7 +112,7 @@ const Scene: React.FC<{
 );
 
 /** 0:00 Introduce yourself: the team picture, scaled down so the caption card sits under the names. */
-const TeamIntro: React.FC = () => {
+export const TeamIntro: React.FC = () => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   return (
@@ -136,7 +138,7 @@ const TeamIntro: React.FC = () => {
 };
 
 /** 0:20 Look into the future: what the web app can do. */
-const FutureStill: React.FC<{ head: string; body: string }> = ({ head, body }) => {
+export const FutureStill: React.FC<{ head: string; body: string }> = ({ head, body }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   return (
@@ -161,7 +163,7 @@ const TEAM = [
   "Nur Waffiah binti Khairul Tajudin",
 ];
 
-const EndCard: React.FC = () => {
+export const EndCard: React.FC = () => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const rise = (from: number) => ({
@@ -222,7 +224,7 @@ const EndCard: React.FC = () => {
 };
 
 /** Visible SI notice required by Space Apps for AI-assisted video. */
-const Watermark: React.FC<{ small?: boolean }> = ({ small }) => (
+export const Watermark: React.FC<{ small?: boolean }> = ({ small }) => (
   <div
     style={{
       position: "absolute",

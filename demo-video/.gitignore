@@ -10,3 +10,11 @@ clean/
 make.sh
 make2.sh
 remotion/public/music.wav
+
+# The 3-minute demo render is 167 MB, over GitHub's 100 MB file limit; keep it locally (or upload it) instead
+ghost-signals-demo-long.mp4
+
+# The frame-capture tool's dependencies, raw frames and log (capture.mjs rebuilds them)
+capture/node_modules/
+capture/*-frames/
+capture/*.log
