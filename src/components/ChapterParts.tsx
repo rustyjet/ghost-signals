@@ -130,14 +130,9 @@ export function Sources({ chapter }: { chapter: Chapter }) {
             </>
           )}
           <p className="mt-6 text-base">{chapter.name}&rsquo;s voice is imagined. What it says happened.</p>
-          <div className="mt-6 flex flex-wrap gap-x-8">
-            <Link to="/" className="inline-flex min-h-11 items-center font-display text-lg font-bold text-sun underline decoration-1 underline-offset-[6px]">
-              Back to all the machines
-            </Link>
-            <Link to="/play" className="inline-flex min-h-11 items-center font-display text-lg font-bold text-sun underline decoration-1 underline-offset-[6px]">
-              All five games
-            </Link>
-          </div>
+          <Link to="/" className="mt-6 inline-flex min-h-11 items-center font-display text-lg font-bold text-sun underline decoration-1 underline-offset-[6px]">
+            Back to all the machines
+          </Link>
         </div>
       </div>
     </footer>

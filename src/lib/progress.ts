@@ -1,4 +1,6 @@
-// Mission patches the player has earned. Stored per browser; the site works without it.
+import { chapters } from '../data/chapters'
+
+// The stories the reader has read to the end. Stored per browser; the site works without it.
 const KEY = 'ghost-signals:patches'
 
 export function getPatches(): string[] {
@@ -19,4 +21,10 @@ export function earnPatch(slug: string): string[] {
     // Private windows can refuse storage; the patch still shows for this visit.
   }
   return next
+}
+
+/** True once every chapter has been read to its end: then the start page offers the games again, to replay. */
+export function finishedEveryStory(): boolean {
+  const done = getPatches()
+  return chapters.every((c) => done.includes(c.slug))
 }
