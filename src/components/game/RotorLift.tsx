@@ -31,6 +31,10 @@ const fmt = (n: number) => Math.round(n).toLocaleString('en-GB')
 const AIRS: Air[] = ['mars', 'earth']
 // The blade speed that just lifts it: lift grows with density × speed², so thicker air needs less speed.
 const liftRpm = (a: Air) => MARS_RPM / Math.sqrt(DENSITY[a])
+// The button works at the pace of the air: in Earth air the blades speed up, slow down and top out at a tenth of
+// the Mars numbers, so a tap does the same in both and Earth air can be flown, not just shot upwards. (At the Mars
+// pace the blades passed Earth lift-off in a fifth of a second and kept pushing for a second after letting go.)
+const pace = (a: Air) => liftRpm(a) / MARS_RPM
 
 type Motion = 'ground' | 'up' | 'hover' | 'down' | 'fast'
 const MOTION: Record<Motion, { d: string; word: string }> = {
@@ -136,7 +140,6 @@ export default function RotorLift() {
   airRef.current = air
   const sim = useRef({ rpm: 0, h: 0, v: 0, inBand: 0, airborne: false, liftRpm: 0, said: new Set<string>() })
 
-  const liftPct = (liftRpm(air) / MAX_RPM) * 100
   // The heading is the stage you are on: your turn, then the other air, then done
   const stage =
     hovered.length === 0 ? 'Your turn.' : hovered.length === 1 ? `Now ${hovered[0] === 'mars' ? 'Earth' : 'Mars'} air.` : 'You flew it twice.'
@@ -243,7 +246,8 @@ export default function RotorLift() {
       const density = DENSITY[airRef.current]
 
       // Blades speed up while held and slow down after letting go.
-      s.rpm = Math.min(MAX_RPM, Math.max(0, s.rpm + (held.current ? SPIN_UP : -SPIN_DOWN) * dt))
+      const p = pace(airRef.current)
+      s.rpm = Math.min(MAX_RPM * p, Math.max(0, s.rpm + (held.current ? SPIN_UP : -SPIN_DOWN) * p * dt))
       const lift = density * (s.rpm / MARS_RPM) ** 2 // as a share of the helicopter's weight
       let a = Math.min(3, Math.max(-G, G * (lift - 1))) - 0.9 * s.v
       if (s.h > 8) a = Math.min(a, -1)
@@ -644,18 +648,28 @@ export default function RotorLift() {
                     className="absolute inset-0 origin-left rounded-full bg-sun/60 transition-colors duration-200 data-[over=true]:bg-sun-bright"
                     style={{ transform: 'scaleX(0)' }}
                   />
-                  <span
-                    className="absolute -inset-y-1.5 w-[3px] -translate-x-1/2 rounded-full bg-sun-bright shadow-[0_0_0_2px_rgb(36_24_18/0.8)] transition-[left] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none"
-                    style={{ left: `${liftPct}%` }}
-                  />
+                  {AIRS.map((a) => (
+                    <span
+                      key={a}
+                      data-on={a === air}
+                      className="absolute -inset-y-1 w-[2px] -translate-x-1/2 rounded-full bg-sun/45 transition-[background-color,top,bottom,width] duration-200 data-[on=true]:-inset-y-1.5 data-[on=true]:w-[3px] data-[on=true]:bg-sun-bright data-[on=true]:shadow-[0_0_0_2px_rgb(36_24_18/0.8)]"
+                      style={{ left: `${(liftRpm(a) / MAX_RPM) * 100}%` }}
+                    />
+                  ))}
                 </span>
                 <span aria-hidden="true" className="relative mt-1.5 block h-5">
-                  <span
-                    className="absolute top-0 whitespace-nowrap text-sm text-sun/80 transition-[left,transform] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none"
-                    style={{ left: `${liftPct}%`, transform: liftPct > 50 ? 'translateX(calc(-100% + 2px))' : 'translateX(-2px)' }}
-                  >
-                    lift-off
-                  </span>
+                  {AIRS.map((a) => {
+                    const pct = (liftRpm(a) / MAX_RPM) * 100
+                    return (
+                      <span
+                        key={a}
+                        className={`absolute top-0 whitespace-nowrap text-sm transition-colors duration-200 ${a === air ? 'text-sun/80' : 'hidden text-sun/50 min-[380px]:block'}`}
+                        style={{ left: `${pct}%`, transform: pct > 50 ? 'translateX(calc(-100% + 2px))' : 'translateX(-2px)' }}
+                      >
+                        {a === air ? 'lift-off' : a === 'mars' ? 'Mars' : 'Earth'}
+                      </span>
+                    )
+                  })}
                 </span>
               </p>
               <p>
