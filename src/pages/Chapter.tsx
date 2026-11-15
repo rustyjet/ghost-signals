@@ -7,6 +7,7 @@ const RoverGame = lazy(() => import('../components/game/rover/RoverGame'))
 import RotorLift from '../components/game/RotorLift'
 import LaserRanging from '../components/game/LaserRanging'
 import { sceneImages } from '../components/story/Backdrop'
+import { rememberChapter } from '../components/journey/Journey'
 import { getChapter } from '../data/chapters'
 import type { Chapter as ChapterData } from '../data/types'
 
@@ -16,7 +17,10 @@ export default function Chapter() {
 
   useEffect(() => {
     window.scrollTo(0, 0)
-    if (chapter) document.title = `${chapter.name} · Ghost Signals`
+    if (chapter) {
+      document.title = `${chapter.name} · Ghost Signals`
+      rememberChapter(chapter.slug)
+    }
   }, [chapter])
 
   if (!chapter) {

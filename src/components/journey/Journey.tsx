@@ -16,6 +16,14 @@ const hold = (t: number) => {
     screen and the machine stands above them; other stops are read in the middle on wide screens. */
 const focusLine = (low = false) => (low || isNarrow() ? 0.74 : 0.5)
 
+/** The chapter last opened, so coming back to the start page (by link or the browser's Back) lands on that
+    machine's stop instead of wherever the chapter's scroll left the page. Lives for the visit only: a fresh
+    load starts at Earth. */
+let returnTo: string | undefined
+export const rememberChapter = (slug: string) => {
+  returnTo = slug
+}
+
 /** "12,345 km", or "12.3 million km" past a million. */
 function distance(km: number) {
   if (km < 1) return 'On Earth'
@@ -137,6 +145,9 @@ export default function Journey() {
         onUpdate: apply,
       })
       measure()
+      // Back from a chapter: start at that machine's stop, at its reading line
+      const back = returnTo ? stops.findIndex((s) => s.machine?.slug === returnTo) : -1
+      if (back > 0) window.scrollTo(0, Math.max(0, centres[back] ?? 0))
       apply()
 
       // Scrolling away from the title: the words go, and the dark behind later words comes in.
