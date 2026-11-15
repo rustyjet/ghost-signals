@@ -1,6 +1,7 @@
 import type { ModelViewerElement } from '@google/model-viewer'
 import { useEffect, useRef, useState } from 'react'
 import DustField from '../DustField'
+import { createDownwash } from './downwash'
 import { news as item, NewsLine, type News } from './LastLightHud'
 import { loadModelViewer } from '../../lib/modelViewer'
 import { isNarrow, prefersReducedMotion } from '../../scroll/smoothScroll'
@@ -94,7 +95,8 @@ export default function RotorLift() {
   const blurDiscRef = useRef<HTMLSpanElement>(null)
   const hudRef = useRef<HTMLDivElement>(null)
   const mvRef = useRef<ModelViewerElement>(null)
-  const stormRef = useRef(0)
+  const stormRef = useRef(0) // the faint wind dust stays light; the rotor's own dust is drawn by the downwash
+  const dustCanvasRef = useRef<HTMLCanvasElement>(null)
   useEffect(() => void loadModelViewer(), [])
 
   const held = useRef(false)
@@ -137,6 +139,8 @@ export default function RotorLift() {
     let rotors: ReturnType<ModelScene['getObjectByName']>[] = []
     let scene: ModelScene | null = null
 
+    const dust = dustCanvasRef.current ? createDownwash(dustCanvasRef.current, reduced) : null
+    let heliX = 0 // screen x of the helicopter's centre
     const layout = () => {
       const narrow = isNarrow()
       const H = root.clientHeight
@@ -150,6 +154,8 @@ export default function RotorLift() {
       topMargin = H * (narrow ? 0.03 : 0.05)
       root.style.setProperty('--k', `${k}px`)
       root.style.setProperty('--ground', `${ground}px`)
+      heliX = heli.offsetLeft
+      dust?.resize()
     }
 
     // The rotors are their own parts in NASA's model: find them once it has loaded.
@@ -190,6 +196,7 @@ export default function RotorLift() {
         if (s.airborne) {
           if (s.v < HARD_LANDING) {
             trauma = Math.min(1, trauma + 0.6)
+            dust?.burst(heliX, groundY, k, 40, 1)
             say('hard', item('bump', 'Bump. A hard landing. Let go a little at a time to come down gently.', 'warn'), false)
           } else {
             const done = doneRef.current
@@ -213,6 +220,7 @@ export default function RotorLift() {
       } else if (!s.airborne && s.h > 0.03) {
         s.airborne = true
         trauma = Math.min(1, trauma + 0.2)
+        dust?.burst(heliX, groundY, k, 16, 0.6)
         say(
           `lift-${airRef.current}`,
           item(
@@ -334,8 +342,10 @@ export default function RotorLift() {
         if (motionWordRef.current) motionWordRef.current.textContent = MOTION[motion].word
       }
 
-      // Downwash kicks up dust near the ground.
-      stormRef.current = (s.rpm / MAX_RPM) * Math.max(0, 1 - s.h / 2) * (airRef.current === 'mars' ? 1 : 0.5)
+      // The rotor wash blows dust out along the ground: as much as the lift the blades make, strongest near the
+      // ground and gone by about 3 m. Same in both airs, since the wash has to hold up the same helicopter.
+      const wash = Math.min(1, lift) * Math.max(0, 1 - s.h / 3.2) ** 2
+      dust?.step(dt, heliX, groundY, k, wash, s.h, cam)
 
       // The blades turn: counter-rotating, at a speed the eye can follow.
       if (rotors.length && scene) {
@@ -501,6 +511,7 @@ export default function RotorLift() {
             />
           </div>
         </div>
+        <canvas ref={dustCanvasRef} aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full" />
       </div>
       <DustField stormRef={stormRef} className="pointer-events-none absolute inset-0 h-full w-full" />
 
