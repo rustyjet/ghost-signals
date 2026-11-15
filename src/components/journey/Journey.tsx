@@ -17,11 +17,25 @@ const hold = (t: number) => {
 const focusLine = (low = false) => (low || isNarrow() ? 0.74 : 0.5)
 
 /** The chapter last opened, so coming back to the start page (by link or the browser's Back) lands on that
-    machine's stop instead of wherever the chapter's scroll left the page. Lives for the visit only: a fresh
-    load starts at Earth. */
-let returnTo: string | undefined
+    machine's stop instead of wherever the chapter's scroll left the page. Kept in the tab's session storage, not
+    in this module, which a hot reload would reset; used once, so a fresh load starts at Earth. */
+const RETURN_KEY = 'ghost-signals:return-to'
 export const rememberChapter = (slug: string) => {
-  returnTo = slug
+  try {
+    sessionStorage.setItem(RETURN_KEY, slug)
+  } catch {
+    /* storage blocked: the start page just opens at Earth */
+  }
+}
+function takeReturn() {
+  try {
+    const slug = sessionStorage.getItem(RETURN_KEY)
+    // Cleared after this render, not now: React's StrictMode runs the setup twice and both need to see it.
+    if (slug) setTimeout(() => sessionStorage.removeItem(RETURN_KEY), 0)
+    return slug
+  } catch {
+    return null
+  }
 }
 
 /** "12,345 km", or "12.3 million km" past a million. */
@@ -146,6 +160,7 @@ export default function Journey() {
       })
       measure()
       // Back from a chapter: start at that machine's stop, at its reading line
+      const returnTo = takeReturn()
       const back = returnTo ? stops.findIndex((s) => s.machine?.slug === returnTo) : -1
       if (back > 0) window.scrollTo(0, Math.max(0, centres[back] ?? 0))
       apply()
