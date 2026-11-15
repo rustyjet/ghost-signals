@@ -12,7 +12,7 @@ import {
   type GameState,
   type Plan,
 } from './dustStormModel'
-import { BatteryCell, Ending, SentHome, Lever, newsFor } from './LastLightHud'
+import { BatteryCell, Ending, SentHome, Lever, NewsLine, news, newsFor, type News } from './LastLightHud'
 
 const SOL_MS = 1500
 const PHOTO = { clean: 'photos/selfie-clean.webp', dusty: 'photos/selfie-dusty.webp' }
@@ -34,7 +34,7 @@ export default function LastLight() {
   const [phase, setPhase] = useState<Phase>('intro')
   const [state, setState] = useState<GameState>(initialState)
   const [plan, setPlan] = useState<Plan>({ heaters: true, radio: true })
-  const [news, setNews] = useState('')
+  const [newsItem, setNews] = useState<News | null>(null)
   const [delta, setDelta] = useState<{ sol: number; value: number } | null>(null)
 
   const rootRef = useRef<HTMLElement>(null)
@@ -174,7 +174,7 @@ export default function LastLight() {
     setState(fresh)
     setPlan({ heaters: true, radio: true })
     setDelta(null)
-    setNews('The sky is clear. A storm is building to the south.')
+    setNews(news('sky', 'The sky is clear. A storm is building to the south.'))
     setPhase('running')
   }
 
@@ -272,9 +272,7 @@ export default function LastLight() {
                 {phase === 'over' ? (
                   <Ending state={state} headingRef={endingRef} onRetry={start} />
                 ) : (
-                  <p aria-live="polite" className="min-h-[2.8em] max-w-[34ch] text-base leading-snug text-sun sm:text-lg lg:text-xl">
-                    {news}
-                  </p>
+                  <NewsLine item={newsItem} />
                 )}
 
                 <div className={`mt-4 flex items-end gap-6 sm:gap-12 ${phase === 'over' ? 'hidden' : ''}`}>

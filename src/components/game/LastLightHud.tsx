@@ -235,21 +235,97 @@ export function Ending({
   )
 }
 
+/** What a news line is about; it picks the badge drawn beside it. */
+export type NewsKind = 'power' | 'cold' | 'warm' | 'sky' | 'gust' | 'rock' | 'radio'
+/** info: plain; warn: act now (orange); cold: the electronics are cooling (frost). Always a badge shape too. */
+export type NewsTone = 'info' | 'warn' | 'cold'
+export interface News {
+  id: number
+  text: string
+  kind: NewsKind
+  tone: NewsTone
+}
+let newsId = 0
+/** A new news line. Each gets its own id, so a repeated line still arrives as new. */
+export const news = (kind: NewsKind, text: string, tone: NewsTone = 'info'): News => ({ id: ++newsId, text, kind, tone })
+
 /** One line of news for the day, most urgent first, early enough to act on. */
-export function newsFor(prev: GameState, next: GameState, plan: Plan): string | null {
+export function newsFor(prev: GameState, next: GameState, plan: Plan): News | null {
   const down = (a: number, b: number, at: number) => a >= at && b < at
   const up = (a: number, b: number, at: number) => a < at && b >= at
   const sunA = sunlight(prev.sol)
   const sunB = sunlight(next.sol)
-  if (down(prev.battery, next.battery, 20)) return 'Battery low. Switch something off.'
-  if (down(prev.warmth, next.warmth, 35)) return 'The electronics are getting cold. Heaters?'
-  if (down(prev.battery, next.battery, 50)) return 'Battery at half. What could you switch off?'
-  if (next.gust) return 'A gust of wind blew some dust off the panels.'
-  if (down(sunA, sunB, 0.75)) return 'The storm is here. Less sunlight reaches the panels.'
-  if (down(sunA, sunB, 0.35)) return 'The sky is nearly dark. The panels make very little power.'
-  if (up(sunA, sunB, 0.5)) return 'The dust is settling. The sky is getting lighter.'
-  if (plan.heaters && up(prev.warmth, next.warmth, 90)) return 'Warm enough. The heaters could rest for a while.'
+  if (down(prev.battery, next.battery, 20)) return news('power', 'Battery low. Switch something off.', 'warn')
+  if (down(prev.warmth, next.warmth, 35)) return news('cold', 'The electronics are getting cold. Heaters?', 'cold')
+  if (down(prev.battery, next.battery, 50)) return news('power', 'Battery at half. What could you switch off?')
+  if (next.gust) return news('gust', 'A gust of wind blew some dust off the panels.')
+  if (down(sunA, sunB, 0.75)) return news('sky', 'The storm is here. Less sunlight reaches the panels.')
+  if (down(sunA, sunB, 0.35)) return news('sky', 'The sky is nearly dark. The panels make very little power.')
+  if (up(sunA, sunB, 0.5)) return news('sky', 'The dust is settling. The sky is getting lighter.')
+  if (plan.heaters && up(prev.warmth, next.warmth, 90)) return news('warm', 'Warm enough. The heaters could rest for a while.')
   return null
+}
+
+/** The badge drawings, one per kind of news, in the same stroke as the dish and thermometer. */
+function NewsIcon({ kind, className }: { kind: NewsKind; className?: string }) {
+  if (kind === 'radio') return <DishIcon className={className} strokeWidth={2.4} waves="pulse" />
+  if (kind === 'cold' || kind === 'warm') return <Thermometer warmth={kind === 'cold' ? 15 : 85} className={className} />
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      {kind === 'power' && (
+        <>
+          <rect x="2.5" y="7" width="17" height="10" rx="2" />
+          <path d="M22 10.5 V13.5" />
+          <rect x="5" y="9.5" width="5" height="5" rx="0.8" fill="currentColor" stroke="none" />
+        </>
+      )}
+      {kind === 'sky' && (
+        <>
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2.5 V4.5 M12 19.5 V21.5 M2.5 12 H4.5 M19.5 12 H21.5 M5.3 5.3 L6.7 6.7 M17.3 17.3 L18.7 18.7 M5.3 18.7 L6.7 17.3 M17.3 6.7 L18.7 5.3" />
+        </>
+      )}
+      {kind === 'gust' && <path d="M3 8.5 H13.5 A3 3 0 1 0 10.5 5.5 M3 12.5 H18 A3 3 0 1 1 15 15.5 M3 16.5 H9" />}
+      {kind === 'rock' && (
+        <>
+          <path d="M3.5 18.5 L6.5 11 L11.5 7.5 L17 9 L20.5 18.5 Z" fill="currentColor" fillOpacity="0.2" />
+          <path d="M9 13.5 L12.5 12 L14.5 14" />
+        </>
+      )}
+    </svg>
+  )
+}
+
+const BADGE: Record<NewsTone, string> = {
+  info: 'bg-black/35 text-sun shadow-[inset_0_0_0_1px_rgb(242_226_194/0.35)]',
+  warn: 'bg-warn text-ink',
+  cold: 'bg-frost text-ink',
+}
+const TEXT: Record<NewsTone, string> = { info: 'text-sun', warn: 'font-bold text-warn', cold: 'font-bold text-frost' }
+
+/**
+ * The rover's news: a drawn badge for what it is about, then the line. Each new line rises in as its blur clears;
+ * under reduced motion it only fades. Warnings are orange, cold is frost, each with its own badge shape.
+ */
+export function NewsLine({ item }: { item: News | null }) {
+  return (
+    <p
+      aria-live="polite"
+      className="min-h-[2.8em] max-w-[36ch] text-base leading-snug [text-shadow:0_1px_2px_rgb(0_0_0/0.6),0_0_18px_rgb(36_24_18/0.9)] sm:text-lg lg:text-xl"
+    >
+      {item && (
+        <span
+          key={item.id}
+          className="flex items-start gap-[0.55em] motion-safe:animate-[news-in_340ms_cubic-bezier(0.23,1,0.32,1)] motion-reduce:animate-[fade-in_200ms_ease-out]"
+        >
+          <span aria-hidden="true" className={`mt-[0.02em] grid h-[1.4em] w-[1.4em] shrink-0 place-items-center rounded-full ${BADGE[item.tone]}`}>
+            <NewsIcon kind={item.kind} className="h-[0.86em] w-[0.86em]" />
+          </span>
+          <span className={TEXT[item.tone]}>{item.text}</span>
+        </span>
+      )}
+    </p>
+  )
 }
 
 /**

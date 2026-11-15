@@ -12,7 +12,7 @@ import {
   type GameState,
   type Plan,
 } from '../dustStormModel'
-import { BatteryCell, Ending, SentHome, Lever, newsFor } from '../LastLightHud'
+import { BatteryCell, Ending, SentHome, Lever, NewsLine, news, newsFor, type News } from '../LastLightHud'
 import LastLight from '../LastLight'
 import { RoverWorld, type DriveInput, type Status } from './RoverWorld'
 
@@ -46,7 +46,7 @@ function Game({ onFail }: { onFail: () => void }) {
   const [phase, setPhase] = useState<Phase>('intro')
   const [state, setState] = useState<GameState>(initialState)
   const [plan, setPlan] = useState<Plan>({ heaters: true, radio: true })
-  const [news, setNews] = useState('')
+  const [newsItem, setNews] = useState<News | null>(null)
   const [delta, setDelta] = useState<{ sol: number; value: number } | null>(null)
   const [found, setFound] = useState(0) // rocks studied since the last sol
   const [loaded, setLoaded] = useState(false)
@@ -85,15 +85,16 @@ function Game({ onFail }: { onFail: () => void }) {
             foundRef.current += 1
             setFound(foundRef.current)
             setNews(
-              planRef.current.radio
-                ? 'Rock studied. The radio will send it home.'
-                : 'Rock studied. Switch the radio on to send it home.',
+              news(
+                'rock',
+                planRef.current.radio ? 'Rock studied. The radio will send it home.' : 'Rock studied. Switch the radio on to send it home.',
+              ),
             )
           },
           onStatus: (s: Status) => {
             if (phaseRef.current !== 'running') return
-            if (s === 'near') setNews('Stop here. The arm can reach the rock.')
-            if (s === 'studying') setNews('Studying the rock. Keep still.')
+            if (s === 'near') setNews(news('rock', 'Stop here. The arm can reach the rock.'))
+            if (s === 'studying') setNews(news('rock', 'Studying the rock. Keep still.'))
           },
         },
         { reduced: prefersReducedMotion(), narrow: isNarrow() },
@@ -184,10 +185,10 @@ function Game({ onFail }: { onFail: () => void }) {
     if (next.gust) world?.gust()
 
     let line = newsFor(prev, next, planRef.current)
-    if (!line && next.sent) line = 'A finding left the antenna for Earth.'
+    if (!line && next.sent) line = news('radio', 'A finding left the antenna for Earth.')
     if (!line && planRef.current.radio && !next.sent && !warnedIdle.current) {
       warnedIdle.current = true
-      line = 'The radio has nothing to send yet. Find a rock, or switch it off.'
+      line = news('radio', 'The radio has nothing to send yet. Find a rock, or switch it off.')
     }
     if (line) setNews(line)
 
@@ -218,7 +219,7 @@ function Game({ onFail }: { onFail: () => void }) {
     setState(fresh)
     setPlan({ heaters: true, radio: true })
     setDelta(null)
-    setNews('Drive to the marked rock and stop beside it. A storm is building to the south.')
+    setNews(news('rock', 'Drive to the marked rock and stop beside it. A storm is building to the south.'))
     worldRef.current?.reset()
     worldRef.current?.takeDriveShare(1)
     setPhase('running')
@@ -270,6 +271,7 @@ function Game({ onFail }: { onFail: () => void }) {
         setState(stateRef.current)
       },
       delta: (value: number) => setDelta({ sol: Math.random(), value }),
+      news: (...a: Parameters<typeof news>) => setNews(news(...a)),
       gust: () => worldRef.current?.gust(),
       packet: () => worldRef.current?.sendPacket(),
     }
@@ -320,7 +322,9 @@ function Game({ onFail }: { onFail: () => void }) {
         />
         {/* Out of the story's dark at the top; dark ground for the controls at the bottom */}
         <div className="absolute inset-x-0 top-0 h-[14svh] bg-gradient-to-b from-basalt to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-[50%] bg-gradient-to-t from-basalt from-20% via-basalt/70 to-transparent lg:h-[40%]" />
+        <div className="absolute inset-x-0 bottom-0 h-[56%] bg-gradient-to-t from-basalt from-25% via-basalt/80 to-transparent lg:h-[40%] lg:from-20% lg:via-basalt/70" />
+        {/* Wide screens: a soft oval of dark behind the words, so they read on any ground and the rover stays bright */}
+        <div className="absolute inset-0 hidden bg-[radial-gradient(ellipse_40%_30%_at_19%_70%,rgb(36_24_18/0.85),rgb(36_24_18/0.6)_45%,transparent_78%)] lg:block" />
 
         {/* Points at the rock when it is off screen */}
         <div ref={pointerRef} className="absolute left-0 top-0 opacity-0 transition-opacity duration-200">
@@ -350,9 +354,7 @@ function Game({ onFail }: { onFail: () => void }) {
                 {phase === 'over' ? (
                   <Ending state={state} headingRef={endingRef} onRetry={start} />
                 ) : (
-                  <p aria-live="polite" className="min-h-[2.8em] max-w-[34ch] text-base leading-snug text-sun sm:text-lg lg:text-xl">
-                    {news}
-                  </p>
+                  <NewsLine item={newsItem} />
                 )}
 
                 <div className={`mt-4 flex items-end gap-6 sm:gap-12 ${phase === 'over' ? 'hidden' : ''}`}>
