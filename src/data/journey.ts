@@ -218,13 +218,11 @@ export const stops: Stop[] = [
       name: 'Sojourner',
       photo: {
         src: P + 'sojourner.webp',
-        w: 1276,
-        h: 1175,
+        w: 2552,
+        h: 2350,
         alt: 'The small six-wheeled Sojourner rover, with a flat solar panel on top, among rocks on Mars.',
         credit: 'NASA/JPL, photographed by the Pathfinder lander (PIA01122)',
         name: 'Sojourner on Mars, 1997',
-        // A small 1997 picture: cropped to fill a wide screen it was blown up 1.5x and went soft. Whole, it stays sharp.
-        fit: 'contain',
       },
     },
     body: 'The first rover on Mars. Planned for a week, it lasted 83 days.',
