@@ -264,24 +264,40 @@ export default function Journey() {
             style={{ opacity: 0, visibility: 'hidden' }}
           />
         ))}
-        {machines.map((m) => (
-          <img
-            key={m.id}
-            data-photo={m.id}
-            src={m.machine!.photo.src}
-            alt=""
-            loading="lazy"
-            className={`absolute inset-0 h-full w-full ${m.machine!.photo.fit === 'contain' ? 'object-contain object-[50%_22%] lg:object-center' : 'object-cover [object-position:var(--focus-narrow)] lg:[object-position:var(--focus)]'}`}
-            style={
-              {
-                opacity: 0,
-                visibility: 'hidden',
-                '--focus': m.machine!.photo.focus ?? '50% 50%',
-                '--focus-narrow': m.machine!.photo.narrowFocus ?? m.machine!.photo.focus ?? '50% 50%',
-              } as React.CSSProperties
-            }
-          />
-        ))}
+        {machines.map((m) => {
+          const p = m.machine!.photo
+          return p.fit === 'contain' ? (
+            // A photo shown whole is sized to its own shape, its edges feathered and blended with lighten, so it
+            // melts out of the photo before it (its black mosaic corners vanish) instead of cutting a hard frame
+            // across it. Over plain black it looks the same. High on phones, like the other machines; centred wide.
+            <img
+              key={m.id}
+              data-photo={m.id}
+              src={p.src}
+              alt=""
+              loading="lazy"
+              className="absolute left-1/2 top-[22%] -translate-x-1/2 -translate-y-[22%] object-cover mix-blend-lighten [mask-composite:intersect] [mask-image:linear-gradient(to_right,transparent,#000_9%,#000_91%,transparent),linear-gradient(to_bottom,transparent,#000_9%,#000_91%,transparent)] lg:top-1/2 lg:-translate-y-1/2"
+              style={{ opacity: 0, visibility: 'hidden', width: `min(100%, calc(100svh * ${p.w / p.h}))`, aspectRatio: `${p.w} / ${p.h}` }}
+            />
+          ) : (
+            <img
+              key={m.id}
+              data-photo={m.id}
+              src={p.src}
+              alt=""
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover [object-position:var(--focus-narrow)] lg:[object-position:var(--focus)]"
+              style={
+                {
+                  opacity: 0,
+                  visibility: 'hidden',
+                  '--focus': p.focus ?? '50% 50%',
+                  '--focus-narrow': p.narrowFocus ?? p.focus ?? '50% 50%',
+                } as React.CSSProperties
+              }
+            />
+          )
+        })}
         {/* Dark behind the words. Wide screens: the middle over space, the bottom over a machine's photo
             (swapped as the photo comes in). Phones: always the lower part. */}
         <div data-scrim="" className="absolute inset-0 hidden lg:block">
