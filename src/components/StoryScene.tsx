@@ -333,7 +333,9 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
         </header>
 
         {chapter.steps.map((s) => (
-          <article key={s.heading} className="flex min-h-stage-70 items-start justify-center px-5 md:px-10 lg:min-h-stage-100 lg:items-center">
+          // overflow-x-clip: the words' shade reaches past the screen's edge on phones; clipped here so the
+          // page never scrolls sideways (the body's own clip does not catch it)
+          <article key={s.heading} className="flex overflow-x-clip min-h-stage-70 items-start justify-center px-5 md:px-10 lg:min-h-stage-100 lg:items-center">
             <div data-block="" className="w-full max-w-[34rem] text-center text-sun lg:w-[min(36rem,42vw)]">
               {/* Phones: the dark only covers the lower part, so the words carry a shadow (as the opening line
                   does) for the stretch where they rise over the picture */}
