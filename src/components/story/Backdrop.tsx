@@ -185,6 +185,8 @@ export function makeBackdropController(
       const tb = parseTarget(scene.to.target) ?? opts.autoTarget()
       const target = ta.map((v, k) => `${lerp(v, tb[k], c).toFixed(3)}m`).join(' ')
       const mv = opts.model()
+      // After the title the words run down the middle, so on wide screens the machine steps to the right of them.
+      if (mv) mv.dataset.aside = s === 0 ? 'false' : 'true'
       if (mv) hideAbove(mv, scene.hideAbove)
       if (mv && (orbit !== lastOrbit || target !== lastTarget)) {
         lastOrbit = orbit
@@ -369,7 +371,7 @@ function Layer({ scene, shots, model, modelRef, title, loaded }: {
         tone-mapping="neutral"
         environment-image="neutral"
         style={{ position: 'absolute', background: 'transparent', pointerEvents: 'none' }}
-        class={`inset-x-0 bottom-[38%] top-[14%] h-auto w-full transition-opacity duration-500 lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[62%] ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        class={`inset-x-0 bottom-[38%] top-[14%] h-auto w-full transition-opacity duration-500 lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[62%] lg:data-[aside=true]:w-[36%] ${loaded ? 'opacity-100' : 'opacity-0'}`}
       />
       {!loaded && <p className="absolute bottom-[34%] right-5 text-sm text-on-sky lg:bottom-[12%] lg:right-10">Receiving {title}&hellip;</p>}
     </div>

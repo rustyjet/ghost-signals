@@ -260,11 +260,12 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
             world={chapter.world}
           />
 
-          {/* Wide screens: the left side darkens once the story starts, so light words read over any picture */}
+          {/* Wide screens: a band down the middle darkens once the story starts, so light words read over any
+              picture while both sides of the picture stay bright */}
           <div
             data-scrim=""
             aria-hidden="true"
-            className="absolute inset-y-0 left-0 hidden w-[64%] bg-[linear-gradient(to_right,color-mix(in_srgb,var(--color-basalt)_94%,transparent)_0%,color-mix(in_srgb,var(--color-basalt)_82%,transparent)_40%,transparent)] opacity-0 lg:block"
+            className="absolute inset-0 hidden bg-[radial-gradient(ellipse_44%_90%_at_50%_50%,color-mix(in_srgb,var(--color-basalt)_88%,transparent)_0%,color-mix(in_srgb,var(--color-basalt)_80%,transparent)_45%,color-mix(in_srgb,var(--color-basalt)_40%,transparent)_75%,transparent_100%)] opacity-0 lg:block"
           />
           {/* Phones: the lower part of the picture darkens; the words are read there */}
           <div
@@ -335,8 +336,8 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
         </header>
 
         {chapter.steps.map((s) => (
-          <article key={s.heading} className="flex min-h-[70svh] items-start px-5 md:px-10 lg:min-h-[100svh] lg:items-center">
-            <div data-block="" className="w-full max-w-[34rem] text-sun lg:w-[min(32rem,36vw)]">
+          <article key={s.heading} className="flex min-h-[70svh] items-start justify-center px-5 md:px-10 lg:min-h-[100svh] lg:items-center">
+            <div data-block="" className="w-full max-w-[34rem] text-center text-sun lg:w-[min(36rem,42vw)]">
               <div data-words="">
                 <p className="sr-only">
                   {chapter.spine.before} {fmt(s.spine)} {s.silent && chapter.spine.silentAfter ? chapter.spine.silentAfter : chapter.spine.after}.
@@ -345,13 +346,13 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
                 <h2
                   data-heading=""
                   data-fade=""
-                  className="mt-4 text-[clamp(1.6rem,6.6vw,2.2rem)] leading-[1.08] md:text-[2.8rem] lg:mt-7 lg:text-[clamp(2rem,2.9vw,3.2rem)] [&>div]:-mb-[0.12em] [&>div]:pb-[0.12em]"
+                  className="mt-4 text-balance text-[clamp(1.6rem,6.6vw,2.2rem)] leading-[1.08] md:text-[2.8rem] lg:mt-7 lg:text-[clamp(2rem,2.9vw,3.2rem)] [&>div]:-mb-[0.12em] [&>div]:pb-[0.12em]"
                 >
                   {s.heading}
                 </h2>
                 {/* Entrance and exit animate different elements, so the two fades never fight over one opacity */}
                 <div data-fade="">
-                  <p data-body="" className="mt-3 max-w-[36ch] text-base leading-snug text-sun/90 md:text-xl md:leading-relaxed lg:mt-4">
+                  <p data-body="" className="mx-auto mt-3 max-w-[36ch] text-base leading-snug text-sun/90 md:text-xl md:leading-relaxed lg:mt-4">
                     {s.body}
                   </p>
                 </div>

@@ -219,7 +219,7 @@ export default function Journey() {
             src={m.machine!.photo.src}
             alt=""
             loading="lazy"
-            className={`absolute inset-0 h-full w-full ${m.machine!.photo.fit === 'contain' ? 'object-contain object-[50%_22%] lg:object-[70%_50%] lg:pl-[30%]' : 'object-cover [object-position:var(--focus-narrow)] lg:[object-position:var(--focus)]'}`}
+            className={`absolute inset-0 h-full w-full ${m.machine!.photo.fit === 'contain' ? 'object-contain object-[50%_22%] lg:object-center' : 'object-cover [object-position:var(--focus-narrow)] lg:[object-position:var(--focus)]'}`}
             style={
               {
                 opacity: 0,
@@ -230,8 +230,8 @@ export default function Journey() {
             }
           />
         ))}
-        {/* Dark behind the words: the left side on wide screens, the lower part on phones */}
-        <div data-scrim="" className="absolute inset-y-0 left-0 hidden w-[60%] bg-[linear-gradient(to_right,rgb(0_0_0/0.85)_0%,rgb(0_0_0/0.6)_45%,transparent)] lg:block" />
+        {/* Dark behind the words: the middle on wide screens, the lower part on phones */}
+        <div data-scrim="" className="absolute inset-0 hidden bg-[radial-gradient(ellipse_44%_90%_at_50%_50%,rgb(0_0_0/0.82)_0%,rgb(0_0_0/0.7)_45%,rgb(0_0_0/0.3)_75%,transparent_100%)] lg:block" />
         <div data-scrim="" className="absolute inset-x-0 bottom-0 h-[60%] bg-[linear-gradient(to_bottom,transparent_0%,rgb(0_0_0/0.75)_35%,rgb(0_0_0/0.92)_100%)] lg:hidden" />
         <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/60 to-transparent" />
         <p
@@ -243,12 +243,12 @@ export default function Journey() {
       </div>
 
       <div className="relative z-10">
-        <header className="relative flex h-[100svh] items-start px-5 pt-[16svh] md:px-10 lg:items-center lg:pt-0">
+        <header className="relative flex h-[100svh] items-start justify-center px-5 pt-[16svh] text-center md:px-10 lg:items-center lg:pt-0">
           <div>
             <h1 data-title="" className="text-[clamp(3.6rem,15vw,11rem)] leading-[0.85]">
               Ghost Signals
             </h1>
-            <p data-intro="" className="mt-6 max-w-[30ch] text-xl leading-snug text-sun lg:text-2xl">
+            <p data-intro="" className="mx-auto mt-6 max-w-[30ch] text-xl leading-snug text-sun lg:text-2xl">
               NASA left machines on the Moon and Mars. Scroll down to go and find them.
             </p>
           </div>
@@ -257,8 +257,8 @@ export default function Journey() {
         {stops.slice(1).map((s) => {
           const chapter = s.machine?.slug ? getChapter(s.machine.slug) : undefined
           return (
-            <article key={s.id} className="flex min-h-[80svh] items-start px-5 md:px-10 lg:min-h-[100svh] lg:items-center">
-              <div data-stop="" className="w-full max-w-[34rem] text-sun lg:w-[min(32rem,38vw)]">
+            <article key={s.id} className="flex min-h-[80svh] items-start justify-center px-5 md:px-10 lg:min-h-[100svh] lg:items-center">
+              <div data-stop="" className="w-full max-w-[34rem] text-center text-sun lg:w-[min(36rem,42vw)]">
                 <div data-words="">
                   {s.figure && (
                     <div data-fade="">
@@ -274,7 +274,7 @@ export default function Journey() {
                     <h2
                       data-heading=""
                       data-fade=""
-                      className={`[&>div]:-mb-[0.12em] [&>div]:pb-[0.12em] ${s.machine ? 'text-[clamp(2.4rem,13vw,4.8rem)] leading-[0.9] md:text-[6rem] lg:text-[clamp(4rem,5.8vw,7rem)]' : 'mt-4 text-[clamp(2rem,8vw,3rem)] leading-[1.02] lg:mt-6 lg:text-[clamp(2.6rem,3.6vw,4rem)]'}`}
+                      className={`text-balance [&>div]:-mb-[0.12em] [&>div]:pb-[0.12em] ${s.machine ? 'text-[clamp(2.4rem,13vw,4.8rem)] leading-[0.9] md:text-[6rem] lg:text-[clamp(4rem,5.8vw,7rem)]' : 'mt-4 text-[clamp(2rem,8vw,3rem)] leading-[1.02] lg:mt-6 lg:text-[clamp(2.6rem,3.6vw,4rem)]'}`}
                     >
                       {s.machine?.name ?? s.heading}
                     </h2>
@@ -285,8 +285,8 @@ export default function Journey() {
                         data-rise=""
                         className={
                           s.heading || s.machine
-                            ? 'mt-4 max-w-[30ch] text-lg leading-snug text-sun/90 md:text-2xl'
-                            : 'max-w-[22ch] font-display text-[clamp(1.6rem,7vw,2.6rem)] font-bold leading-[1.08]'
+                            ? 'mx-auto mt-4 max-w-[30ch] text-lg leading-snug text-sun/90 md:text-2xl'
+                            : 'mx-auto max-w-[22ch] text-balance font-display text-[clamp(1.6rem,7vw,2.6rem)] font-bold leading-[1.08]'
                         }
                       >
                         {s.body}

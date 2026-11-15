@@ -97,7 +97,7 @@ export const stops: Stop[] = [
   {
     id: 'earth',
     km: 0,
-    globes: { earth: { x: 0.2, y: 0.62, s: 1.7, o: 1 }, moon: gone, mars: gone },
+    globes: { earth: { x: 0, y: 1.02, s: 1.7, o: 1 }, moon: gone, mars: gone },
     narrow: { earth: { x: 0, y: 0.5, s: 1.5, o: 1 } },
   },
   {
@@ -113,7 +113,7 @@ export const stops: Stop[] = [
     figure: { value: '384,400', label: 'kilometres from Earth' },
     heading: 'The Moon.',
     body: 'The closest world to ours. People have walked here, and left things behind.',
-    globes: { earth: { x: -0.08, y: 0.4, s: 0.05, o: 0.8 }, moon: { x: 0.2, y: 0, s: 0.95, o: 1 }, mars: gone },
+    globes: { earth: { x: -0.08, y: 0.4, s: 0.05, o: 0.8 }, moon: { x: 0.28, y: 0, s: 0.95, o: 1 }, mars: gone },
     narrow: { earth: { x: -0.32, y: -0.38, s: 0.05, o: 0.8 }, moon: { x: 0, y: -0.2, s: 0.78, o: 1 } },
   },
   {
@@ -133,7 +133,7 @@ export const stops: Stop[] = [
       },
     },
     body: 'The half that stayed, from Apollo 11.',
-    globes: { earth: { x: -0.08, y: 0.4, s: 0.05, o: 0 }, moon: { x: 0.2, y: 0, s: 1.1, o: 0.4 }, mars: gone },
+    globes: { earth: { x: -0.08, y: 0.4, s: 0.05, o: 0 }, moon: { x: 0.28, y: 0, s: 1.1, o: 0.4 }, mars: gone },
     narrow: { moon: { x: 0, y: -0.2, s: 0.9, o: 0.4 } },
   },
   {
@@ -150,7 +150,7 @@ export const stops: Stop[] = [
     figure: { value: '225 million', label: 'kilometres from Earth, on average' },
     heading: 'Mars.',
     body: 'Four of the machines in this story are still here.',
-    globes: { earth: gone, moon: passed(-0.6, 0.1), mars: { x: 0.2, y: 0, s: 0.95, o: 1 } },
+    globes: { earth: gone, moon: passed(-0.6, 0.1), mars: { x: 0.28, y: 0, s: 0.95, o: 1 } },
     narrow: { moon: passed(-0.4, -0.2), mars: { x: 0, y: -0.2, s: 0.78, o: 1 } },
   },
   {
@@ -171,7 +171,7 @@ export const stops: Stop[] = [
       },
     },
     body: 'Built for 90 days. Lasted 5,111.',
-    globes: { mars: { x: 0.2, y: 0, s: 1.1, o: 0.4 } },
+    globes: { mars: { x: 0.28, y: 0, s: 1.1, o: 0.4 } },
     narrow: { mars: { x: 0, y: -0.2, s: 0.9, o: 0.4 } },
   },
   {
@@ -191,7 +191,7 @@ export const stops: Stop[] = [
       },
     },
     body: 'Allowed five flights. Flew seventy-two.',
-    globes: { mars: { x: 0.2, y: 0, s: 1.1, o: 0.4 } },
+    globes: { mars: { x: 0.28, y: 0, s: 1.1, o: 0.4 } },
   },
   {
     id: 'insight',
@@ -209,7 +209,7 @@ export const stops: Stop[] = [
       },
     },
     body: 'It felt 1,319 marsquakes.',
-    globes: { mars: { x: 0.2, y: 0, s: 1.1, o: 0 } },
+    globes: { mars: { x: 0.28, y: 0, s: 1.1, o: 0 } },
   },
   {
     id: 'sojourner',
@@ -226,6 +226,6 @@ export const stops: Stop[] = [
       },
     },
     body: 'The first rover on Mars. Planned for a week, it lasted 83 days.',
-    globes: { mars: { x: 0.2, y: 0, s: 1.1, o: 0.4 } },
+    globes: { mars: { x: 0.28, y: 0, s: 1.1, o: 0.4 } },
   },
 ]

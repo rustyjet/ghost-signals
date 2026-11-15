@@ -32,7 +32,7 @@ The Moon: a chapter page with `data-world="moon"` swaps the tokens: black sky to
   - **black.**
 - Every photo fills the screen; no framed pictures. The next scene dissolves in over the current one across most of the scroll between two steps, and both keep moving while they cross. Scenes that share a photo keep travelling across it.
 - At the end of the story the picture sinks into the page's dark ground before the next section, so there is never a hard edge.
-- 1024 px and wider: words travel up the left side over a dark scrim.
+- 1024 px and wider: words travel up the middle of the screen, centred, over a soft oval of dark that leaves both sides of the picture bright. On the last step the 3D machine steps to the right so the words never sit on it.
 - Narrower: the backdrop fills the screen and its lower part is darkened. Words are read there, and each part of the words fades out before it passes the middle of the screen. Nothing is ever layered on top of the words.
 - No fixed chrome except the story counter (e.g. "Day 48 on Mars"). No progress bar, no next button.
 
@@ -41,7 +41,7 @@ The Moon: a chapter page with `data-world="moon"` swaps the tokens: black sky to
 - A trip outward from Earth (`src/components/journey/Journey.tsx`, stops in `src/data/journey.ts`). The page is pure black space; the real globes (Apollo 17 Earth, Apollo 11 Moon, Viking Mars) sit in a sticky layer, blended with `lighten` so their black edges vanish.
 - Scrolling moves between stops: Earth shrinks behind, the Moon grows and passes, Mars grows. At each machine its NASA photo fills the screen. The corner counter is the distance from Earth, travelling on a log scale so it races after the Moon.
 - Photos with black mosaic gaps (InSight) are shown whole on black instead of filling the screen. Each photo can have its own phone crop (`narrowFocus`) to keep mosaic holes off screen.
-- Same text rules as a chapter: words left on wide screens, low on phones, fading before the middle.
+- Same text rules as a chapter: words centred, in the middle on wide screens and low on phones, fading before the middle. On wide screens the title sits above Earth rising from the bottom edge, and the Moon and Mars pass to the right of the words.
 - Short stops (InSight, Sojourner) have no chapter, so they carry no button and no promise of one.
 - The trip ends with the last photo sinking into black, then a footer listing where every number and picture comes from. The sticky photo layer is clipped to the journey section so it never covers the footer.
 
