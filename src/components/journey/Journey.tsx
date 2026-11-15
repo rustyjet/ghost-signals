@@ -12,7 +12,9 @@ const hold = (t: number) => {
   const u = clamp01((t - 0.15) / 0.7)
   return u * u * (3 - 2 * u)
 }
-const focusLine = () => (isNarrow() ? 0.74 : 0.5)
+/** Where a stop's words are read. A machine's photo is mostly machine, so its words are read low on every
+    screen and the machine stands above them; other stops are read in the middle on wide screens. */
+const focusLine = (low = false) => (low || isNarrow() ? 0.74 : 0.5)
 
 /** "12,345 km", or "12.3 million km" past a million. */
 function distance(km: number) {
@@ -61,6 +63,8 @@ export default function Journey() {
       const globeEls = GLOBES.map((g) => root.querySelector<HTMLElement>(`[data-globe="${g}"]`)!)
       const photoEls = machines.map((m) => root.querySelector<HTMLElement>(`[data-photo="${m.id}"]`)!)
       const blocks = gsap.utils.toArray<HTMLElement>('[data-stop]', root)
+      const ovalEl = root.querySelector<HTMLElement>('[data-oval]')
+      const lowEl = root.querySelector<HTMLElement>('[data-lowshade]')
 
       let centres: number[] = []
       const measure = () => {
@@ -70,7 +74,7 @@ export default function Journey() {
           root.getBoundingClientRect().top + y,
           ...blocks.map((b) => {
             const r = (b.querySelector('[data-words]') ?? b).getBoundingClientRect()
-            return r.top + y + r.height / 2 - focusLine() * vh
+            return r.top + y + r.height / 2 - focusLine(b.hasAttribute('data-low')) * vh
           }),
         ]
       }
@@ -103,11 +107,16 @@ export default function Journey() {
           el.style.visibility = o < 0.01 ? 'hidden' : 'visible'
         })
 
+        let photo = 0
         machines.forEach((m, k) => {
           const o = lerp(a.id === m.id ? 1 : 0, b.id === m.id ? 1 : 0, t)
+          photo = Math.max(photo, o)
           photoEls[k].style.opacity = String(o)
           photoEls[k].style.visibility = o < 0.01 ? 'hidden' : 'visible'
         })
+        // Wide screens: the dark sits behind the words, in the middle over space and along the bottom over a photo.
+        if (ovalEl) ovalEl.style.opacity = String(1 - photo)
+        if (lowEl) lowEl.style.opacity = String(photo)
 
         // Distance travels on a log scale, so the numbers race once the Moon is behind.
         const la = Math.log10(a.km + 1)
@@ -161,11 +170,12 @@ export default function Journey() {
         blocks.forEach((block) => {
           const heading = block.querySelector<HTMLElement>('[data-heading]')
           const rest = block.querySelectorAll('[data-rise]')
+          const low = () => block.hasAttribute('data-low') || isNarrow()
           const tl = gsap.timeline({
             scrollTrigger: {
               trigger: block,
-              start: () => (isNarrow() ? 'top 98%' : 'top 92%'),
-              end: () => (isNarrow() ? 'top 66%' : 'top 46%'),
+              start: () => (low() ? 'top 98%' : 'top 92%'),
+              end: () => (low() ? 'top 66%' : 'top 46%'),
               scrub: 0.5,
               invalidateOnRefresh: true,
             },
@@ -180,12 +190,16 @@ export default function Journey() {
 
       // Words fade before they get high on the screen: on phones before the middle, where the globe is.
       const mm = gsap.matchMedia()
-      const fadeAll = (start: string, end: string) =>
-        gsap.utils.toArray<HTMLElement>('[data-fade]', root).forEach((el) =>
+      // Machine stops (read low) fade before the middle on every screen, so the machine above is never covered.
+      const fadeAll = (selector: string, start: string, end: string) =>
+        gsap.utils.toArray<HTMLElement>(selector, root).forEach((el) =>
           gsap.to(el, { opacity: 0, ease: 'none', scrollTrigger: { trigger: el, start, end, scrub: true } }),
         )
-      mm.add('(min-width: 1024px)', () => fadeAll('top 24%', 'top 8%'))
-      mm.add('(max-width: 1023px)', () => fadeAll('top 50%', 'top 36%'))
+      mm.add('(min-width: 1024px)', () => {
+        fadeAll('[data-stop]:not([data-low]) [data-fade]', 'top 24%', 'top 8%')
+        fadeAll('[data-stop][data-low] [data-fade]', 'top 50%', 'top 36%')
+      })
+      mm.add('(max-width: 1023px)', () => fadeAll('[data-fade]', 'top 50%', 'top 36%'))
 
       if (import.meta.env.DEV) {
         ;(window as unknown as { __step?: (i: number) => void }).__step = (i: number) =>
@@ -230,8 +244,12 @@ export default function Journey() {
             }
           />
         ))}
-        {/* Dark behind the words: the middle on wide screens, the lower part on phones */}
-        <div data-scrim="" className="absolute inset-0 hidden bg-[radial-gradient(ellipse_44%_90%_at_50%_50%,rgb(0_0_0/0.82)_0%,rgb(0_0_0/0.7)_45%,rgb(0_0_0/0.3)_75%,transparent_100%)] lg:block" />
+        {/* Dark behind the words. Wide screens: the middle over space, the bottom over a machine's photo
+            (swapped as the photo comes in). Phones: always the lower part. */}
+        <div data-scrim="" className="absolute inset-0 hidden lg:block">
+          <div data-oval="" className="absolute inset-0 bg-[radial-gradient(ellipse_44%_90%_at_50%_50%,rgb(0_0_0/0.82)_0%,rgb(0_0_0/0.7)_45%,rgb(0_0_0/0.3)_75%,transparent_100%)]" />
+          <div data-lowshade="" className="absolute inset-x-0 bottom-0 h-[55%] bg-[linear-gradient(to_bottom,transparent_0%,rgb(0_0_0/0.7)_40%,rgb(0_0_0/0.88)_100%)]" style={{ opacity: 0 }} />
+        </div>
         <div data-scrim="" className="absolute inset-x-0 bottom-0 h-[60%] bg-[linear-gradient(to_bottom,transparent_0%,rgb(0_0_0/0.75)_35%,rgb(0_0_0/0.92)_100%)] lg:hidden" />
         <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/60 to-transparent" />
         <p
@@ -258,7 +276,7 @@ export default function Journey() {
           const chapter = s.machine?.slug ? getChapter(s.machine.slug) : undefined
           return (
             <article key={s.id} className="flex min-h-[80svh] items-start justify-center px-5 md:px-10 lg:min-h-[100svh] lg:items-center">
-              <div data-stop="" className="w-full max-w-[34rem] text-center text-sun lg:w-[min(36rem,42vw)]">
+              <div data-stop="" data-low={s.machine ? '' : undefined} className="w-full max-w-[34rem] text-center text-sun lg:w-[min(36rem,42vw)]">
                 <div data-words="">
                   {s.figure && (
                     <div data-fade="">
