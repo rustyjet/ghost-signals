@@ -18,3 +18,6 @@ ghost-signals-demo-long.mp4
 capture/node_modules/
 capture/*-frames/
 capture/*.log
+
+# Footage for the 3-minute edit (163 MB); kept locally, not in the repo
+remotion/public/long/
