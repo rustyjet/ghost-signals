@@ -95,6 +95,13 @@ h3 {
 }
 
 /* A new line of game news */
+/* A mirror panel's corner cubes catching the light, in Find the mirrors */
+@keyframes cube-lit {
+  0% { opacity: 0.15; }
+  45% { opacity: 1; }
+  100% { opacity: 0.85; }
+}
+
 /* High dust haze in the Lift off sky, drifting very slowly */
 @keyframes haze-drift {
   from { transform: translateX(-5%); }

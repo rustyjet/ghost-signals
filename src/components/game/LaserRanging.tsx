@@ -55,6 +55,52 @@ function targetAt(x: number, y: number): Target {
   return Math.hypot(x - DISC.x, y - DISC.y) < DISC.r ? { kind: 'ground' } : { kind: 'space' }
 }
 
+/**
+ * One mirror site in the "Mirrors found" row: the panel of corner cubes it left, drawn as dots (a picture, not to
+ * scale: Apollo 15's 300 are drawn three times as many as the 100 at 11 and 14). Found: green, with its Apollo
+ * number; the cubes light up in a quick wave when light comes back (again on every catch from it). Not found yet:
+ * a dashed panel with a question mark, the same for every slot so it gives nothing away.
+ */
+function MirrorSlot({ site, catchId }: { site?: Site; catchId: number }) {
+  const PITCH = 6.5
+  if (!site)
+    return (
+      <span className="flex flex-col items-center gap-1.5">
+        <span className="grid h-[40.5px] w-[34px] place-items-center rounded-[5px] border-2 border-dashed border-sun/35 font-display text-sm font-bold text-sun/50">
+          ?
+        </span>
+        <span className="text-sm leading-none text-transparent">.</span>
+      </span>
+    )
+  const cols = site.cubes >= 300 ? 12 : 4
+  const rows = 5
+  const w = cols * PITCH + 8
+  const h = rows * PITCH + 8
+  return (
+    <span className="flex flex-col items-center gap-1.5">
+      <svg key={catchId} viewBox={`0 0 ${w} ${h}`} width={w} height={h} className="overflow-visible">
+        <rect x="1" y="1" width={w - 2} height={h - 2} rx="4" fill="rgb(109 255 142 / 0.1)" stroke="var(--color-laser)" strokeWidth="2" />
+        {Array.from({ length: cols * rows }, (_, i) => {
+          const c = i % cols
+          const r = Math.floor(i / cols)
+          return (
+            <circle
+              key={i}
+              cx={4 + PITCH / 2 + c * PITCH}
+              cy={4 + PITCH / 2 + r * PITCH}
+              r="2"
+              fill="var(--color-laser)"
+              className="opacity-85 motion-safe:animate-[cube-lit_520ms_ease-out_both]"
+              style={{ animationDelay: `${(c + r) * 22}ms` }}
+            />
+          )
+        })}
+      </svg>
+      <span className="whitespace-nowrap text-sm font-bold leading-none text-laser">Apollo {site.n}</span>
+    </span>
+  )
+}
+
 const where = (x: number, y: number) => {
   const t = targetAt(x, y)
   return t.kind === 'site' ? `Aiming at Apollo ${t.site.n}.` : t.kind === 'ground' ? 'Aiming at bare ground.' : 'Aiming past the Moon.'
@@ -63,6 +109,8 @@ const where = (x: number, y: number) => {
 export default function LaserRanging() {
   const [news, setNews] = useState('Each number marks where an Apollo crew landed. Start with 11: that is where Eagle left its mirrors.')
   const [found, setFound] = useState<number[]>([])
+  // Each catch from a site lights its panel again
+  const [catches, setCatches] = useState<Record<number, number>>({})
   const [busy, setBusy] = useState(false)
   const [aim, setAim] = useState({ x: 0.5, y: 0.5 })
   const [aimSaid, setAimSaid] = useState('')
@@ -113,6 +161,7 @@ export default function LaserRanging() {
         if (!prefersReducedMotion())
           distRef.current.animate([{ transform: 'scale(1.08)' }, { transform: 'scale(1)' }], { duration: 320, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' })
       }
+      setCatches((c) => ({ ...c, [n]: (c[n] ?? 0) + 1 }))
       const first = !foundRef.current.includes(n)
       const all = first && foundRef.current.length + 1 === MIRRORS
       if (first) {
@@ -391,26 +440,17 @@ export default function LaserRanging() {
         </div>
         {/* Mirrors found: one slot per mirror site, filled in green with its Apollo number once light has come back
             from it. Empty slots don't say where the others are, so the hunt stays a hunt. */}
-        <div className="mt-5 flex items-center gap-3 lg:mt-7">
-          <span className="flex gap-1.5" aria-hidden="true">
-            {Array.from({ length: MIRRORS }, (_, i) => {
-              const n = found[i]
-              return n ? (
-                <span
-                  key={n}
-                  className="grid size-9 place-items-center rounded-full border-2 border-laser bg-laser/15 font-display text-sm font-extrabold text-laser motion-safe:animate-[news-in_340ms_cubic-bezier(0.23,1,0.32,1)]"
-                >
-                  {n}
-                </span>
-              ) : (
-                <span key={`empty-${i}`} className="size-9 rounded-full border-2 border-dashed border-sun/35" />
-              )
-            })}
-          </span>
-          <span className="text-base text-sun/85">
-            {found.length} of {MIRRORS} mirrors found
+        <div className="mt-5 lg:mt-7">
+          <p className="text-base text-sun/85">
+            Mirrors found: <span className="font-bold text-sun">{found.length}</span> of {MIRRORS}
             {found.length > 0 && <span className="sr-only">: {found.map((n) => `Apollo ${n}`).join(', ')}</span>}
-          </span>
+          </p>
+          <div className="mt-2.5 flex items-end gap-4" aria-hidden="true">
+            {Array.from({ length: MIRRORS }, (_, i) => {
+              const site = SITES.find((s) => s.n === found[i])
+              return <MirrorSlot key={site ? site.n : `empty-${i}`} site={site} catchId={site ? (catches[site.n] ?? 0) : 0} />
+            })}
+          </div>
         </div>
         {/* How to fire: the Moon itself is the control (there is no separate button that would fire at a stale aim) */}
         <p className="mt-4 flex items-start gap-2 text-base text-sun/85 lg:mt-5">
