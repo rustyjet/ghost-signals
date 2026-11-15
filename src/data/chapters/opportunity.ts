@@ -289,5 +289,7 @@ export const opportunity: Chapter = {
       label: 'NASA 3D Resources: Spirit and Opportunity Rover 3D model',
       url: 'https://science.nasa.gov/resource/spirit-and-opportunity-rover-3d-model/',
     },
+    { label: "NASA Science: Perseverance Rover's SuperCam Records Wind on Mars (the wind sound)", url: 'https://science.nasa.gov/resource/perseverance-rovers-supercam-records-wind-on-mars/' },
+    { label: 'NSSDCA: Mars Exploration Rover B (Opportunity), its instruments', url: 'https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2003-032A' },
   ],
 }

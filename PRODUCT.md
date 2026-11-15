@@ -36,6 +36,7 @@ Real NASA 3D models and real NASA photographs, told by the machine itself, with 
 
 - NASA 3D models in `public/models/` (credits in `docs/CREDITS.md`).
 - NASA photographs in `public/photos/` (credits in `docs/CREDITS.md`).
+- NASA sound recordings in `public/audio/`, played only when the reader presses "Hear it" (credits and every change in `docs/CREDITS.md`, facts in `docs/FACTS.md`, "Story sounds").
 - No invented quotes, testimonials or figures may be added.
 
 ## Product Principles

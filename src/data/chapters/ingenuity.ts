@@ -222,5 +222,6 @@ export const ingenuity: Chapter = {
       url: 'https://www.jpl.nasa.gov/news/nasas-ingenuity-mars-helicopter-team-says-goodbye-for-now/',
     },
     { label: 'NASA 3D Resources: Ingenuity Mars Helicopter', url: 'https://science.nasa.gov/3d-resources/ingenuity-mars-helicopter/' },
+    { label: "NASA Science: Listen to NASA's Ingenuity Mars Helicopter in Flight (the sound of my blades)", url: 'https://science.nasa.gov/resource/listen-to-nasas-ingenuity-mars-helicopter-in-flight/' },
   ],
 }

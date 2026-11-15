@@ -241,5 +241,6 @@ export const insight: Chapter = {
     },
     { label: 'NASA Photojournal: SEIS Deployed on Mars (PIA22956)', url: 'https://photojournal.jpl.nasa.gov/catalog/PIA22956' },
     { label: 'NASA 3D Resources: InSight Cruise Lander', url: 'https://science.nasa.gov/3d-resources/insight-cruise-lander/' },
+    { label: "NASA Science: More Audible Sounds from InSight's Seismometer on Mars (the wind on my panels)", url: 'https://science.nasa.gov/resource/more-audible-sounds-from-insights-seismometer-on-mars' },
   ],
 }

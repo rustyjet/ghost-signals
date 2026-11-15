@@ -104,7 +104,7 @@ export default function Seismometer() {
   const bareRef = useRef<HTMLImageElement>(null)
   const dustRef = useRef<HTMLCanvasElement>(null)
   /** The sound, once turned on: noise for the wind and Earth's crackles, a low rumble for quakes. */
-  const audio = useRef<{ ac: AudioContext; wind: GainNode; crackle: GainNode; rumble: GainNode; pitch: OscillatorNode; master: GainNode } | null>(null)
+  const audio = useRef<{ ac: AudioContext; wind: GainNode; crackle: GainNode; rumble: GainNode; pitch: OscillatorNode[]; master: GainNode } | null>(null)
   const soundOn = useRef(false)
 
   function makeAudio() {
@@ -117,9 +117,17 @@ export default function Seismometer() {
     const noise = ac.createBufferSource()
     noise.buffer = buf
     noise.loop = true
+    // A limiter at the end: the quake can be loud enough for laptop speakers without its peaks distorting
+    const limiter = ac.createDynamicsCompressor()
+    limiter.threshold.value = -10
+    limiter.knee.value = 6
+    limiter.ratio.value = 12
+    limiter.attack.value = 0.003
+    limiter.release.value = 0.2
+    limiter.connect(ac.destination)
     const master = ac.createGain()
-    master.gain.value = 0.8
-    master.connect(ac.destination)
+    master.gain.value = 1
+    master.connect(limiter)
     const gain = () => {
       const g = ac.createGain()
       g.gain.value = 0
@@ -139,24 +147,37 @@ export default function Seismometer() {
     bp.frequency.value = 1500
     bp.Q.value = 2.5
     noise.connect(bp).connect(crackle)
-    // A quake: a deep rumble, a little rougher with some low noise
+    // A quake: a deep rumble. Laptop and phone speakers play almost nothing under about 150 Hz, so the deep tone
+    // alone was silent there. Its overtones (a softened sawtooth at the same pitch) reach those speakers, and the ear
+    // still hears them as the deep note; a rough band of noise around 240 Hz gives the rumble its grit.
     const rumble = gain()
-    const pitch = ac.createOscillator()
-    pitch.type = 'sine'
-    pitch.frequency.value = 46
-    const second = ac.createOscillator()
-    second.type = 'triangle'
-    second.frequency.value = 69
-    const low = ac.createBiquadFilter()
-    low.type = 'lowpass'
-    low.frequency.value = 180
-    pitch.connect(rumble)
-    second.connect(low).connect(rumble)
-    noise.connect(low)
+    const mix = (to: AudioNode, level: number) => {
+      const g = ac.createGain()
+      g.gain.value = level
+      g.connect(to)
+      return g
+    }
+    const sub = ac.createOscillator() // felt on headphones and big speakers
+    sub.type = 'sine'
+    sub.frequency.value = 46
+    sub.connect(mix(rumble, 0.5))
+    const overtones = ac.createOscillator() // what small speakers can play
+    overtones.type = 'sawtooth'
+    overtones.frequency.value = 46
+    const soften = ac.createBiquadFilter()
+    soften.type = 'lowpass'
+    soften.frequency.value = 600
+    soften.Q.value = 0.7
+    overtones.connect(soften).connect(mix(rumble, 0.55))
+    const grit = ac.createBiquadFilter()
+    grit.type = 'bandpass'
+    grit.frequency.value = 240
+    grit.Q.value = 0.9
+    noise.connect(grit).connect(mix(rumble, 1.1))
     noise.start()
-    pitch.start()
-    second.start()
-    return { ac, wind, crackle, rumble, pitch, master }
+    sub.start()
+    overtones.start()
+    return { ac, wind, crackle, rumble, pitch: [sub, overtones], master }
   }
 
   function toggleSound() {
@@ -662,8 +683,9 @@ export default function Seismometer() {
         earthEnv = Math.max(Math.abs(earthNow), earthEnv * Math.exp(-dt * 5))
         a.wind.gain.setTargetAtTime(Math.min(0.35, windEnv * 0.9), now, 0.05)
         a.crackle.gain.setTargetAtTime(Math.min(0.18, earthEnv * 0.25), now, 0.04)
-        a.rumble.gain.setTargetAtTime(Math.min(0.9, rumbleEnv * 1.4), now, 0.04)
-        a.pitch.frequency.setTargetAtTime(40 + 22 * Math.min(1, rumbleEnv), now, 0.1)
+        // A faint quake (line height about 0.36) plays near full, so it is heard on laptop speakers too
+        a.rumble.gain.setTargetAtTime(Math.min(1, rumbleEnv * 2.8), now, 0.04)
+        for (const o of a.pitch) o.frequency.setTargetAtTime(40 + 22 * Math.min(1, rumbleEnv), now, 0.1)
       }
 
     }

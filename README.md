@@ -14,7 +14,7 @@ Scrolling is travelling. The start page moves out from Earth, past the Moon, to 
 
 ## Accuracy
 
-Every number and historical claim on screen has a row in [docs/FACTS.md](docs/FACTS.md) with the NASA, JPL or NSSDCA page it came from. Every photograph and 3D model is real NASA material, listed in [docs/CREDITS.md](docs/CREDITS.md) and credited on the page. The machines' voices are imagined, and the page says so; what they describe happened. The games simplify their numbers and say so on screen.
+Every number and historical claim on screen has a row in [docs/FACTS.md](docs/FACTS.md) with the NASA, JPL or NSSDCA page it came from. Every photograph, 3D model and sound recording is real NASA material, listed in [docs/CREDITS.md](docs/CREDITS.md) and credited on the page. The machines' voices are imagined, and the page says so; what they describe happened. The games simplify their numbers and say so on screen.
 
 ## Running it
 
@@ -35,5 +35,6 @@ The build is a static site with hash routing (`#/signal/eagle`), so it works on 
 - NASA's 3D models are shown with Google's `<model-viewer>`, using a Draco decoder served from `public/draco/` so nothing loads from a third-party CDN.
 - Chapter text lives in `src/data/chapters/*.ts`, typed by `src/data/types.ts`. `node scripts/check-copy.mjs` enforces the copy limits (headings at most 5 words, body at most 150 characters).
 - The games are in `src/components/game/`.
+- Four story steps have a "Hear it" button that plays a real NASA recording of that moment (`src/components/story/StepSound.tsx`, files in `public/audio/`): Ingenuity's blades heard by Perseverance, Armstrong's landing call, wind on InSight's panels, and Mars wind under Opportunity's wind step. Nothing plays or downloads until it is pressed, and there is no background music. The three Mars clips are raised two octaves so laptop and phone speakers can play them; each caption says so.
 
 Design and product notes: [DESIGN.md](DESIGN.md), [PRODUCT.md](PRODUCT.md). How AI tools were used: [docs/SUBMISSION.md](docs/SUBMISSION.md).

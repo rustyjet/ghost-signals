@@ -41,6 +41,7 @@ Each chapter opens and closes on NASA's 3D model of the machine, with real NASA 
 
 - 4 NASA 3D models (NASA 3D Resources): Opportunity, Ingenuity, the Apollo lunar module, InSight. NASA has none of Sojourner.
 - More than 50 photographs and image files from NASA, JPL, NSSDCA and NASA's Scientific Visualization Studio, including Opportunity's last image, Apollo 11 surface photos, an LRO view of the Moon with NASA's Apollo site markers, InSight's own photos of its seismometer and dome, and the Pathfinder lander's photos of Sojourner. Each one is listed with its NASA ID and source page in `docs/CREDITS.md` and credited on the page.
+- 4 NASA sound recordings, each played by a "Hear it" button under the story step it belongs to: Ingenuity's blades on its fourth flight, recorded by the Perseverance rover's microphone; Neil Armstrong's "The Eagle has landed" radio call (NSSDCA); wind on InSight's solar panels, felt by its seismometer; and Mars wind recorded by Perseverance, under Opportunity's step about the wind cleaning its panels (Opportunity had no microphone, and the caption says so). Listed with their source pages in `docs/CREDITS.md` and credited on the page.
 - About 200 checked facts from NASA, JPL and NSSDCA pages and from Sojourner's day-by-day operations logs in NASA's Planetary Data System, listed with their sources in `docs/FACTS.md`.
 
 ## Use of artificial intelligence
@@ -55,14 +56,15 @@ Hack Tuah built Ghost Signals with Claude Code, Anthropic's AI coding assistant 
 What AI did **not** make:
 
 - **No AI-generated images, video, audio or 3D models.** Every picture and model is real NASA material. In the Last Light driving game, the Mars ground, rocks, sky and dust are drawn live by the game's code (no image files); the rover is NASA's own 3D model.
-- **Drawn parts are labelled.** The seismometer line in Listen for marsquakes and the rover's outline and drive in Plan my drive are drawn by the game's code, and the screen says so. Plan my drive's two lander photos were lined up on each other by an image-matching script, which only scaled and cropped them.
+- **Drawn parts are labelled.** The seismometer line in Listen for marsquakes and the rover's outline and drive in Plan my drive are drawn by the game's code, and the screen says so. Plan my drive's two lander photos were lined up on each other by an image-matching script, which only scaled and cropped them. The marsquake game's sound is made live by its code from the line it draws, and the screen says so.
+- **NASA's recordings are only trimmed, levelled and, where needed, raised in pitch.** As NASA released them, the three Mars recordings are almost all below 150 Hz, which laptop and phone speakers cannot play, so they were raised two octaves with ffmpeg (same length, nothing added). Each caption says so, and `docs/CREDITS.md` lists every change.
 - **No invented quotes.** Every quotation comes from a NASA source.
 
 Done by the team without AI: the idea behind Ghost Signals, the choice of machines and stories, and the narration edits.
 
 ## Tools
 
-Vite, React, TypeScript, Tailwind CSS, GSAP ScrollTrigger and SplitText, Google's model-viewer, three.js (the driving game), sharp, ffmpeg and Pillow (image conversion, cropping and lining up), Claude Code.
+Vite, React, TypeScript, Tailwind CSS, GSAP ScrollTrigger and SplitText, Google's model-viewer, three.js (the driving game), sharp, ffmpeg and Pillow (image conversion, cropping and lining up; trimming and levelling the NASA sound clips), the Web Audio API (the marsquake game's sound), Claude Code.
 
 ## Links
 
