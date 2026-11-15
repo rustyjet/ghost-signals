@@ -31,10 +31,10 @@ Each chapter opens and closes on NASA's 3D model of the machine, with real NASA 
 
 ## Use of artificial intelligence
 
-[Team name] built Ghost Signals with Claude Code, Anthropic's AI coding assistant (Claude models). How it was used:
+Hack Tuah built Ghost Signals with Claude Code, Anthropic's AI coding assistant (Claude models). How it was used:
 
 - **Code.** Claude Code wrote most of the source code (React, TypeScript, the scroll animation and the three games), working from the team's direction and reviewed by the team at each checkpoint.
-- **Writing.** The machines' narration was drafted with Claude and edited by the team to fit the rules in `CLAUDE.md`: short, concrete, for a ten-year-old, with no invented quotes.
+- **Writing.** Claude drafted first versions of the machines' narration. The team chose the stories and the facts in them, and made every edit that fits the narration to the rules in `CLAUDE.md`: short, concrete, for a ten-year-old, with no invented quotes.
 - **Research.** Claude read NASA, JPL and NSSDCA pages to find and check facts. No fact was taken from the model's memory: every claim on screen was matched to a NASA source and logged with that source in `docs/FACTS.md`. Where a page could only be seen through a search summary, the row says so.
 - **Design checks.** Claude ran design and accessibility checks and took screenshots at desktop and phone width.
 
@@ -43,7 +43,7 @@ What AI did **not** make:
 - **No AI-generated images, video, audio or 3D models.** Every picture and model is real NASA material.
 - **No invented quotes.** Every quotation comes from a NASA source.
 
-[Add anything the team did without AI, such as the concept, the story choices, testing with young readers.]
+Done by the team without AI: the idea behind Ghost Signals, the choice of machines and stories, and the narration edits.
 
 ## Tools
 
@@ -53,4 +53,3 @@ Vite, React, TypeScript, Tailwind CSS, GSAP ScrollTrigger and SplitText, Google'
 
 - Live site: [URL once deployed]
 - Source code: [repository URL]
-- Demo video: [URL, if the submission asks for one]
