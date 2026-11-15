@@ -191,7 +191,7 @@ export function Lever({
         className={`relative h-16 w-9 shrink-0 rounded-xl ring-1 transition-[background-color,box-shadow] duration-200 min-[360px]:w-10 sm:h-24 sm:w-14 ${on ? 'bg-sun/20 ring-sun/45' : 'bg-black/50 ring-sun/20'}`}
       >
         <span
-          className={`absolute inset-x-1 top-1 grid h-[calc(50%-0.25rem)] place-items-center rounded-lg transition-[transform,background-color,color,box-shadow] duration-[260ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] ${on ? 'translate-y-0 bg-sun text-ink shadow-[0_4px_10px_rgb(0_0_0/0.45)]' : 'translate-y-[calc(100%+0.5rem)] bg-sun/25 text-sun/75'}`}
+          className={`absolute inset-x-1 top-1 grid h-[calc(50%-0.25rem)] place-items-center rounded-lg transition-[transform,background-color,color,box-shadow] duration-[260ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] ${on ? 'translate-y-0 bg-sun text-ink shadow-[0_4px_10px_rgb(0_0_0/0.45)]' : 'translate-y-full bg-sun/25 text-sun/75'}`}
         >
           {icon === 'heater' ? (
             <Thermometer warmth={warmth} className={iconClass} />
