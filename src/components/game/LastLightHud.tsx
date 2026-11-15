@@ -87,12 +87,69 @@ export function BatteryCell({ value, instantKey }: { value: number; /** Change i
   )
 }
 
-/** A big two-way switch. Up is on. */
+/** Opportunity's dish, drawn: bowl, feed, mast. The arcs show the radio at work. */
+export function DishIcon({
+  className,
+  strokeWidth = 2.7,
+  waves = 'off',
+  wavesRef,
+}: {
+  className?: string
+  strokeWidth?: number
+  /** off: hidden (or driven through wavesRef); pulse: a slow beat while the radio is on (lit, still, with reduced motion) */
+  waves?: 'off' | 'pulse'
+  wavesRef?: React.Ref<SVGGElement>
+}) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 7 A9.5 9.5 0 0 0 17 20 Z" fill="currentColor" fillOpacity="0.18" />
+      <path d="M10.5 13.5 L15.5 8.5" />
+      <circle cx="16.4" cy="7.6" r="1.4" fill="currentColor" />
+      <path d="M9 18.5 L6.5 23 M3.5 23 H11" />
+      <g
+        ref={wavesRef}
+        opacity={waves === 'pulse' ? undefined : 0}
+        className={waves === 'pulse' ? 'motion-safe:animate-[signal_2.4s_ease-in-out_infinite]' : undefined}
+      >
+        <path d="M18.6 4.2 A4.5 4.5 0 0 1 20.4 6" />
+        <path d="M19.8 1.4 A8 8 0 0 1 23.2 4.8" />
+      </g>
+    </svg>
+  )
+}
+
+/** A thermometer whose level is the rover's warmth (0-100); it eases to each new day's value. */
+function Thermometer({ warmth, className }: { warmth: number; className?: string }) {
+  const level = Math.min(1, Math.max(0.04, warmth / 100))
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9.5 14.6 V5 a2.5 2.5 0 0 1 5 0 v9.6 a4.5 4.5 0 1 1 -5 0 Z" />
+      <circle cx="12" cy="18" r="2.1" fill="currentColor" stroke="none" />
+      <rect
+        x="11"
+        y="5"
+        width="2"
+        height="12"
+        rx="1"
+        fill="currentColor"
+        stroke="none"
+        style={{ transformBox: 'fill-box', transformOrigin: 'bottom', transform: `scaleY(${level})`, transition: 'transform 600ms cubic-bezier(0.23, 1, 0.32, 1)' }}
+      />
+    </svg>
+  )
+}
+
+/**
+ * A big two-way switch. Up is on. The knob carries what it switches: the heater's thermometer shows the rover's
+ * warmth, the radio's dish beats while it is on. The knob is thrown with a small overshoot; the track lights when on.
+ */
 export function Lever({
   label,
   cost,
   on,
   warn,
+  icon,
+  warmth = 50,
   onToggle,
 }: {
   label: string
@@ -100,23 +157,38 @@ export function Lever({
   cost: number
   on: boolean
   warn?: string
+  icon: 'heater' | 'radio'
+  /** The heater's thermometer: the rover's warmth, 0-100. */
+  warmth?: number
   onToggle: () => void
 }) {
+  const iconClass = 'h-5 w-5 sm:h-7 sm:w-7'
   return (
     <button
       type="button"
       role="switch"
       aria-checked={on}
       onClick={onToggle}
-      className="group flex items-center gap-2 rounded-2xl bg-basalt/70 p-2 text-left min-[360px]:gap-3 min-[360px]:p-3 ring-1 ring-sun/20 transition-[transform,box-shadow] duration-150 ease-out hover:ring-sun/45 active:scale-[0.97] sm:gap-4 sm:p-4"
+      className={`group flex items-center gap-2 rounded-2xl p-2 text-left ring-1 transition-[transform,background-color,box-shadow] duration-200 ease-out active:scale-[0.97] min-[360px]:gap-3 min-[360px]:p-3 sm:gap-4 sm:p-4 ${on ? 'bg-basalt/85 ring-sun/40 hover:ring-sun/60' : 'bg-basalt/60 ring-sun/15 hover:ring-sun/35'}`}
     >
-      <span aria-hidden="true" className="relative h-16 w-9 shrink-0 rounded-xl min-[360px]:w-10 bg-black/50 ring-1 ring-sun/25 sm:h-24 sm:w-12">
+      <span
+        aria-hidden="true"
+        className={`relative h-16 w-9 shrink-0 rounded-xl ring-1 transition-[background-color,box-shadow] duration-200 min-[360px]:w-10 sm:h-24 sm:w-14 ${on ? 'bg-sun/20 ring-sun/45' : 'bg-black/50 ring-sun/20'}`}
+      >
         <span
-          className={`absolute inset-x-1 h-[calc(50%-0.25rem)] rounded-lg transition-[transform,background-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] ${on ? 'top-1 translate-y-0 bg-sun shadow-[0_4px_10px_rgb(0_0_0/0.45)]' : 'top-1 translate-y-[calc(100%+0.5rem)] bg-sun/25'}`}
-        />
+          className={`absolute inset-x-1 top-1 grid h-[calc(50%-0.25rem)] place-items-center rounded-lg transition-[transform,background-color,color,box-shadow] duration-[260ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] ${on ? 'translate-y-0 bg-sun text-ink shadow-[0_4px_10px_rgb(0_0_0/0.45)]' : 'translate-y-[calc(100%+0.5rem)] bg-sun/25 text-sun/75'}`}
+        >
+          {icon === 'heater' ? (
+            <Thermometer warmth={warmth} className={iconClass} />
+          ) : (
+            <DishIcon className={iconClass} strokeWidth={2.3} waves={on ? 'pulse' : 'off'} />
+          )}
+        </span>
       </span>
       <span className="min-w-0">
-        <span className="block font-display text-lg font-extrabold leading-tight sm:text-2xl">{label}</span>
+        <span className={`block font-display text-base font-extrabold leading-tight transition-colors duration-200 min-[380px]:text-lg sm:text-2xl ${on ? 'text-sun' : 'text-sun/75'}`}>
+          {label}
+        </span>
         <span className="block text-sm leading-snug sm:text-base">
           <span className="font-bold">{on ? 'On' : 'Off'}</span>
           <span className="text-sun/75">, {cost} a day</span>
@@ -214,16 +286,7 @@ export function SentHome({ sent, waiting, radio }: { sent: number; waiting: numb
       <p className="flex items-end gap-[0.18em] font-display text-[clamp(2rem,9vw,4.25rem)] font-extrabold leading-[0.85] text-sun">
         {/* Opportunity's dish, drawn: bowl, feed, mast. Arcs show a send. */}
         <span aria-hidden="true" className={`relative block h-[0.82em] w-[0.82em] shrink-0 transition-opacity duration-300 ${radio ? 'opacity-100' : 'opacity-40'}`}>
-          <svg viewBox="0 0 24 24" className="h-full w-full" fill="none" stroke="currentColor" strokeWidth="2.7" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 7 A9.5 9.5 0 0 0 17 20 Z" fill="currentColor" fillOpacity="0.18" />
-            <path d="M10.5 13.5 L15.5 8.5" />
-            <circle cx="16.4" cy="7.6" r="1.4" fill="currentColor" />
-            <path d="M9 18.5 L6.5 23 M3.5 23 H11" />
-            <g ref={wavesRef} opacity="0">
-              <path d="M18.6 4.2 A4.5 4.5 0 0 1 20.4 6" />
-              <path d="M19.8 1.4 A8 8 0 0 1 23.2 4.8" />
-            </g>
-          </svg>
+          <DishIcon className="h-full w-full" wavesRef={wavesRef} />
           {/* The finding on its way to Earth */}
           <span ref={dotRef} className="absolute left-[64%] top-[22%] block h-[0.14em] w-[0.14em] -translate-x-1/2 rounded-full bg-sun-bright opacity-0 shadow-[0_0_0.12em_rgb(255_241_214/0.8)]" />
         </span>

@@ -310,6 +310,8 @@ export default function LastLight() {
                   <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:w-[30rem]">
                     <Lever
                       label="Heaters"
+                      icon="heater"
+                      warmth={state.warmth}
                       cost={COST_HEATERS}
                       on={plan.heaters}
                       warn={cold > 0.45 && !plan.heaters ? 'Getting cold' : undefined}
@@ -317,6 +319,7 @@ export default function LastLight() {
                     />
                     <Lever
                       label="Radio"
+                      icon="radio"
                       cost={COST_RADIO}
                       on={plan.radio}
                       onToggle={() => setPlan((p) => ({ ...p, radio: !p.radio }))}

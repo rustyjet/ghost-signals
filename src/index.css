@@ -71,6 +71,12 @@ h3 {
 }
 
 /* The day's battery change floats up beside the number and fades */
+/* The radio switch's dish while the radio is on */
+@keyframes signal {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
 @keyframes rise {
   0% { opacity: 0; transform: translateY(6px); }
   15% { opacity: 1; transform: translateY(0); }

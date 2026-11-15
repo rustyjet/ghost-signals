@@ -400,12 +400,14 @@ function Game({ onFail }: { onFail: () => void }) {
                   <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:w-[30rem]">
                     <Lever
                       label="Heaters"
+                      icon="heater"
+                      warmth={state.warmth}
                       cost={COST_HEATERS}
                       on={plan.heaters}
                       warn={cold > 0.45 && !plan.heaters ? 'Getting cold' : undefined}
                       onToggle={() => setPlan((p) => ({ ...p, heaters: !p.heaters }))}
                     />
-                    <Lever label="Radio" cost={COST_RADIO} on={plan.radio} onToggle={() => setPlan((p) => ({ ...p, radio: !p.radio }))} />
+                    <Lever label="Radio" icon="radio" cost={COST_RADIO} on={plan.radio} onToggle={() => setPlan((p) => ({ ...p, radio: !p.radio }))} />
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-4">
                     <p className="text-sm text-sun/75 sm:text-base">
