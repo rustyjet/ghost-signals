@@ -21,7 +21,7 @@ Sources are abbreviated below:
 | Opportunity | Launched 7 July 2003 (PDT; 8 July UT) | MP, NSSDCA | Checked |
 | Opportunity | Landed 24 Jan 2004 (PST), Meridiani Planum, inside Eagle crater | MP | Checked |
 | Opportunity | Designed for 90 sols and about 1,000 m of driving | END | Checked |
-| Opportunity | Operated almost 15 years; exceeded life expectancy 60 times | MP, END | Checked |
+| Opportunity | Operated almost 15 years; exceeded life expectancy 60 times. Use 60, the end-of-mission figure (END, 2019). JPL's walkabout page (23 June 2017) says "more than 50 times longer", which was true at that date | MP, END | Checked |
 | Opportunity | Total odometry 45.16 km (28.06 mi) | MP | Checked |
 | Opportunity | Off-world driving record | END | Checked |
 | Opportunity | One-day record 220 m on 20 March 2005 | END | Checked |
