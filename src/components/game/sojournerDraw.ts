@@ -2,23 +2,24 @@
 // here from a few simple 3D shapes, in metres, and projected with the photo's own camera, so it keeps the right size
 // and perspective wherever it drives. What the drawing follows (docs/FACTS.md, "Plan my drive"): six wheels on a
 // rocker-bogie; the front and rear wheels steer, so it turns in place; wheels 13 cm across; a solar panel of
-// 13 strings of 18 cells; the APXS sensor on an arm at the rear. No antenna: where it sat is not checked. Sizes are tuned by eye to the rover in the photo.
+// 13 strings of 18 cells; the APXS sensor on an arm at the rear. No antenna: where it sat is not checked. Sizes are NASA's (about 28 cm tall, 13 cm wheels), placed by fitting the drawing to the real rover's panel corners
+// and wheels in both lander photos.
 
 import type { Pt } from './driveGround'
 
 /** The six wheel hubs in the rover's own frame (u forward, v to its right), m: left front, middle, rear, then right. */
 export const WHEELS: { u: number; v: number }[] = [
-  { u: 0.27, v: -0.2 },
-  { u: 0.02, v: -0.2 },
-  { u: -0.23, v: -0.2 },
-  { u: 0.27, v: 0.2 },
-  { u: 0.02, v: 0.2 },
-  { u: -0.23, v: 0.2 },
+  { u: 0.33, v: -0.2 },
+  { u: -0.08, v: -0.2 },
+  { u: -0.24, v: -0.2 },
+  { u: 0.33, v: 0.2 },
+  { u: -0.08, v: 0.2 },
+  { u: -0.24, v: 0.2 },
 ]
 export const WHEEL_R = 0.065
 const WHEEL_W = 0.055
-const PANEL = { l: 0.3, w: 0.2, up: 0.21, thick: 0.018 }
-const BODY = { l: 0.19, w: 0.13, lo: 0.09, hi: 0.19 }
+const PANEL = { l: 0.3, w: 0.2, up: 0.27, thick: 0.02 }
+const BODY = { l: 0.19, w: 0.13, lo: 0.1, hi: 0.25 }
 
 export interface RoverLook {
   /** How far each side's wheels have turned, radians. */
@@ -69,14 +70,26 @@ function hull(pts: Pt[]) {
 
 /**
  * Draw the rover at ground point `p`, facing `heading` (radians, 0 = straight away from the camera).
- * `metre` is screen px per metre at the rover; `camH` the camera's height (it stands at ground 0, 0).
+ * `project(ground, up)` puts a point `up` metres above the ground on screen; `metre` is screen px per metre at the
+ * rover; `camH` the camera's height (it stands at ground 0, 0); `size` scales the rover across the ground (the
+ * caller's correction for the photo's camera, see DrivePlan).
  */
-export function drawSojourner(ctx: CanvasRenderingContext2D, project: Project, metre: number, camH: number, p: Pt, heading: number, look: RoverLook, c: RoverColours) {
+export function drawSojourner(
+  ctx: CanvasRenderingContext2D,
+  project: Project,
+  metre: number,
+  camH: number,
+  p: Pt,
+  heading: number,
+  look: RoverLook,
+  c: RoverColours,
+  size = 1,
+) {
   const fx = Math.sin(heading)
   const fz = Math.cos(heading)
   const sx = Math.cos(heading)
   const sz = -Math.sin(heading)
-  const at = (u: number, v: number): Pt => ({ x: p.x + fx * u + sx * v, y: p.y + fz * u + sz * v })
+  const at = (u: number, v: number): Pt => ({ x: p.x + (fx * u + sx * v) * size, y: p.y + (fz * u + sz * v) * size })
   const big = metre * 0.6 // the rover's length on screen
   const detail = big > 70
   const lw = Math.min(2.6, Math.max(1.5, metre * 0.0065))
@@ -86,7 +99,7 @@ export function drawSojourner(ctx: CanvasRenderingContext2D, project: Project, m
   const hub = WHEELS.map((_, i) => WHEEL_R + (look.ground[i] ?? 0) + (look.lift[i] ?? 0))
   const avg = (...i: number[]) => i.reduce((a, k) => a + hub[k], 0) / i.length
   const base = avg(0, 1, 2, 3, 4, 5) - WHEEL_R
-  const pitch = (avg(0, 3) - avg(2, 5)) / 0.5 + look.dip
+  const pitch = (avg(0, 3) - avg(2, 5)) / 0.57 + look.dip
   const roll = (avg(3, 4, 5) - avg(0, 1, 2)) / 0.4
   const lift = (u: number, v: number, up: number) => up + base + pitch * u + roll * v
   const P = (u: number, v: number, up: number) => project(at(u, v), lift(u, v, up))
@@ -132,8 +145,8 @@ export function drawSojourner(ctx: CanvasRenderingContext2D, project: Project, m
   // The ground shadow, a little wider than the panel
   poly(
     [
-      [0.34, -0.25],
-      [0.34, 0.25],
+      [0.4, -0.25],
+      [0.4, 0.25],
       [-0.32, 0.25],
       [-0.32, -0.25],
     ].map(([u, v]) => project(at(u + 0.02, v + 0.02), 0)),
@@ -201,8 +214,8 @@ export function drawSojourner(ctx: CanvasRenderingContext2D, project: Project, m
   function suspension(sideV: number) {
     const ids = sideV < 0 ? [0, 1, 2] : [3, 4, 5]
     const hubAt = (i: number) => project(at(WHEELS[i].u, WHEELS[i].v), hub[i])
-    const pivot = P(0.07, sideV * 0.15, 0.13)
-    const bogie = P(-0.105, sideV * 0.2, WHEEL_R + 0.06 - base)
+    const pivot = P(0.06, sideV * 0.15, 0.17)
+    const bogie = P(-0.16, sideV * 0.2, WHEEL_R + 0.07 - base)
     beam(hubAt(ids[0]), pivot)
     beam(pivot, bogie)
     beam(bogie, hubAt(ids[1]))
@@ -234,9 +247,9 @@ export function drawSojourner(ctx: CanvasRenderingContext2D, project: Project, m
   // The APXS sensor on its arm at the rear: folded under, or reaching back to touch a rock
   function arm() {
     const e = look.arm
-    const root = P(-BODY.l, 0, 0.14)
-    const elbow = P(-0.26 - 0.06 * e, 0, 0.11 - 0.01 * e)
-    const head = P(-0.29 - 0.17 * e, 0, 0.07 + 0.04 * e)
+    const root = P(-BODY.l, 0, 0.16)
+    const elbow = P(-0.26 - 0.06 * e, 0, 0.13 - 0.01 * e)
+    const head = P(-0.29 - 0.17 * e, 0, 0.08 + 0.05 * e)
     beam(root, elbow)
     beam(elbow, head)
     const r = Math.max(2, metre * 0.022)

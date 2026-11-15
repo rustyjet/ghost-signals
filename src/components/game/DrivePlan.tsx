@@ -56,19 +56,26 @@ function inside(poly: Pt[], p: Pt) {
   return hit
 }
 
-/** Where the real rover parked at Yogi (the days 8 to 10 photo): park inside this ring. */
-const RING = { c: toGround(LENS, { x: 641, y: 259 }), r: 0.32 }
-/** Where the real rover stood in the day 3 photo (the middle of its panel, fitted to the panel's corners in the photo), and which way it
-    faced (0 = away from the camera). */
-const START = { p: toGround(LENS, { x: 432, y: 640 }), heading: (188.5 * Math.PI) / 180 }
+/** Where the real rover stood in the day 3 photo, on the ground under its middle, and which way it faced (0 = away
+    from the camera): fitted to its panel's corners and the wheels you can see, in the photo's own pixels. */
+const START = { p: toGround(LENS, { x: 423.7, y: 615.3 }), heading: (198.2 * Math.PI) / 180 }
+/** The same for the days 8 to 10 photo, at Yogi (fitted to its panel's corners). Park inside this ring; at the end
+    the rover drives to its middle and turns to this heading, so the drawing lands on the real rover as that photo
+    comes up. */
+const REAL_SPOT = toGround(LENS, { x: 655, y: 272 })
+const REAL_HEADING = (-94 * Math.PI) / 180
+const RING = { c: REAL_SPOT, r: 0.32 }
+/** The lander's camera looks steeply down, and the game's ground mapping treats it as level. On the ground that is
+    close enough, but things standing up come out too short near the bottom of the photo and too tall near the top.
+    So the drawn rover's heights are corrected by how far up the photo it stands, fitted to the real rover in both
+    photos: at the start they show at 0.62, at Yogi at 1.6. */
+function cameraFix(row: number) {
+  const e = Math.min(1.2, Math.max(-0.2, (615.3 - row) / (615.3 - 272)))
+  return { tall: 0.62 + (1.6 - 0.62) * e, size: 1 }
+}
 /** The rover's size for bumping into things, and how far apart its wheel tracks are (the drawing is in
     sojournerDraw.ts, sized on the real rover in the day 3 photo, so it sits on it at the start). */
 const ROVER = { r: 0.23, track: 0.2 }
-/** Which way the real rover faces in the days 8 to 10 photo: from the back of its panel to the front, on the
-    ground, and where it stands (inside the ring, fitted to its panel in that photo). At the end it drives there and
-    turns to this, so the drawing lands on the real rover as that photo comes up. */
-const REAL_SPOT = toGround(LENS, { x: 652, y: 250 })
-const REAL_HEADING = headingTo(toGround(LENS, { x: 720, y: 210 }), toGround(LENS, { x: 600, y: 223 }))
 
 const FIRST_DAY = 3
 const REAL_DAY = 6
@@ -622,7 +629,12 @@ export default function DrivePlan() {
         dip: reduced || de >= 1 ? 0 : -0.06 * Math.sin(de * Math.PI) * (1 - de),
       }
       const at = { x: s.pose.p.x + Math.sin(s.pose.heading) * jolt, y: s.pose.p.y + Math.cos(s.pose.heading) * jolt }
-      drawSojourner(ctx!, scr, metre(at), LENS.h, at, s.pose.heading, look, { sun: SUN, bright: BRIGHT, ink: INK })
+      const fix = cameraFix(toPhoto(LENS, at).y)
+      const roverScr = (g: Pt, up = 0) => {
+        const q = scr(g)
+        return { x: q.x, y: q.y - up * metre(g) * fix.tall }
+      }
+      drawSojourner(ctx!, roverScr, metre(at) * fix.size, LENS.h, at, s.pose.heading, look, { sun: SUN, bright: BRIGHT, ink: INK }, fix.size)
       ctx!.globalAlpha = 1
     }
 

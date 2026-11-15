@@ -426,7 +426,7 @@ The rover's outline, the drive, its speed, the rock outlines, how much it slips 
 | Day 7: "Get wheel off Yogi"; "Move 0.35 m, turn right 11.0 deg." (behind "Back me off and try again") | EVT | Checked |
 | Yogi hides ground behind it: "a rock taller than rover Sojourner" (the game forbids stops inside Yogi's outline in the photo) | PIA00639 (Sojourner step 6) | Checked |
 | Days 8 to 10 photo: "rover tracks leading up to the large rock "Yogi." Rover Sojourner is seen using its Alpha Proton X-Ray Spectrometer (APXS) instrument to study Yogi's composition … taken … over sols 8, 9, and 10" → "the real me beside Yogi, with my real tracks" | PIA00751 | Checked |
-| The ring is where the rover stands in PIA00751, found by laying that photo over PIA00660 (same lander camera; aligned by image matching, scale 0.99, no rotation) | PIA00660, PIA00751 | Checked (alignment ours) |
+| The ring is where the rover stands in PIA00751, found by laying that photo over PIA00660 (same lander camera; aligned by image matching, scale 0.99, no rotation); centred on the ground under the rover's middle, fitted to its panel and wheels in that photo | PIA00660, PIA00751 | Checked (alignment and fit ours) |
 | The drawn rover: "a six-wheeled vehicle … mounted on a "rocker-bogie" suspension" | NSSDCA (MESURPR) | Checked |
 | Turning in place with the front and rear wheels angled: "The front and rear wheels are independently steerable, providing the capability for the vehicle to turn in place"; wheels "a wheel diameter (13 cm)" → drawn wheels 13 cm across | RDESC | Checked |
 | The panel's cells: "a 0.22 square meter solar panel comprised of 13 strings of 18, 5.5 mil GaAs cells each" → a grid of 13 by 18 | RDESC | Checked |
