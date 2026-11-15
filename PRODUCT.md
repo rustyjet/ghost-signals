@@ -12,7 +12,7 @@ School-age space enthusiasts, roughly 9 to 14, reading on a phone or a school/ho
 
 ## Product Purpose
 
-Ghost Signals tells the stories of NASA machines left on the Moon and Mars (Opportunity, Ingenuity, the Apollo 11 Eagle descent stage, with short stops for InSight and Sojourner). Each machine tells its own story in the first person while the reader scrolls past its real NASA 3D model. Success: a ten-year-old reads a whole chapter and remembers one true number from it.
+Ghost Signals tells the stories of NASA machines left on the Moon and Mars (Opportunity, Ingenuity, the Apollo 11 Eagle descent stage, InSight and Sojourner). Each machine tells its own story in the first person while the reader scrolls past its real NASA 3D model. Success: a ten-year-old reads a whole chapter and remembers one true number from it.
 
 ## Positioning
 

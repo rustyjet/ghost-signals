@@ -28,7 +28,7 @@ All downloaded 14 Nov 2026 and converted to WebP with ffmpeg. "Step" is the Oppo
 | `last-picture.webp` | Opportunity's Last Message (PIA22929) | NASA/JPL-Caltech/Cornell/ASU | https://science.nasa.gov/photojournal/opportunitys-last-message | The last few rows before the black band are faded into it, so the edge reads softly when the picture fills the screen. Step 10. |
 | `perseverance-valley-wide.webp`, `perseverance-valley-narrow.webp` | Opportunity Legacy Pan (True Color) (PIA22909) | NASA/JPL-Caltech/Cornell/ASU | https://science.nasa.gov/photojournal/opportunity-legacy-pan-true-color | Opportunity's last panorama, sols 5,084–5,111. Cropped from the full TIFF to the valley floor. Ground band under the 3D rover, step 12. |
 
-No NASA 3D model was found for Sojourner; its chapter uses a NASA photo with pins.
+No NASA 3D model was found for Sojourner; its chapter is told with NASA photos only (title and closing screens stand on the lander's own panorama).
 
 `public/draco/` holds the Draco mesh decoder copied from the `three` package (Apache-2.0), so models load without contacting a CDN.
 
@@ -91,3 +91,19 @@ All from Photojournal; full-size files at `https://assets.science.nasa.gov/conte
 | `insight-mole-rest.webp` | The mole comes to rest under the scoop, sol 754 (PIA24263) | NASA/JPL-Caltech | WebP only. |
 | `insight-dusty-panel.webp` | Dusty solar panel, sol 1,211 (PIA25286) | NASA/JPL-Caltech | WebP only. |
 | `insight-sunset.webp` | Sunset, sol 145 (PIA23202) | NASA/JPL-Caltech | WebP only. |
+
+## Sojourner chapter photos (downloaded 15 Nov 2026)
+
+All from Photojournal, credits as Photojournal prints them; full-size files at `https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/piaNN/piaNNNNN/PIANNNNN.jpg` (or `.tif`). No 3D model.
+
+| File | What | Credit | Changes |
+|---|---|---|---|
+| `sojourner-ground-wide.webp`, `sojourner-ground-narrow.webp` | "Improved MPF 360-degree Color Panorama", the Gallery Pan, sols 8–10, with Sojourner at Yogi (PIA01466) | NASA/JPL | Horizon down, as the ground under the title's sky; 4400 px, and a 1400 px crop round the rover for phones. |
+| `sojourner-pano.webp` | The same panorama with its sky (PIA01466) | NASA/JPL | Scaled to 4400 px. |
+| `sojourner-peaks.webp` | "Twin Peaks in Super Resolution – Left Eye" (PIA02405) | NASA/JPL | Scaled to 3200 px. |
+| `sojourner-deployed.webp` | "Newly Deployed Sojourner Rover", sol 2 (PIA01551) | NASA/JPL | Cropped clear of the black mosaic edges. |
+| `sojourner-tracks.webp` | "Sojourner's Success Image", the rover's own camera looking back at the lander (PIA00664) | NASA/JPL | WebP only. |
+| `sojourner-yogi.webp` | "Sojourner Within Color-Enhanced Panorama" (PIA01003) | NASA/JPL | WebP only; NASA enhanced the colours, and the picture's name says so. |
+| `sojourner-blue-sky.webp` | "True Color of Mars – Pathfinder Sol 24" (PIA01547) | NASA/JPL | Axis numbers along the bottom edge cropped off. |
+| `sojourner-mermaid.webp` | "Mosaic of Mermaid Dune", sol 30 (PIA01549) | NASA/JPL | WebP only. |
+| `sojourner-orbit.webp` | "Mars Pathfinder Landing Site and Surroundings", HiRISE, 21 Dec 2006 (PIA09105, unannotated) | NASA/JPL/Univ. of Arizona/USGS | 2400 px square cut from the 4000 px frame, round the lander. |

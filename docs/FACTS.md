@@ -326,4 +326,49 @@ Read by a research agent on 15 Nov 2026, directly on the nasa.gov / science.nasa
 | 10 | Before/after: PIA23180 (sol 145, Apr 2019) and PIA25680 ("one of the last images … Dec. 11, 2022, the 1,436th Martian day") share the same camera framing | PIA23180, PIA25680 captions | Checked (framing compared by eye) |
 | 11 | "detected 1,319 marsquakes"; "The last time InSight communicated with Earth was Dec. 15."; "will continue to listen for a signal from the lander, just in case" | INSEND | Checked |
 
-Traps: NASA pages give four different core sizes and two crust thicknesses, so the app gives neither. InSight's "final tweet" is on no NASA page: never quote it. The seismometer was "the last science instrument that remained powered on"; the app does not claim it was still listening at the end.
+Traps (InSight): NASA pages give four different core sizes and two crust thicknesses, so the app gives neither. InSight's "final tweet" is on no NASA page: never quote it. The seismometer was "the last science instrument that remained powered on"; the app does not claim it was still listening at the end.
+
+### Sojourner (15 Nov 2026)
+
+Read by a research agent on 15 Nov 2026, directly on the NASA / NSSDCA pages (jpl.nasa.gov and mars.nasa.gov refuse automated requests, so nothing below depends on them). The counter is the sol, landing day being sol 1 ("before sunset on July 4 (Sol 1)", PIA00619).
+
+- **PATH** = see the home page sources above (NASA Science, Mars Pathfinder mission page)
+- **NSL** = NSSDCA, Mars Pathfinder — https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1996-068A
+- **NSR** = NSSDCA, Mars Pathfinder Rover — https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=MESURPR
+- **NSSCI** = NSSDCA, "Mars Pathfinder Preliminary Results" — https://nssdc.gsfc.nasa.gov/planetary/marspath_results.html
+- **PR0808** = NASA release 97-174, 8 Aug 1997 (NSSDCA copy) — https://nssdc.gsfc.nasa.gov/planetary/text/marspath_review.txt
+- **PR1104** = NASA release 97-255, "Mars Pathfinder Winds Down After Phenomenal Mission", 4 Nov 1997 (NSSDCA copy) — https://nssdc.gsfc.nasa.gov/planetary/text/marspath_pr_971104.txt
+- **HIST25** = NASA History, "25 Years Ago: Mars Pathfinder Launches to Mars to Deploy Sojourner, the First Planetary Rover" — https://www.nasa.gov/history/25-years-ago-mars-pathfinder-launches-to-mars-to-deploy-sojourner-the-first-planetary-rover-2/
+- **POD** = NASA/JPL "On a Mission" podcast, "First Steps: Sojourner" (transcript) — https://www.nasa.gov/podcasts/on-a-mission/first-steps-sojourner-s4e2/
+- **ROBO** = JPL Robotics, Mars Pathfinder — https://www-robotics.jpl.nasa.gov/what-we-do/flight-projects/pathfinder/
+- **PIAxxxxx** = that image's Photojournal caption
+
+| Step | Claim | Source | Checked |
+|------|-------|--------|---------|
+| Title | Rover planned for a week, lasted 83 days ("spent 83 days of a planned seven-day mission"; "the rover for one week") | PIA01122, HIST25 | Checked |
+| Title | Place: Ares Vallis ("Landing Site: Ares Vallis, Mars") | PATH | Checked |
+| Title, 11 | The panorama shows the rover at Yogi: "Just beyond Barnacle Bill, rover tracks lead to Sojourner, shown using its Alpha Proton X-Ray Spectrometer (APXS) instrument to study the large rock "Yogi."" (sols 8–10) | PIA01466 | Checked |
+| Counter | Values shown: 1, 2, 3, 6, 7, 24, 30, 83 (each from its row below) | rows below | Checked |
+| 1 | Landed 4 July 1997 in Ares Vallis, "known as among the rockiest parts of the planet" | PATH | Checked |
+| 1 | Bounced "at least 15 times" (other NASA pages say "about 15" or "about 16": the app says "at least 15") | HIST25, NSL | Checked |
+| 2 | "On the night of July 5, late in the second Martian day, or sol 2, Sojourner stood up to its full height of 1 foot (30 centimeters) and rolled down the lander's rear ramp" | PATH | Checked |
+| 2 | "We can report visually six wheels on soil." (mission control audio, speaker not named; the app names no one) | POD | Checked (real quote) |
+| 2 | Photo: "shows the newly deployed rover sitting on the Martian surface", sol 2 | PIA01551 | Checked |
+| 3 | Named "after Sojourner Truth, an African-American reformist of the Civil War era, inspired by the winning essay submitted by 12-year-old Valerie Ambrose … to a naming contest" (the app leaves out her name: NASA spells it two ways) | HIST25 | Checked |
+| 3 | ""Sojourner" means a traveler who depends on the goodwill of others." | POD | Checked |
+| 4 | "the time delay was between 10 and 15 minutes … requiring some autonomous control, provided by a hazard avoidance system"; driven by "an Earth-based operator who used images obtained by both the rover and lander" | NSR | Checked |
+| 4 | Top speed "0.39 inch per second" = 0.99 cm/s, shown as 1 cm a second | HIST25 | Checked (conversion ours) |
+| 5 | "Sojourner's first analysis of a rock on Mars began on Sol 3 with the study of Barnacle Bill"; "A full study using the APXS takes approximately ten hours"; APXS "Determined the elemental composition of rocks and soils" | PIA00634, PATH | Checked |
+| 6 | "Controllers nicknamed notable rocks after cartoon characters, such as Barnacle Bill, Yogi, and Scooby Doo." | HIST25 | Checked |
+| 6 | Yogi "a meter-size rock"; "a rock taller than rover Sojourner"; sol 6: "The rover's left rear wheel has driven up onto the Yogi's surface" | PIA01430, PIA00639, PIA00670 | Checked |
+| 7 | "The primary objectives were scheduled for the first seven sols, all within about 10 meters of the lander." It went on to day 83 | NSR, PR1104 | Checked |
+| 8 | "the lander completed 8.5 million measurements of Martian weather" | HIST25 | Checked |
+| 8 | Sol 24: "The twin peaks can be seen on the horizon. The sky near the sun is a pale blue color."; "The blue color near the Sun is not caused by clouds of water ice, but by the martian dust itself." NASA titles the photo "4 PM", so the app gives no time of day | PIA01547, PIA00917 | Checked |
+| 9 | "The lander was expected to operate for one month"; "completed its milestone 30-day mission on Aug. 3"; "After 30 days, the rover is still healthy and has traveled 171 feet" (= 52 m) | HIST25, PR0808 | Checked (conversion ours) |
+| 9 | "Sojourner Rover atop the "Mermaid Dune" on Sol 30" | PIA01549 | Checked |
+| 10 | "The last successful data transmission cycle from Pathfinder was completed at 3:23 a.m. Pacific Daylight Time on Sept. 27, which was Sol 83"; "All rover communications were done through the lander." | PR1104, NSR | Checked |
+| 11 | "the rover is probably circling the vicinity of the lander, attempting to communicate with it" (kept as "probably") | PR1104 | Checked |
+| 11 | "traveled a total distance of 330 feet, never venturing more than 39 feet from the Pathfinder lander" (= 100 m and 12 m) | HIST25 | Checked (conversion ours) |
+| 12 | HiRISE "took an image on Dec. 21, 2006"; "one can discern the ramps, science deck, and portions of the airbags"; "Sojourner?" "tentatively identified" (kept as "may be me"). Nine years: July 1997 to December 2006 | PIA09105 | Checked (arithmetic ours) |
+
+Traps (Sojourner): it was the first rover on Mars, not the first wheeled vehicle on another world (Lunokhod 1, Moon, 1970). Mass is 10.5 kg (NSSDCA) or 10.6 kg (PATH), height 28 or 30 cm, bounce height 12 or 15 m: the app uses only the 30 cm that PATH gives with the ramp moment. The ramp date is 5 July in Pacific time and 6 July in UT, so the app says "day 2". NASA never confirmed Sojourner was found from orbit.

@@ -77,7 +77,7 @@ const gamePictures: Partial<Record<NonNullable<ChapterData['interaction']>, { wh
 /** Every page and picture the chapter used. Picture credits live here, not under the pictures. */
 function Sources({ chapter }: { chapter: ChapterData }) {
   const pictures = [
-    { what: `3D model of ${chapter.name}`, credit: chapter.model.credit },
+    ...(chapter.model ? [{ what: `3D model of ${chapter.name}`, credit: chapter.model.credit }] : []),
     ...sceneImages([chapter.title.scene, ...chapter.steps.map((s) => s.scene)]).map((i) => ({ what: i.name, credit: i.credit })),
     ...((chapter.interaction && gamePictures[chapter.interaction]) || []),
   ]

@@ -11,8 +11,9 @@ A scroll-driven web story for ages ~9–14. Scrolling is travelling: the start p
 1. Opportunity — scroll scene + "Last Light" dust-storm game: drive the 3D rover to rocks while the storm comes in (three.js; photo version as fallback)
 2. Apollo 11 descent stage + laser retroreflector — laser-ranging toy
 3. Ingenuity — rotor lift toy (Earth air vs. Mars air)
-4. InSight, Sojourner — short stops on the journey, no full chapter
-5. Pioneer 10 — only if time remains
+4. InSight — the seismometer, the stuck mole, the dust (story chapter, no toy yet)
+5. Sojourner — the first rover on Mars (story chapter on photos only: NASA has no 3D model of it)
+6. Pioneer 10 — only if time remains
 
 ## Rules that must not be broken
 

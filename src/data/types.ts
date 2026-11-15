@@ -54,6 +54,8 @@ export type Scene =
   /**
    * The 3D model standing on a real panorama under the world's sky. `hideAbove` hides every part of the
    * model whose centre is higher than that many metres (Eagle without its ascent stage, after it left).
+   * A chapter with no model (NASA has none of Sojourner) gets the sky and the panorama alone; the camera
+   * swing still slides the ground.
    */
   | { kind: 'rover'; ground: SceneImage; from: Camera; to: Camera; hideAbove?: number }
   /** A photo filling the screen, travelling across it. `narrow` replaces from/to under 1024 px. */
@@ -106,7 +108,8 @@ export interface Chapter {
   spine: { before: string; after: string; /** Replaces `after` once the machine is silent. */ silentAfter?: string }
   /** The title screen's scene and sky. */
   title: { scene: Scene; storm: number }
-  model: Model
+  /** The NASA 3D model. Left out only when NASA has none; then the real photos carry the whole chapter. */
+  model?: Model
   steps: Step[]
   interaction?: InteractionId
   /** What the machine leaves behind, after the story and the game. Facts follow the same rules. */

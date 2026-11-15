@@ -290,7 +290,7 @@ function CoverPhoto({ image }: { image: SceneImage }) {
 function Layer({ scene, shots, model, modelRef, title, loaded }: {
   scene: Scene
   shots: Shot[]
-  model: Model
+  model?: Model
   modelRef: React.RefObject<ModelViewerElement | null>
   title: string
   loaded: boolean
@@ -360,22 +360,24 @@ function Layer({ scene, shots, model, modelRef, title, loaded }: {
         </span>
       </div>
 
-      <model-viewer
-        ref={modelRef}
-        src={model.src}
-        alt={model.alt}
-        camera-orbit={shots[0].scene.kind === 'rover' ? shots[0].scene.from.orbit : undefined}
-        interpolation-decay="45"
-        disable-zoom=""
-        shadow-intensity="1.1"
-        shadow-softness="0.9"
-        exposure="1.05"
-        tone-mapping="neutral"
-        environment-image="neutral"
-        style={{ position: 'absolute', background: 'transparent', pointerEvents: 'none' }}
-        class={`inset-x-0 bottom-[38%] top-[14%] h-auto w-full transition-opacity duration-500 lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[62%] lg:data-[aside=true]:w-[36%] ${loaded ? 'opacity-100' : 'opacity-0'}`}
-      />
-      {!loaded && <p className="absolute bottom-[34%] right-5 text-sm text-on-sky lg:bottom-[12%] lg:right-10">Receiving {title}&hellip;</p>}
+      {model && (
+        <model-viewer
+          ref={modelRef}
+          src={model.src}
+          alt={model.alt}
+          camera-orbit={shots[0].scene.kind === 'rover' ? shots[0].scene.from.orbit : undefined}
+          interpolation-decay="45"
+          disable-zoom=""
+          shadow-intensity="1.1"
+          shadow-softness="0.9"
+          exposure="1.05"
+          tone-mapping="neutral"
+          environment-image="neutral"
+          style={{ position: 'absolute', background: 'transparent', pointerEvents: 'none' }}
+          class={`inset-x-0 bottom-[38%] top-[14%] h-auto w-full transition-opacity duration-500 lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[62%] lg:data-[aside=true]:w-[36%] ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        />
+      )}
+      {model && !loaded && <p className="absolute bottom-[34%] right-5 text-sm text-on-sky lg:bottom-[12%] lg:right-10">Receiving {title}&hellip;</p>}
     </div>
   )
 }
@@ -383,7 +385,7 @@ function Layer({ scene, shots, model, modelRef, title, loaded }: {
 /** The full-screen picture behind the words. Holds one layer per scene; the controller decides which show. */
 export default function Backdrop(props: {
   shots: Shot[]
-  model: Model
+  model?: Model
   modelRef: React.RefObject<ModelViewerElement | null>
   stormRef: React.RefObject<number>
   title: string
@@ -392,7 +394,8 @@ export default function Backdrop(props: {
   world: World
 }) {
   const { shots, stormRef, rootRef } = props
-  useEffect(() => void loadModelViewer(), [])
+  const hasModel = !!props.model
+  useEffect(() => void (hasModel && loadModelViewer()), [hasModel])
   const seen = new Set<string>()
   const layers = shots.filter((s) => {
     const k = sceneKey(s.scene)

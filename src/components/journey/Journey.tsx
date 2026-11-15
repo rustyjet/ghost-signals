@@ -405,7 +405,7 @@ export default function Journey() {
                       </p>
                     </div>
                   )}
-                  {/* Short stops (InSight, Sojourner) have no chapter, so no button and no promise of one */}
+                  {/* A stop without a chapter gets no button and no promise of one */}
                   {chapter && (
                     <div data-fade="" className="mt-6">
                       <div data-rise="">

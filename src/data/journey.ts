@@ -223,6 +223,7 @@ export const stops: Stop[] = [
     km: 225000000,
     machine: {
       name: 'Sojourner',
+      slug: 'sojourner',
       photo: {
         src: P + 'sojourner.webp',
         w: 1276,

@@ -42,7 +42,7 @@ The Moon: a chapter page with `data-world="moon"` swaps the tokens: black sky to
 - Scrolling moves between stops: Earth shrinks behind, the Moon grows and passes, Mars grows. At each machine its NASA photo fills the screen. The corner counter is the distance from Earth, travelling on a log scale so it races after the Moon.
 - Photos with black mosaic gaps (InSight) are shown whole on black instead of filling the screen. Each photo can have its own phone crop (`narrowFocus`) to keep mosaic holes off screen.
 - Words are centred. Stops in space (the Moon, Mars, the distances) are read in the middle on wide screens, beside the globes, over a soft oval of dark; on wide screens the title sits above Earth rising from the bottom edge, and the Moon and Mars pass to the right of the words. A machine's photo is mostly machine, so its words are read low on every screen, over a dark band along the bottom, and fade before the middle: the machine stands above them. Phones read every stop low.
-- Short stops (InSight, Sojourner) have no chapter, so they carry no button and no promise of one.
+- A stop whose machine has no chapter carries no button and no promise of one. Every machine has one now.
 - The trip ends with the last photo sinking into black, then a footer listing where every number and picture comes from. The sticky photo layer is clipped to the journey section so it never covers the footer.
 
 ## The Last Light game
