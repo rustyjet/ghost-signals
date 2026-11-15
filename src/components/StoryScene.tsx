@@ -345,12 +345,12 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
                 <h2
                   data-heading=""
                   data-fade=""
-                  className="mt-4 text-balance text-[clamp(1.6rem,6.6vw,2.2rem)] leading-[1.08] md:text-[2.8rem] lg:mt-7 lg:text-[clamp(2rem,2.9vw,3.2rem)] [&>div]:-mb-[0.12em] [&>div]:pb-[0.12em]"
+                  className={`${wordsShade} mt-4 text-balance text-[clamp(1.6rem,6.6vw,2.2rem)] leading-[1.08] md:text-[2.8rem] lg:mt-7 lg:text-[clamp(2rem,2.9vw,3.2rem)] [&>div]:-mb-[0.12em] [&>div]:pb-[0.12em]`}
                 >
                   {s.heading}
                 </h2>
                 {/* Entrance and exit animate different elements, so the two fades never fight over one opacity */}
-                <div data-fade="">
+                <div data-fade="" className={wordsShade}>
                   <p data-body="" className="mx-auto mt-3 max-w-[36ch] text-base leading-snug text-sun/90 md:text-xl md:leading-relaxed lg:mt-4">
                     {s.body}
                   </p>
@@ -380,10 +380,18 @@ function SceneDescription({ scene }: { scene: Chapter['steps'][number]['scene'] 
   return <p className="sr-only">Picture: {alt}</p>
 }
 
+/**
+ * Phones: a soft band of the page's dark behind one part of the words. The words cross the picture on their
+ * way up and a text shadow alone is not enough over a pale picture (sky, sand). It sits on each fading part,
+ * not on the whole block, so it fades with that part and never stays behind once the words have gone.
+ */
+const wordsShade =
+  'relative isolate before:pointer-events-none before:absolute before:-inset-x-12 before:-inset-y-10 before:-z-10 before:bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--color-basalt)_68%,transparent)_0%,color-mix(in_srgb,var(--color-basalt)_68%,transparent)_55%,transparent_100%)] lg:before:hidden'
+
 function FigureView({ figure }: { figure: Figure }) {
   const d = figure.decimals ?? 0
   return (
-    <div data-fade="">
+    <div data-fade="" className={wordsShade}>
     <div data-figure="">
       <p
         aria-label={`${fmt(figure.value, d, figure.plain)}${figure.unit ? ` ${figure.unit}` : ''}`}
