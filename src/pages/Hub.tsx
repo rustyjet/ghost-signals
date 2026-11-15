@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import Journey, { journeyPictures } from '../components/journey/Journey'
 import { journeySources } from '../data/journey'
+import { team } from '../data/team'
 
 /** The start page: a trip out from Earth to the machines, then where its numbers and pictures come from. */
 export default function Hub() {
@@ -40,6 +41,20 @@ export default function Hub() {
               ))}
             </ul>
           </div>
+        </div>
+        <div className="mx-auto mt-12 max-w-5xl">
+          <h2 className="font-display text-2xl text-sun">Who made this</h2>
+          <p className="mt-4 max-w-[60ch] text-base">
+            {team.name} made Ghost Signals for the {team.event}.
+          </p>
+          <ul className="mt-3 space-y-1 text-base">
+            {team.members.map((m) => (
+              <li key={m.name}>
+                {m.name}
+                {m.role && <span className="text-sun/60">, {m.role}</span>}
+              </li>
+            ))}
+          </ul>
         </div>
       </footer>
     </main>

@@ -1,6 +1,6 @@
 # Ghost Signals — NASA Space Apps 2026
 
-Entry for the challenge *Abandoned but not Forgotten: Storytelling about NASA's Discarded Equipment on the Moon and Mars*. Solo build over the hackathon weekend (14–15 Nov 2026).
+Entry for the challenge *Abandoned but not Forgotten: Storytelling about NASA's Discarded Equipment on the Moon and Mars*. Built by team Hack Tuah (five members, led by Juni; names in `src/data/team.ts` and `docs/SUBMISSION.md`) over the hackathon weekend (14–15 Nov 2026).
 
 ## What it is
 

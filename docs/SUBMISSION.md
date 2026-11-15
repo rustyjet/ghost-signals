@@ -2,6 +2,18 @@
 
 Draft text for the NASA Space Apps 2026 project page. The submission fields and judging criteria were not confirmed when this was written; check the team dashboard guides and move each part into the field it belongs to. Items in [square brackets] are for the team to fill in.
 
+## Team
+
+Hack Tuah
+
+- Muhammad Juni Damia bin Jihad (team lead)
+- Muhammad Akmal Harith bin Mohd Isa
+- Aqilah binti Mohd Yani
+- Syazwin Al-Afiqah binti Mohamad Sawal
+- Nur Waffiah binti Khairul Tajudin
+
+As registered (capitals): MUHAMMAD JUNI DAMIA BIN JIHAD, MUHAMMAD AKMAL HARITH BIN MOHD ISA, AQILAH BINTI MOHD YANI, SYAZWIN AL-AFIQAH BINTI MOHAMAD SAWAL, NUR WAFFIAH BINTI KHAIRUL TAJUDIN.
+
 ## Challenge
 
 Abandoned but not Forgotten: Storytelling about NASA's Discarded Equipment on the Moon and Mars.

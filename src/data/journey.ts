@@ -16,6 +16,9 @@ export interface GlobeImage {
   alt: string
   credit: string
   name: string
+  /** The planet's disc inside the photo, as a CSS clip-path: the black around it is cut away, so a globe in
+      front hides the one behind it instead of letting it show through. Fitted to the photo's edge. */
+  disc: string
 }
 
 export interface MachinePhoto {
@@ -74,18 +77,21 @@ export const globes: Record<Globe, GlobeImage> = {
     alt: 'The whole Earth seen from space: blue ocean, white clouds and brown land on black.',
     credit: 'NASA, photographed by the Apollo 17 crew (AS17-148-22727)',
     name: 'Earth, December 1972',
+    disc: 'circle(48.9% at 51.92% 49.98%)',
   },
   moon: {
     src: P + 'moon.webp',
     alt: 'The whole Moon, grey with dark patches, on black.',
     credit: 'NASA, photographed by the Apollo 11 crew on the way home (AS11-44-6667)',
     name: 'The Moon, July 1969',
+    disc: 'circle(47.4% at 50.24% 48.32%)',
   },
   mars: {
     src: P + 'mars.webp',
     alt: 'The whole of Mars, rusty orange, on black.',
     credit: 'NASA/JPL/USGS, Viking orbiter mosaic (PIA00407)',
     name: 'Mars',
+    disc: 'circle(46.9% at 49.97% 49.97%)',
   },
 }
 
@@ -104,8 +110,8 @@ export const stops: Stop[] = [
     id: 'leaving',
     km: 60000,
     body: 'Every machine in this story left from here.',
-    globes: { earth: { x: 0.22, y: 0.12, s: 0.42, o: 1 }, moon: { x: 0.1, y: -0.05, s: 0.06, o: 0.9 }, mars: gone },
-    narrow: { earth: { x: 0.05, y: -0.1, s: 0.42, o: 1 }, moon: { x: -0.05, y: -0.26, s: 0.06, o: 0.9 } },
+    globes: { earth: { x: 0.22, y: 0.12, s: 0.42, o: 1 }, moon: { x: 0.1, y: -0.05, s: 0.06, o: 1 }, mars: gone },
+    narrow: { earth: { x: 0.05, y: -0.1, s: 0.42, o: 1 }, moon: { x: -0.05, y: -0.26, s: 0.06, o: 1 } },
   },
   {
     id: 'moon',

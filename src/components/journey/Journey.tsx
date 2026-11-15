@@ -87,8 +87,10 @@ export default function Journey() {
       const blocks = gsap.utils.toArray<HTMLElement>('[data-stop]', root)
       const ovalEl = root.querySelector<HTMLElement>('[data-oval]')
       const lowEl = root.querySelector<HTMLElement>('[data-lowshade]')
+      const phoneEl = root.querySelector<HTMLElement>('[data-phoneshade]')
 
       let centres: number[] = []
+      let wordsGone: number[] = []
       const measure = () => {
         const y = window.scrollY
         const vh = window.innerHeight
@@ -99,6 +101,13 @@ export default function Journey() {
             return r.top + y + r.height / 2 - focusLine(b.hasAttribute('data-low')) * vh
           }),
         ]
+        // Phones: where a machine's last words have faded (their top at 36%, as fadeAll), so the photo is held
+        // to there and the trip moves on only after. Opacity never moves layout, so this is safe to measure faded.
+        wordsGone = centres.map((_, i) => {
+          const last = [...(blocks[i - 1]?.querySelectorAll<HTMLElement>('[data-low] [data-fade]') ?? [])].pop()
+          // ...plus a tenth of a screen with the whole machine and nothing on it
+          return last ? last.getBoundingClientRect().top + y - 0.36 * vh + 0.1 * vh : -1
+        })
       }
 
       let lastKm = ''
@@ -109,12 +118,28 @@ export default function Journey() {
         while (i < centres.length - 2 && y >= centres[i + 1]) i++
         const span = centres[i + 1] - centres[i]
         const raw = span > 0 ? clamp01((y - centres[i]) / span) : y >= centres[i + 1] ? 1 : 0
-        const t = reduced ? Math.round(raw) : hold(raw)
+        // Phones leaving a machine: hold its photo until the words are gone, then travel in what is left.
+        const gone = isNarrow() && span > 0 && wordsGone[i] > 0 ? clamp01((wordsGone[i] - centres[i]) / span) : 0
+        const t = reduced ? Math.round(raw) : gone > 0.15 ? hold(0.15 + ((raw - gone) / (1 - gone)) * 0.85) : hold(raw)
         const a = stops[i]
         const b = stops[Math.min(i + 1, stops.length - 1)]
         const set = isNarrow() ? poses.narrow : poses.wide
         const vw = window.innerWidth
         const vh = window.innerHeight
+
+        // Leaving a machine stop: its words fade before the middle (fadeAll below), and the dark under them lifts
+        // with them, so the words step aside for the whole photo. Follows the fade's own scrubbed opacity.
+        // Past the last stop there is no next one: the stop being left is b itself.
+        const last = y >= centres[centres.length - 1]
+        const leaving = last ? b : a
+        let lift = 0
+        const fades = leaving.machine ? blocks[(last ? i + 1 : i) - 1]?.querySelectorAll<HTMLElement>('[data-fade]') : undefined
+        if (fades?.length) {
+          let shown = 0
+          fades.forEach((f) => (shown += f.style.opacity === '' ? 1 : Number(f.style.opacity)))
+          // Comes back only for a next machine's words; on the way to space the photo just goes.
+          lift = (1 - shown / fades.length) * (!last && b.machine ? 1 - t : 1)
+        }
 
         GLOBES.forEach((g, k) => {
           const p = set[i][g]
@@ -138,7 +163,9 @@ export default function Journey() {
         })
         // Wide screens: the dark sits behind the words, in the middle over space and along the bottom over a photo.
         if (ovalEl) ovalEl.style.opacity = String(1 - photo)
-        if (lowEl) lowEl.style.opacity = String(photo)
+        if (lowEl) lowEl.style.opacity = String(photo * (1 - lift))
+        // Phones keep their dark low on every stop; it lifts off a machine's photo and is back for the next words.
+        if (phoneEl) phoneEl.style.opacity = String(1 - lift * photo)
 
         // Distance travels on a log scale, so the numbers race once the Moon is behind.
         const la = Math.log10(a.km + 1)
@@ -220,15 +247,19 @@ export default function Journey() {
       // Words fade before they get high on the screen: on phones before the middle, where the globe is.
       const mm = gsap.matchMedia()
       // Machine stops (read low) fade before the middle on every screen, so the machine above is never covered.
-      const fadeAll = (selector: string, start: string, end: string) =>
+      const fadeAll = (selector: string, start: string, end: string, onUpdate?: () => void) =>
         gsap.utils.toArray<HTMLElement>(selector, root).forEach((el) =>
-          gsap.to(el, { opacity: 0, ease: 'none', scrollTrigger: { trigger: el, start, end, scrub: true } }),
+          gsap.to(el, { opacity: 0, ease: 'none', onUpdate, scrollTrigger: { trigger: el, start, end, scrub: true } }),
         )
       mm.add('(min-width: 1024px)', () => {
         fadeAll('[data-stop]:not([data-low]) [data-fade]', 'top 24%', 'top 8%')
-        fadeAll('[data-stop][data-low] [data-fade]', 'top 50%', 'top 36%')
+        // The dark under a machine's words follows their fade (apply reads it), so re-apply once it has moved.
+        fadeAll('[data-stop][data-low] [data-fade]', 'top 50%', 'top 36%', apply)
       })
-      mm.add('(max-width: 1023px)', () => fadeAll('[data-fade]', 'top 50%', 'top 36%'))
+      mm.add('(max-width: 1023px)', () => {
+        fadeAll('[data-stop]:not([data-low]) [data-fade]', 'top 50%', 'top 36%')
+        fadeAll('[data-stop][data-low] [data-fade]', 'top 50%', 'top 36%', apply)
+      })
 
       if (import.meta.env.DEV) {
         ;(window as unknown as { __step?: (i: number) => void }).__step = (i: number) =>
@@ -263,8 +294,8 @@ export default function Journey() {
             data-globe={g}
             src={globes[g].src}
             alt=""
-            className="absolute left-1/2 top-1/2 aspect-square w-[min(92vw,92svh)] object-contain mix-blend-lighten will-change-transform"
-            style={{ opacity: 0, visibility: 'hidden' }}
+            className="absolute left-1/2 top-1/2 aspect-square w-[min(92vw,92svh)] object-contain will-change-transform"
+            style={{ opacity: 0, visibility: 'hidden', clipPath: globes[g].disc }}
           />
         ))}
         {machines.map((m) => {
@@ -307,7 +338,10 @@ export default function Journey() {
           <div data-oval="" className="absolute inset-0 bg-[radial-gradient(ellipse_44%_90%_at_50%_50%,rgb(0_0_0/0.82)_0%,rgb(0_0_0/0.7)_45%,rgb(0_0_0/0.3)_75%,transparent_100%)]" />
           <div data-lowshade="" className="absolute inset-x-0 bottom-0 h-[55%] bg-[linear-gradient(to_bottom,transparent_0%,rgb(0_0_0/0.7)_40%,rgb(0_0_0/0.88)_100%)]" style={{ opacity: 0 }} />
         </div>
-        <div data-scrim="" className="absolute inset-x-0 bottom-0 h-[60%] bg-[linear-gradient(to_bottom,transparent_0%,rgb(0_0_0/0.75)_35%,rgb(0_0_0/0.92)_100%)] lg:hidden" />
+        {/* Outer: the title's scroll brings it in. Inner: lifts when a machine's words have gone. */}
+        <div data-scrim="" className="absolute inset-x-0 bottom-0 h-[60%] lg:hidden">
+          <div data-phoneshade="" className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgb(0_0_0/0.75)_35%,rgb(0_0_0/0.92)_100%)]" />
+        </div>
         <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/60 to-transparent" />
         <p
           ref={kmRef}
@@ -332,7 +366,8 @@ export default function Journey() {
         {stops.slice(1).map((s) => {
           const chapter = s.machine?.slug ? getChapter(s.machine.slug) : undefined
           return (
-            <article key={s.id} className="flex min-h-[80svh] items-start justify-center px-5 md:px-10 lg:min-h-[100svh] lg:items-center">
+            // Phones: a machine stop is longer, as its photo is held until its words have gone (see `gone`)
+            <article key={s.id} className={`flex items-start justify-center px-5 md:px-10 lg:min-h-[100svh] lg:items-center ${s.machine ? 'min-h-[110svh]' : 'min-h-[80svh]'}`}>
               <div data-stop="" data-low={s.machine ? '' : undefined} className="w-full max-w-[34rem] text-center text-sun lg:w-[min(36rem,42vw)]">
                 <div data-words="">
                   {s.figure && (
