@@ -12,14 +12,17 @@
     <!-- Icons: NASA's Apollo 11 photo of the Moon (AS11-44-6667), the same picture the start page uses -->
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-    <!-- Share preview. og:image needs an absolute URL, so add it once the site has its address. -->
+    <!-- Share preview. The picture is the start page's NASA photo of Eagle (credited there and in docs/CREDITS.md). -->
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://rustyjet.github.io/ghost-signals/" />
     <meta property="og:title" content="Ghost Signals" />
     <meta
       property="og:description"
-      content="The stories of the machines NASA left on the Moon and Mars, told by the machines themselves."
+      content="The stories of the machines NASA left on the Moon and Mars, told by the machines themselves, with five games built on real NASA numbers."
     />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content="https://rustyjet.github.io/ghost-signals/photos/eagle.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://rustyjet.github.io/ghost-signals/photos/eagle.webp" />
     <script>
       // Load the 3D mesh decoder from this site instead of Google's CDN, so the demo works offline.
       self.ModelViewerElement = self.ModelViewerElement || {}

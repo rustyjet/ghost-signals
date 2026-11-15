@@ -439,6 +439,28 @@ The rover's outline, the drive, its speed, the rock outlines, how much it slips 
 Traps (drive game): the top speed differs between sources (NSSDCA/NASA History "0.39 inch per second", about 1 cm/s; ICES "about 0.7 cm/sec"; OPS "~0.4 meter/minute"); the game shows no speed. ICES says "over 500 images" from the rover, the PDS mission page "over 600": the game uses neither.
 
 
+### Learning lines and the list of games (16 Nov 2026)
+
+Each chapter now says what you will find out (`learn`, on its title screen and in the list of games at `#/play`), every chapter has a closing, and each game in the list shows one real sentence with its source. No new source was read: every line restates a row already checked above.
+
+| Where | Claim | Rows it rests on | Checked |
+|-------|-------|------------------|---------|
+| Eagle learn | A laser and the mirrors left on the Moon measure how far away it is | Find the mirrors (2.5 s, 385,000 km), Eagle 8 (lasers showed the Moon drifting away) | Checked |
+| Eagle game fact | Laser light takes about 2.5 seconds to reach the mirrors and come back | Find the mirrors (BEAMS) | Checked |
+| Eagle closing | The mirrors need no power; scientists still fire lasers at them; the time the light takes gives the distance | Eagle 4 and 10 (GIVING), Eagle 7 (BEAMS, GIVING), Find the mirrors | Checked |
+| Laser game, first find | "Light came back after 2.5 seconds, so the Moon is about 385,000 km away" now shows on the first mirror found at any site; Apollo 15 left 300 mirrors, Apollo 14 left 100 | Find the mirrors | Checked |
+| Laser game, Apollo 11 found later | "These are Eagle's mirrors: 100 of them, set down by Buzz" | Eagle 4 (GIVING; the step says Buzz set them down) | Checked |
+| Laser game, all found | "Scientists still fire lasers at these mirrors" | Eagle 7 ("continues to return fresh data to this day", GIVING); Find the mirrors ("five reflecting panels", BEAMS) | Checked |
+| Opportunity learn | A dust storm is dangerous for a rover that runs on sunlight | Last Light game, loss ending (panels could not recharge the batteries) | Checked |
+| Opportunity game fact | June 2018 storm covered all of Mars; last signal reached Earth on 10 June 2018 | Last Light game, loss ending (MP, END, NSSDCA) | Checked |
+| Ingenuity learn | It spins its blades fast to fly in the thin air of Mars | Ingenuity 2 and 3 (QF, SIX), Lift off (LIFT) | Checked |
+| Ingenuity game fact and closing | Mars air about 1% as dense as Earth's; blades around 2,400 times a minute (rpm); 72 flights | Ingenuity 2, 3, 9 (QF, SIX, IMP) | Checked |
+| InSight learn | A seismometer hears marsquakes, and the wind has to be kept off it | Listen for marsquakes (QUAKE1, WTS) | Checked |
+| InSight game fact | 1,319 marsquakes; last spoke to Earth in December 2022 (15 Dec) | InSight 11 (INSEND) | Checked |
+| InSight closing | Mars is so quiet that faint rumbles show; 1,319 marsquakes; the centre of Mars is molten | Listen for marsquakes (QUAKE1), InSight 8 (INTERIOR), InSight 11 (INSEND) | Checked |
+| Sojourner learn | A rover on Mars has to drive itself instead of being steered from Earth | Plan my drive (NSR, OPS) | Checked |
+| Sojourner game fact and closing | Commands took 10 to 15 minutes, so no one could steer it live; each day's drive was planned on the lander's photos | Sojourner 4 (NSR), Plan my drive (NSR, ICES) | Checked |
+
 ### Story sounds (16 Nov 2026)
 
 Four steps have a "Hear it" button that plays a real NASA recording, off until pressed. Each caption says who recorded it and what NASA changed. Clips are trimmed and made mono (docs/CREDITS.md). Pages read directly on 16 Nov 2026, except where noted.

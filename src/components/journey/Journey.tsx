@@ -358,9 +358,26 @@ export default function Journey() {
             <h1 data-title="" className="text-[clamp(3.6rem,15vw,11rem)] leading-[0.85]">
               Ghost Signals
             </h1>
-            <p data-intro="" className="mx-auto mt-6 max-w-[30ch] text-xl leading-snug text-sun lg:text-2xl">
-              NASA left machines on the Moon and Mars. Scroll down to go and find them.
-            </p>
+            <div data-intro="">
+              <p className="mx-auto mt-6 max-w-[30ch] text-xl leading-snug text-sun lg:text-2xl">
+                NASA left machines on the Moon and Mars. Scroll down to go and find them.
+              </p>
+              {/* For anyone who wants to play first: the strongest game, and the list of all five */}
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+                <Link
+                  to="/play/eagle"
+                  className="inline-flex min-h-12 items-center rounded-full bg-sun px-6 font-display text-lg font-extrabold text-ink transition-transform duration-150 ease-out hover:bg-sun-bright active:scale-[0.97]"
+                >
+                  Fire a laser at the Moon
+                </Link>
+                <Link
+                  to="/play"
+                  className="inline-flex min-h-11 items-center font-display text-lg font-bold text-sun underline decoration-sun/40 decoration-1 underline-offset-[6px] transition-[text-decoration-color] duration-200 hover:decoration-sun"
+                >
+                  Or play all five games
+                </Link>
+              </div>
+            </div>
           </div>
         </header>
 
@@ -409,13 +426,21 @@ export default function Journey() {
                   {/* A stop without a chapter gets no button and no promise of one */}
                   {chapter && (
                     <div data-fade="" className="mt-6">
-                      <div data-rise="">
+                      <div data-rise="" className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
                         <Link
                           to={`/signal/${chapter.slug}`}
                           className="inline-flex min-h-12 items-center rounded-full bg-sun px-6 font-display text-lg font-extrabold text-ink transition-transform duration-150 ease-out hover:bg-sun-bright active:scale-[0.97]"
                         >
                           Hear its story
                         </Link>
+                        {chapter.game && (
+                          <Link
+                            to={`/play/${chapter.slug}`}
+                            className="inline-flex min-h-11 items-center font-display text-lg font-bold text-sun underline decoration-sun/40 decoration-1 underline-offset-[6px] transition-[text-decoration-color] duration-200 hover:decoration-sun"
+                          >
+                            Or play {chapter.game.name}
+                          </Link>
+                        )}
                       </div>
                     </div>
                   )}

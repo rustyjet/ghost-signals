@@ -234,8 +234,18 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
       refresh.current()
       ScrollTrigger.refresh()
     }
+    // The model failed (a weak connection, no WebGL): the real panorama and the photos carry the chapter, as they do
+    // for Sojourner, and the "Receiving…" line goes rather than waiting forever.
+    const onError = () => {
+      mv.style.visibility = 'hidden'
+      setLoaded(true)
+    }
     mv.addEventListener('load', onLoad)
-    return () => mv.removeEventListener('load', onLoad)
+    mv.addEventListener('error', onError)
+    return () => {
+      mv.removeEventListener('load', onLoad)
+      mv.removeEventListener('error', onError)
+    }
   }, [])
 
   return (
@@ -322,6 +332,9 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
           >
             <p className="max-w-[24ch] font-display text-[clamp(1.4rem,6.4vw,2.25rem)] font-bold leading-tight text-sun [text-shadow:0_1px_14px_rgb(0_0_0/0.65)] lg:max-w-[26ch] lg:[text-shadow:none] lg:font-body lg:text-2xl lg:font-normal lg:text-on-sky">
               {chapter.tagline}
+            </p>
+            <p className="mt-3 max-w-[34ch] text-lg leading-snug text-sun/90 [text-shadow:0_1px_14px_rgb(0_0_0/0.65)] lg:max-w-[40ch] lg:text-xl lg:text-on-sky lg:[text-shadow:0_0_10px_var(--color-horizon),0_0_22px_var(--color-horizon)]">
+              You&rsquo;ll find out {chapter.learn.charAt(0).toLowerCase() + chapter.learn.slice(1)}
             </p>
             {/* Phones: the way home sits under the opening line rather than crowding the top */}
             <a

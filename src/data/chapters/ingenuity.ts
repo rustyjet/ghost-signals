@@ -191,7 +191,23 @@ export const ingenuity: Chapter = {
       },
     },
   ],
+  // docs/FACTS.md, "Learning lines": Ingenuity
+  learn: 'Why a helicopter has to spin its blades so fast to fly in the thin air of Mars.',
   interaction: 'rotor-lift',
+  game: {
+    name: 'Lift off',
+    photo: {
+      src: 'photos/ingenuity.webp',
+      alt: 'Ingenuity standing on the ground of Jezero crater, seen by Perseverance, 5 April 2021.',
+      credit: 'NASA/JPL-Caltech/ASU (PIA24547)',
+    },
+    fact: "Mars air is about 1% as dense as Earth's, so Ingenuity's blades spun around 2,400 times a minute.",
+    source: { label: 'JPL: Ingenuity landing press kit, quick facts', url: 'https://www.jpl.nasa.gov/news/press_kits/ingenuity/landing/quick_facts/' },
+  },
+  closing: {
+    heading: 'Thin air, fast blades.',
+    body: "Mars air is about 1% as dense as Earth's. To lift me, my blades spun around 2,400 times a minute, and I flew 72 times.",
+  },
   sources: [
     {
       label: 'NASA Science: Ingenuity Mars Helicopter mission page',

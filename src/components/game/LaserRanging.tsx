@@ -246,16 +246,24 @@ export default function LaserRanging() {
         foundRef.current = [...foundRef.current, n]
         setFound(foundRef.current)
       }
+      // The first catch, at whichever site, says what the time means; docs/FACTS.md, "Find the mirrors"
+      const distance = 'Light came back after 2.5 seconds, so the Moon is about 385,000 km away.'
       setNews(
         all
-          ? item('goal', 'All three found. Real lasers have it far harder: only 1 bit of light in 25 million even reaches Eagle’s mirrors.', 'good')
+          ? item('goal', 'All three found. Scientists still fire lasers at these mirrors. Only 1 bit of light in 25 million even reaches Eagle’s.', 'good')
           : !first
             ? item('again', 'Light came back again, 2.5 seconds later.')
-            : n === 11
-              ? item('goal', 'Light came back after 2.5 seconds, so the Moon is about 385,000 km away. Two more crews left mirrors. Can you find them?', 'good')
-              : n === 15
-                ? item('goal', 'Apollo 15 left mirrors too: 300 of them, so light comes back more often.', 'good')
-                : item('goal', 'Apollo 14 left 100 mirrors, just like Eagle’s.', 'good'),
+            : foundRef.current.length === 1
+              ? n === 11
+                ? item('goal', `${distance} Two more crews left mirrors. Can you find them?`, 'good')
+                : n === 15
+                  ? item('goal', `${distance} Apollo 15 left 300 mirrors. Two more to find.`, 'good')
+                  : item('goal', `${distance} Apollo 14 left 100 mirrors. Two more to find.`, 'good')
+              : n === 11
+                ? item('goal', 'These are Eagle’s mirrors: 100 of them, set down by Buzz.', 'good')
+                : n === 15
+                  ? item('goal', 'Apollo 15 left mirrors too: 300 of them, so light comes back more often.', 'good')
+                  : item('goal', 'Apollo 14 left 100 mirrors, just like Eagle’s.', 'good'),
       )
     } else if (t.kind === 'site' && t.site.cubes > 0) {
       setNews(item('none', `The light reached Apollo ${t.site.n}’s mirrors, but none of it made it back this time. Fire again.`))
@@ -366,10 +374,11 @@ export default function LaserRanging() {
             p.arrived = true
             set(splashRef.current, { cx: g.tx, cy: g.ty })
             set(spotRef.current, { cx: g.tx, cy: g.ty, r: spread * 1.2 })
+            // Reduced motion: the ring fades where it is, without growing
             splashRef.current?.animate(
               [
-                { opacity: 0.9, transform: 'scale(0.6)' },
-                { opacity: 0, transform: 'scale(1.6)' },
+                { opacity: 0.9, transform: reduced ? 'none' : 'scale(0.6)' },
+                { opacity: 0, transform: reduced ? 'none' : 'scale(1.6)' },
               ],
               { duration: 520, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
             )
@@ -402,8 +411,8 @@ export default function LaserRanging() {
             set(catchRef.current, { cx: g.ox, cy: g.oy })
             catchRef.current?.animate(
               [
-                { opacity: 1, transform: 'scale(0.5)' },
-                { opacity: 0, transform: 'scale(2.2)' },
+                { opacity: 1, transform: reduced ? 'none' : 'scale(0.5)' },
+                { opacity: 0, transform: reduced ? 'none' : 'scale(2.2)' },
               ],
               { duration: 600, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
             )

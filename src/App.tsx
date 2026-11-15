@@ -10,6 +10,8 @@ if (typeof window !== 'undefined') {
   const idle = window.requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 2500))
   window.addEventListener('load', () => idle(() => void loadChapter()), { once: true })
 }
+const Play = lazy(() => import('./pages/Play'))
+const PlayGame = lazy(() => import('./pages/PlayGame'))
 const DevFrames = import.meta.env.DEV ? lazy(() => import('./pages/DevFrames')) : null
 
 export default function App() {
@@ -18,6 +20,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Hub />} />
         <Route path="/signal/:slug" element={<Chapter />} />
+        <Route path="/play" element={<Play />} />
+        <Route path="/play/:slug" element={<PlayGame />} />
         {DevFrames && <Route path="/dev/frames" element={<DevFrames />} />}
         <Route path="*" element={<Hub />} />
       </Routes>

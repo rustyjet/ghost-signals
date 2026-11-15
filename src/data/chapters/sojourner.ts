@@ -203,7 +203,23 @@ export const sojourner: Chapter = {
       scene: { kind: 'photo', image: orbit, from: { x: 0, y: 0.09, zoom: 1.5 }, to: { x: 0.317, y: 0.148, zoom: 3 }, narrow: [{ x: 0.467, y: 0.07, zoom: 1.5 }, { x: 0.473, y: 0.16, zoom: 3 }] },
     },
   ],
+  // docs/FACTS.md, "Learning lines": Sojourner
+  learn: 'Why a rover on Mars has to drive itself instead of being steered from Earth.',
   interaction: 'drive-plan',
+  game: {
+    name: 'Plan my drive',
+    photo: {
+      src: 'photos/sojourner-drive-day3.webp',
+      alt: 'Sojourner beside the rocks Barnacle Bill and Yogi, seen from the lander on day 3, in black and white.',
+      credit: 'NASA/JPL (PIA00660)',
+    },
+    fact: 'Commands from Earth took 10 to 15 minutes to reach Sojourner, so no one could steer it live.',
+    source: { label: 'NSSDCA: Mars Pathfinder Rover', url: 'https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=MESURPR' },
+  },
+  closing: {
+    heading: 'I drove myself.',
+    body: "Commands took 10 to 15 minutes to reach me, so no one could steer me live. Each day's drive was planned on the lander's photos.",
+  },
   sources: [
     { label: 'NASA Science: Mars Pathfinder mission page', url: 'https://science.nasa.gov/mission/mars-pathfinder/' },
     { label: 'NSSDCA: Mars Pathfinder', url: 'https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1996-068A' },

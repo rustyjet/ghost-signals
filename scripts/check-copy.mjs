@@ -8,6 +8,8 @@ import { pathToFileURL } from 'node:url'
 const MAX_HEADING_WORDS = 5
 const MAX_BODY_CHARS = 150
 const MAX_TAGLINE_CHARS = 70
+const MAX_LEARN_CHARS = 90
+const MAX_GAME_FACT_CHARS = 120
 const MAX_SOUND_LABEL_WORDS = 6
 const MAX_SOUND_CAPTION_CHARS = 140
 const BANNED = [/\bjourney\b/i, /look closer/i, /!/, /\?$/]
@@ -22,6 +24,22 @@ for (const file of files) {
     if (!chapter?.steps) continue
     if (chapter.tagline.length > MAX_TAGLINE_CHARS)
       problems.push(`${chapter.slug} tagline: ${chapter.tagline.length} chars (max ${MAX_TAGLINE_CHARS})`)
+    // The learning line, the closing and the game's real sentence (list of games): short, and no banned patterns
+    const extra = [
+      ['learn', chapter.learn, MAX_LEARN_CHARS],
+      ['closing body', chapter.closing?.body, MAX_BODY_CHARS],
+      ['game fact', chapter.game?.fact, MAX_GAME_FACT_CHARS],
+    ]
+    if (!chapter.learn) problems.push(`${chapter.slug}: no learn line`)
+    for (const [what, text, max] of extra) {
+      if (!text) continue
+      if (text.length > max) problems.push(`${chapter.slug} ${what}: ${text.length} chars (max ${max})`)
+      for (const re of BANNED) if (re.test(text)) problems.push(`${chapter.slug} ${what}: uses banned pattern ${re}`)
+    }
+    if (chapter.closing) {
+      const words = chapter.closing.heading.trim().split(/\s+/).length
+      if (words > MAX_HEADING_WORDS) problems.push(`${chapter.slug} closing heading: ${words} words (max ${MAX_HEADING_WORDS})`)
+    }
     chapter.steps.forEach((s, i) => {
       const where = `${chapter.slug} step ${i + 1} "${s.heading}"`
       const words = s.heading.trim().split(/\s+/).length

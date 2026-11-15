@@ -26,6 +26,8 @@ export function StageHeading({
   const riseRef = useRef<HTMLSpanElement>(null)
   useGSAP(() => {
     if (prefersReducedMotion() || !riseRef.current) return
+    // A game opened on its own page starts on screen: no rise, or the heading would sit half hidden until a scroll.
+    if (riseRef.current.getBoundingClientRect().top < window.innerHeight) return
     gsap.from(riseRef.current, {
       yPercent: 110,
       ease: 'none',

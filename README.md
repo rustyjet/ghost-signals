@@ -2,6 +2,8 @@
 
 A scrolling story about the machines NASA left on the Moon and Mars, for readers aged about 9 to 14. Made for the NASA Space Apps Challenge 2026 challenge *Abandoned but not Forgotten*.
 
+**Live site:** https://rustyjet.github.io/ghost-signals/. To go straight to the games: [all five games](https://rustyjet.github.io/ghost-signals/#/play), or [the laser game](https://rustyjet.github.io/ghost-signals/#/play/eagle).
+
 Scrolling is travelling. The start page moves out from Earth, past the Moon, to Mars, and stops at each machine. Each machine tells its own story in a chapter, and each chapter ends with a game:
 
 | Machine | Where | The game |
@@ -11,6 +13,8 @@ Scrolling is travelling. The start page moves out from Earth, past the Moon, to 
 | Eagle (Apollo 11) | Sea of Tranquility, the Moon | **Find the mirrors**: time a laser's trip to the Moon and back |
 | InSight | Elysium Planitia, Mars | **Listen for marsquakes**: catch faint quakes on a seismometer once the dome keeps the wind off |
 | Sojourner | Ares Vallis, Mars | **Plan my drive**: plan a day's drive on the lander's photo, because commands took minutes to arrive |
+
+Each chapter's title screen says what you will find out, and each chapter ends with what the machine leaves behind. Every game also has its own page (`#/play/<machine>`), and `#/play` lists all five with the real NASA number each one is built on.
 
 ## Accuracy
 

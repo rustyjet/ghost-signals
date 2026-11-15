@@ -239,7 +239,19 @@ export const opportunity: Chapter = {
       },
     },
   ],
+  // docs/FACTS.md, "Learning lines": Opportunity
+  learn: 'Why a dust storm is so dangerous for a rover that runs on sunlight.',
   interaction: 'dust-storm',
+  game: {
+    name: 'Last Light',
+    photo: {
+      src: 'photos/selfie-clean.webp',
+      alt: "Opportunity's deck and solar panels, freshly cleaned by the wind, March 2014.",
+      credit: 'NASA/JPL-Caltech/Cornell Univ./Arizona State Univ. (PIA18079)',
+    },
+    fact: "In June 2018 a dust storm covered all of Mars. Opportunity's last signal reached Earth on 10 June 2018.",
+    source: { label: "NASA Science: NASA's Opportunity Rover Mission on Mars Comes to End", url: 'https://science.nasa.gov/missions/mer/nasas-opportunity-rover-mission-on-mars-comes-to-end/' },
+  },
   closing: {
     heading: 'What I found.',
     body: 'I found rocks that formed in water. Long ago Mars was wet, and it may once have been a place where tiny living things could survive.',

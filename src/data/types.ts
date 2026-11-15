@@ -130,7 +130,18 @@ export interface Chapter {
   /** The NASA 3D model. Left out only when NASA has none; then the real photos carry the whole chapter. */
   model?: Model
   steps: Step[]
+  /** What the reader will find out, in one plain sentence. Shown on the title screen and in the list of games. */
+  learn: string
   interaction?: InteractionId
+  /** The game after the story, as the list of games shows it: its name, its photo and the real number behind it. */
+  game?: {
+    name: string
+    /** `whole`: shown uncropped on black (the whole Moon), instead of filling its frame. */
+    photo: { src: string; alt: string; credit: string; whole?: boolean }
+    /** One true sentence from NASA that the game is built on. Needs a checked row in docs/FACTS.md. */
+    fact: string
+    source: Source
+  }
   /** What the machine leaves behind, after the story and the game. Facts follow the same rules. */
   closing?: { heading: string; body: string }
   sources: Source[]

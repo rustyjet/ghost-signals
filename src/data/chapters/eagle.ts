@@ -207,7 +207,24 @@ export const eagle: Chapter = {
       },
     },
   ],
+  // docs/FACTS.md, "Learning lines": Eagle
+  learn: 'How a laser and the mirrors left on the Moon measure how far away it is.',
   interaction: 'laser-ranging',
+  game: {
+    name: 'Find the mirrors',
+    photo: {
+      src: 'photos/moon-near.webp',
+      alt: 'The near side of the Moon, with the Apollo landing sites numbered.',
+      credit: "NASA's Scientific Visualization Studio, from LRO (SVS 4731)",
+      whole: true,
+    },
+    fact: 'Laser light takes about 2.5 seconds to reach the mirrors and come back.',
+    source: { label: 'NASA: Laser Beams Reflected Between Earth and Moon Boost Science', url: 'https://www.nasa.gov/missions/laser-beams-reflected-between-earth-and-moon-boost-science/' },
+  },
+  closing: {
+    heading: 'Still answering.',
+    body: 'My mirrors need no power. Scientists still fire lasers at them, and the time the light takes tells them how far away the Moon is.',
+  },
   sources: [
     { label: 'NSSDCA: Apollo 11 Lunar Module / EASEP', url: 'https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C' },
     { label: 'NSSDCA: Apollo 11 landing site information', url: 'https://nssdc.gsfc.nasa.gov/planetary/lunar/apollo11info.html' },

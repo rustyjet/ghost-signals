@@ -207,7 +207,26 @@ export const insight: Chapter = {
       },
     },
   ],
+  // docs/FACTS.md, "Learning lines": InSight
+  learn: 'How a seismometer hears marsquakes, and why the wind has to be kept off it.',
   interaction: 'seismometer',
+  game: {
+    name: 'Listen for marsquakes',
+    photo: {
+      src: 'photos/insight-dome-arm.webp',
+      alt: "The dome over InSight's seismometer on the Martian ground, seen by its arm camera.",
+      credit: 'NASA/JPL-Caltech (PIA23177)',
+    },
+    fact: 'InSight heard 1,319 marsquakes before it last spoke to Earth in December 2022.',
+    source: {
+      label: 'NASA: NASA Retires InSight Mars Lander Mission After Years of Science',
+      url: 'https://www.nasa.gov/missions/insight/nasa-retires-insight-mars-lander-mission-after-years-of-science/',
+    },
+  },
+  closing: {
+    heading: 'What I heard.',
+    body: 'Mars is so quiet that even faint rumbles show. With the wind kept off, I heard 1,319 marsquakes and found the centre of Mars is molten.',
+  },
   sources: [
     { label: 'NASA Science: InSight mission page', url: 'https://science.nasa.gov/mission/insight/' },
     { label: 'NASA Science: InSight spacecraft', url: 'https://science.nasa.gov/mission/insight/spacecraft/' },
