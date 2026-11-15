@@ -8,7 +8,7 @@ A scroll-driven web story for ages ~9–14. Scrolling is travelling: the start p
 
 ## Chapters
 
-1. Opportunity — scroll scene + "Last Light" dust-storm game (full scene, two levers)
+1. Opportunity — scroll scene + "Last Light" dust-storm game: drive the 3D rover to rocks while the storm comes in (three.js; photo version as fallback)
 2. Apollo 11 descent stage + laser retroreflector — laser-ranging toy
 3. Ingenuity — rotor lift toy (Earth air vs. Mars air)
 4. InSight, Sojourner — short stops on the journey, no full chapter
@@ -26,7 +26,7 @@ A scroll-driven web story for ages ~9–14. Scrolling is travelling: the start p
 
 ## Stack
 
-Vite + React + TypeScript + Tailwind v4 (static site, `HashRouter`). GSAP ScrollTrigger + SplitText for scroll-scrubbed animation; native scroll. 3D via `<model-viewer>` with NASA `.glb` files in `public/models/` (Draco decoder bundled in `public/draco/`). Chapters are lazy-loaded. Content lives in `src/data/chapters/*.ts` (typed by `src/data/types.ts`).
+Vite + React + TypeScript + Tailwind v4 (static site, `HashRouter`). GSAP ScrollTrigger + SplitText for scroll-scrubbed animation; native scroll. 3D via `<model-viewer>` with NASA `.glb` files in `public/models/` (Draco decoder bundled in `public/draco/`). The Last Light driving game uses plain three.js (pinned to the version model-viewer needs, so there is one copy) in `src/components/game/rover/`, lazy-loaded. Chapters are lazy-loaded. Content lives in `src/data/chapters/*.ts` (typed by `src/data/types.ts`).
 
 Commands: `npm run dev`, `npm run build`.
 

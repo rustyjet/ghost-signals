@@ -145,7 +145,16 @@ The game's numbers (battery, warmth, dust, 40 days, power costs) are game units,
 | Loss ending | June 2018 storm covered all of Mars; panels could not recharge the batteries | MP, END | Checked |
 | Loss ending | Last signal reached Earth on 10 June 2018 | MP, NSSDCA | Checked |
 | Loss ending | In 2007 the team got it through a storm like this by keeping still and waiting | APOD07, TEN18 ("engineers nursed the rover back to health when sunlight returned") | Checked |
-| Scene | The deck photos are the two 2014 self-portraits (PIA17759 dusty, PIA18079 clean), used to show dust building up and blowing off | PIA17759, PIA18079 | Shown as a game picture, not a dated moment |
+| Scene | The deck photos are the two 2014 self-portraits (PIA17759 dusty, PIA18079 clean), used to show dust building up and blowing off | PIA17759, PIA18079 | Shown as a game picture, not a dated moment. Now the fallback when 3D can't run |
+
+Driving version (15 Nov 2026). Same rules and endings; the driving speed (5 m/s), the cost of driving, the study time and the rocks are game units, covered by the same on-screen line. No new real-world claim is made.
+
+| Where | Claim | Source | Checked |
+|-------|-------|--------|---------|
+| Scene | The rover is NASA's 3D model of Opportunity (same file as the story) | Model credit in CREDITS.md | Checked |
+| Scene | The ground, rocks, sky and Sun are drawn by the game (no photo, no AI-made image), coloured from the Mars tokens; not a real place | n/a | Labelled as a game picture, not a place |
+| Scene | The Sun shrinks to a dull dot in the storm; follows "Dust blocked 99 percent of direct sunlight" (step 6) in spirit, with no number shown | DARK07 | Checked |
+| Scene | The rover studies rocks with its arm and sends findings home by radio; shown as play, not as a dated event | n/a | Shown as play; no claim on screen |
 
 ### Home page (14 Nov 2026)
 

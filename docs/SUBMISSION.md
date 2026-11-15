@@ -40,14 +40,14 @@ Hack Tuah built Ghost Signals with Claude Code, Anthropic's AI coding assistant 
 
 What AI did **not** make:
 
-- **No AI-generated images, video, audio or 3D models.** Every picture and model is real NASA material.
+- **No AI-generated images, video, audio or 3D models.** Every picture and model is real NASA material. In the Last Light driving game, the Mars ground, rocks, sky and dust are drawn live by the game's code (no image files); the rover is NASA's own 3D model.
 - **No invented quotes.** Every quotation comes from a NASA source.
 
 Done by the team without AI: the idea behind Ghost Signals, the choice of machines and stories, and the narration edits.
 
 ## Tools
 
-Vite, React, TypeScript, Tailwind CSS, GSAP ScrollTrigger and SplitText, Google's model-viewer, sharp (image conversion), Claude Code.
+Vite, React, TypeScript, Tailwind CSS, GSAP ScrollTrigger and SplitText, Google's model-viewer, three.js (the driving game), sharp (image conversion), Claude Code.
 
 ## Links
 

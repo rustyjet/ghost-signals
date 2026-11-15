@@ -1,7 +1,9 @@
-import { useEffect } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import StoryScene from '../components/StoryScene'
-import LastLight from '../components/game/LastLight'
+
+// The driving game brings three.js; it loads in its own file, after the story.
+const RoverGame = lazy(() => import('../components/game/rover/RoverGame'))
 import RotorLift from '../components/game/RotorLift'
 import LaserRanging from '../components/game/LaserRanging'
 import { sceneImages } from '../components/story/Backdrop'
@@ -35,7 +37,11 @@ export default function Chapter() {
       {/* Keyed, so moving between chapters builds a fresh story (the title's letters are split in place) */}
       <StoryScene key={chapter.slug} chapter={chapter} />
 
-      {chapter.interaction === 'dust-storm' && <LastLight />}
+      {chapter.interaction === 'dust-storm' && (
+        <Suspense fallback={<section aria-hidden="true" className="h-[100svh] min-h-[560px] bg-basalt" />}>
+          <RoverGame />
+        </Suspense>
+      )}
       {chapter.interaction === 'rotor-lift' && <RotorLift />}
       {chapter.interaction === 'laser-ranging' && <LaserRanging />}
 

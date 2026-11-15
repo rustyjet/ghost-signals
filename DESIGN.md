@@ -47,7 +47,24 @@ The Moon: a chapter page with `data-world="moon"` swaps the tokens: black sky to
 
 ## The Last Light game
 
-- One full screen after the story, on Opportunity's real deck (the 2014 self-portraits). The state is in the picture, not in bars:
+- One full screen after the story. The player drives NASA's 3D Opportunity across drawn Mars ground (three.js, `src/components/game/rover/`), chase camera behind it, while the storm comes in. Goal: drive to the marked rock, stop beside it to study it (a ring fills), and let the radio send the finding home; survive 40 days. A day is 3 s.
+- The state is in the scene, not in bars:
+  - the storm: the butterscotch sky and fog turn storm brown, the fog closes in, the Sun shrinks to a dull dot, the air fills with blowing dust;
+  - dust on the panels: the panel materials turn dust-coloured;
+  - a gust: the camera shakes a little and a burst of dust blows through;
+  - heaters on: a warm glow under the rover;
+  - driving: the body pitches and rolls over the ground, dust puffs from the wheels, tracks stay behind (the model's wheels are one piece with it, so they don't turn);
+  - the rock: a pale ring and a thin marker pole; an arrow at the screen edge (never in the bottom part where the words are) when it is off screen;
+  - the radio: a small light leaves the antenna and rises out of view;
+  - cold and signal lost: the frost and the black curtain below, laid over the 3D view.
+- Controls: arrow keys or W A S D only while the 3D view has focus ("Start the storm" puts it there; elsewhere the arrows scroll the page). Touch screens get a thumb stick beside the numbers. Heaters and Radio switches and Pause as before.
+- Framing: the camera aims below the rover so it rides in the open upper part of the screen; the intro orbit keeps it right of the words on wide screens and above them on phones.
+- Reduced motion: no shake, sway or orbit, the camera follows rigidly, the air dust stands still; driving still works because the player moves it.
+- No WebGL, or the model fails to load: the photo version below plays instead (`LastLight.tsx`).
+
+### The photo version (fallback)
+
+- On Opportunity's real deck (the 2014 self-portraits). The state is in the picture, not in bars:
   - dust on the panels: the clean photo turns into the dusty one;
   - a gust: the dustier picture is swept off left to right behind a thin light line, the camera shakes a little and the air fills with dust;
   - the storm: the light goes dark brown;
