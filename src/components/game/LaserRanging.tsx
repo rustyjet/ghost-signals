@@ -21,14 +21,16 @@ interface Site {
   y: number
   /** Corner cubes left there (NASA). 0: no mirrors. */
   cubes: number
+  /** Where NASA's printed number box sits, from the site's dot, in the 2000 px picture (our label covers it) */
+  label: [number, number]
 }
 const SITES: Site[] = [
-  { n: 11, x: 0.6755, y: 0.476, cubes: 100 },
-  { n: 12, x: 0.2915, y: 0.5085, cubes: 0 },
-  { n: 14, x: 0.3385, y: 0.5125, cubes: 100 },
-  { n: 15, x: 0.511, y: 0.2705, cubes: 300 },
-  { n: 16, x: 0.6115, y: 0.5565, cubes: 0 },
-  { n: 17, x: 0.7175, y: 0.3175, cubes: 0 },
+  { n: 11, x: 0.6755, y: 0.476, cubes: 100, label: [11, -54] },
+  { n: 12, x: 0.2915, y: 0.5085, cubes: 0, label: [-7.5, -53] },
+  { n: 14, x: 0.3385, y: 0.5125, cubes: 100, label: [-6.5, 61] },
+  { n: 15, x: 0.511, y: 0.2705, cubes: 300, label: [3.5, -65] },
+  { n: 16, x: 0.6115, y: 0.5565, cubes: 0, label: [5, -50] },
+  { n: 17, x: 0.7175, y: 0.3175, cubes: 0, label: [12, -62.5] },
 ]
 const MIRRORS = SITES.filter((s) => s.cubes > 0).length
 /** Game odds that light comes back from a pulse that reached a site's mirrors: more mirrors, more light. */
@@ -117,6 +119,8 @@ const where = (x: number, y: number) => {
 export default function LaserRanging() {
   const [news, setNews] = useState('Each number marks where an Apollo crew landed. Start with 11: that is where Eagle left its mirrors.')
   const [found, setFound] = useState<number[]>([])
+  // Sites fired at that turned out to have no mirrors: their labels are crossed out, so the hunt narrows
+  const [ruledOut, setRuledOut] = useState<number[]>([])
   // Each catch from a site lights its panel again
   const [catches, setCatches] = useState<Record<number, number>>({})
   const [busy, setBusy] = useState(false)
@@ -125,6 +129,8 @@ export default function LaserRanging() {
   // The hint follows what you are doing: pointing with a mouse, aiming with keys, or waiting for the light
   const [pointing, setPointing] = useState(false)
   const [keying, setKeying] = useState(false)
+  const aimed = targetAt(aim.x, aim.y)
+  const aimedSite = aimed.kind === 'site' ? aimed.site.n : null
   const [mouse] = useState(() => typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches)
 
   const rootRef = useRef<HTMLElement>(null)
@@ -218,7 +224,9 @@ export default function LaserRanging() {
     } else if (t.kind === 'site' && t.site.cubes > 0) {
       setNews(`The light reached Apollo ${t.site.n}’s mirrors, but none of it made it back this time. Fire again.`)
     } else if (t.kind === 'site') {
-      setNews(`Apollo ${t.site.n} left no mirrors. Nothing came back.`)
+      const n = t.site.n
+      setRuledOut((r) => (r.includes(n) ? r : [...r, n]))
+      setNews(`Apollo ${n} left no mirrors. Nothing came back.`)
     } else if (t.kind === 'ground') {
       setNews('No mirrors there. Nothing came back.')
     } else {
@@ -414,25 +422,58 @@ export default function LaserRanging() {
               if (!e.repeat) fire()
             }
           }}
-          className={`absolute left-1/2 top-[1svh] aspect-square w-[var(--moon,min(112vw,62svh))] -translate-x-1/2 ${busy ? 'cursor-progress' : 'cursor-crosshair'} rounded-full outline-none [-webkit-tap-highlight-color:transparent] focus-visible:ring-2 focus-visible:ring-sun focus-visible:ring-offset-4 focus-visible:ring-offset-black lg:left-auto lg:right-[3vw] lg:top-1/2 lg:h-[min(96svh,60vw)] lg:w-auto lg:-translate-y-1/2 lg:translate-x-0`}
+          className={`absolute left-1/2 top-[1svh] aspect-square [container-type:inline-size] w-[var(--moon,min(112vw,62svh))] -translate-x-1/2 ${busy ? 'cursor-progress' : 'cursor-crosshair'} rounded-full outline-none [-webkit-tap-highlight-color:transparent] focus-visible:ring-2 focus-visible:ring-sun focus-visible:ring-offset-4 focus-visible:ring-offset-black lg:left-auto lg:right-[3vw] lg:top-1/2 lg:h-[min(96svh,60vw)] lg:w-auto lg:-translate-y-1/2 lg:translate-x-0`}
         >
           <img
             src="photos/moon-near.webp"
             width={2000}
             height={2000}
-            alt="The near side of the Moon. NASA's numbers mark the six Apollo landing sites: 11, 12, 14, 15, 16 and 17."
+            alt="The near side of the Moon. Numbers mark the six Apollo landing sites: 11, 12, 14, 15, 16 and 17."
             draggable={false}
             className="pointer-events-none h-full w-full select-none"
           />
-          {/* Mirrors that have sent light back stay marked */}
-          {SITES.filter((s) => found.includes(s.n)).map((s) => (
-            <span
-              key={s.n}
-              aria-hidden="true"
-              className="pointer-events-none absolute aspect-square w-[3.2%] -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-laser bg-laser/30 shadow-[0_1px_3px_rgb(0_0_0/0.75)]"
-              style={{ left: `${s.x * 100}%`, top: `${s.y * 100}%` }}
-            />
-          ))}
+          {/* The landing sites, drawn over NASA's printed numbers at the same places (NASA's dots, NASA's label
+              boxes), so they can show the game: lit green while aimed at, green with a tick once its mirrors sent
+              light back, crossed out once fired at and found to have none. Sized from the Moon (cqw). */}
+          {SITES.map((s) => {
+            const state = found.includes(s.n) ? 'found' : ruledOut.includes(s.n) ? 'none' : 'open'
+            const aimed = aimedSite === s.n
+            // Anchored at NASA's box edge nearest the dot, so a label bigger than NASA's (phones) grows away from it
+            const above = s.label[1] < 0
+            const edge = s.label[1] + (above ? 35 : -35)
+            return (
+              <span key={s.n} aria-hidden="true" className="pointer-events-none">
+                <span
+                  className={`absolute flex h-[1.65em] w-[2.1em] -translate-x-1/2 ${above ? '-translate-y-full' : ''} items-center justify-center gap-[0.15em] rounded-[0.32em] font-display text-[max(2.55cqw,10.5px)] font-extrabold leading-none tabular-nums shadow-[0_0.1em_0.35em_rgb(0_0_0/0.55)] transition-[background-color,color,box-shadow] duration-150 ${
+                    state === 'found'
+                      ? 'bg-laser text-ink'
+                      : state === 'none'
+                        ? 'bg-[#2a2420] text-sun/45 line-through decoration-[0.09em]'
+                        : aimed
+                          ? 'bg-ink text-laser shadow-[0_0_0_0.12em_var(--color-laser),0_0.1em_0.35em_rgb(0_0_0/0.55)]'
+                          : 'bg-ink/90 text-sun'
+                  }`}
+                  style={{ left: `${(s.x + s.label[0] / 2000) * 100}%`, top: `${(s.y + edge / 2000) * 100}%` }}
+                >
+                  {s.n}
+                  {state === 'found' && (
+                    <svg viewBox="0 0 24 24" className="h-[0.62em] w-[0.62em]" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12.5 L10 17 L19 7.5" />
+                    </svg>
+                  )}
+                </span>
+                {/* The landing spot itself, over NASA's dot */}
+                <span
+                  className={`absolute aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full ${
+                    state === 'found'
+                      ? 'w-[2.6%] border-[0.35cqw] border-laser bg-laser/35 shadow-[0_0.05em_0.2em_rgb(0_0_0/0.75)]'
+                      : 'w-[max(1.1%,6px)] bg-ink shadow-[0_0_0_0.25cqw_rgb(242_226_194/0.85),0_0.1em_0.3em_rgb(0_0_0/0.6)]'
+                  }`}
+                  style={{ left: `${(s.x + 1 / 2000) * 100}%`, top: `${(s.y + 3.5 / 2000) * 100}%` }}
+                />
+              </span>
+            )
+          })}
           {/* The aim: where the next pulse will land */}
           <span
             aria-hidden="true"
