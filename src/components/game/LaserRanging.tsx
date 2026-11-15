@@ -131,6 +131,8 @@ export default function LaserRanging() {
   const [pointing, setPointing] = useState(false)
   const [keying, setKeying] = useState(false)
   const aimed = targetAt(aim.x, aim.y)
+  // Touch screens: no sight until the first tap (it would sit on bare ground in the middle)
+  const [hasAimed, setHasAimed] = useState(false)
   const aimedSite = aimed.kind === 'site' ? aimed.site.n : null
   const [mouse] = useState(() => typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches)
 
@@ -174,7 +176,9 @@ export default function LaserRanging() {
       back = m >= 2 || Math.random() < odds(target.site)
       misses.current.set(target.site.n, back ? 0 : m + 1)
     }
-    pulse.current = { t0: performance.now(), at, target, back, arrived: false, started: false }
+    // On a site, the pulse goes to the site's dot, where the sight snapped
+    const to = target.kind === 'site' ? { x: target.site.x, y: target.site.y } : at
+    pulse.current = { t0: performance.now(), at: to, target, back, arrived: false, started: false }
     setBusy(true)
     setNews('Fired. The light is on its way to the Moon.')
     if (distRef.current) {
@@ -436,6 +440,7 @@ export default function LaserRanging() {
     const a = { x: Math.min(1, Math.max(0, x)), y: Math.min(1, Math.max(0, y)) }
     aimRef.current = a
     setAim(a)
+    setHasAimed(true)
     return a
   }
 
@@ -529,14 +534,38 @@ export default function LaserRanging() {
               </span>
             )
           })}
-          {/* The aim: where the next pulse will land */}
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute aspect-square w-[6%] -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-laser shadow-[0_1px_3px_rgb(0_0_0/0.75),inset_0_1px_3px_rgb(0_0_0/0.75)]"
-            style={{ left: `${aim.x * 100}%`, top: `${aim.y * 100}%` }}
-          >
-            <span className="absolute left-1/2 top-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-laser shadow-[0_0_0_1.5px_rgb(0_0_0/0.6)]" />
-          </span>
+          {/* The sight: where the next pulse will land. A ring with four ticks and a centre dot, each on a dark
+              casing. On a landing site it snaps onto the site's dot and tightens; off the Moon it goes dashed and dim
+              (that pulse would fly past); while light is out it waits where you fired, dim, without ticks. */}
+          {(mouse || hasAimed || keying) && (
+            <svg
+              aria-hidden="true"
+              viewBox="-50 -50 100 100"
+              className={`pointer-events-none absolute aspect-square w-[7.5%] -translate-x-1/2 -translate-y-1/2 overflow-visible transition-opacity duration-200 ${busy ? 'opacity-55' : aimed.kind === 'space' ? 'opacity-70' : 'opacity-100'}`}
+              style={(() => {
+                const at = aimed.kind === 'site' && !busy ? aimed.site : aim
+                return { left: `${at.x * 100}%`, top: `${at.y * 100}%` }
+              })()}
+            >
+              <g
+                className="transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none"
+                style={{ transform: `scale(${aimed.kind === 'site' && !busy ? 0.8 : 1})` }}
+                fill="none"
+                strokeLinecap="round"
+              >
+                {[
+                  { w: 8, c: 'rgb(0 0 0 / 0.6)' },
+                  { w: 3.5, c: 'var(--color-laser)' },
+                ].map(({ w, c }) => (
+                  <g key={c} stroke={c} strokeWidth={w}>
+                    <circle r="28" strokeDasharray={aimed.kind === 'space' && !busy ? '7 7' : undefined} />
+                    {!busy && <path d="M0 -46 V-36 M0 36 V46 M-46 0 H-36 M36 0 H46" />}
+                  </g>
+                ))}
+                <circle r="4.5" fill="var(--color-laser)" stroke="rgb(0 0 0 / 0.6)" strokeWidth="2.5" />
+              </g>
+            </svg>
+          )}
         </div>
 
         <svg aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full overflow-visible">
