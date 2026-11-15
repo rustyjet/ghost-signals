@@ -34,6 +34,7 @@ The Moon: a chapter page with `data-world="moon"` swaps the tokens: black sky to
 - At the end of the story the picture sinks into the page's dark ground before the next section, so there is never a hard edge.
 - 1024 px and wider: words travel up the middle of the screen, centred, over a soft oval of dark that leaves both sides of the picture bright. On the last step the 3D machine steps to the right so the words never sit on it.
 - Narrower: the backdrop fills the screen and its lower part is darkened. Words are read there, and each part of the words fades out before it passes the middle of the screen. Nothing is ever layered on top of the words.
+- Phones: the words cross the picture on their way up, so each part (the number, the heading, the body) carries its own soft oval of dark behind it, which travels and fades with that part (`wordsShade` in `StoryScene.tsx`). On a dark picture it barely shows; on a pale sky or sand it keeps the words readable.
 - No fixed chrome except the story counter (e.g. "Day 48 on Mars"). No progress bar, no next button.
 
 ## The start page
