@@ -205,7 +205,19 @@ export default function Journey() {
         ;(window as unknown as { __step?: (i: number) => void }).__step = (i: number) =>
           window.scrollTo(0, Math.max(0, centres[Math.min(i, centres.length - 1)] ?? 0))
       }
-      return () => mm.revert()
+      // Keyboard: the browser scrolls just enough to show a focused button, which can leave its heading already
+      // faded. Bring the whole stop to its reading line instead (after the browser's own scroll, so ours wins).
+      const onFocus = (e: FocusEvent) => {
+        const el = e.target as HTMLElement
+        if (!el.matches(':focus-visible')) return
+        const i = blocks.findIndex((b) => b.contains(el))
+        if (i >= 0) requestAnimationFrame(() => window.scrollTo(0, centres[i + 1]))
+      }
+      root.addEventListener('focusin', onFocus)
+      return () => {
+        mm.revert()
+        root.removeEventListener('focusin', onFocus)
+      }
     },
     { scope: rootRef },
   )
@@ -317,7 +329,7 @@ export default function Journey() {
                       <div data-rise="">
                         <Link
                           to={`/signal/${chapter.slug}`}
-                          className="inline-flex min-h-12 items-center rounded-full bg-sun px-6 font-display text-lg font-extrabold text-ink transition-transform duration-150 ease-out hover:bg-[#fff1d6] active:scale-[0.97]"
+                          className="inline-flex min-h-12 items-center rounded-full bg-sun px-6 font-display text-lg font-extrabold text-ink transition-transform duration-150 ease-out hover:bg-sun-bright active:scale-[0.97]"
                         >
                           Hear its story
                         </Link>

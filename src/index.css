@@ -11,6 +11,8 @@
   --color-mars-storm-horizon: #5b3826;
   --color-basalt: #241812;
   --color-sun: #f2e2c2;
+  /* A cream button under the pointer or held down */
+  --color-sun-bright: #fff1d6;
   --color-frost: #a8c6d6;
   --color-ink: #1f140e;
 
@@ -80,18 +82,25 @@ h3 {
   outline-offset: 4px;
 }
 
+/* Cream buttons have dark lettering, and they sit on dark ground: their ring takes the cream, not the lettering */
+.bg-sun:focus-visible {
+  outline-color: var(--color-sun);
+}
+
 /* Headings that receive focus from script (so screen readers hear a result) don't need a ring */
 [tabindex='-1']:focus-visible {
   outline: none;
 }
 
+/* Reduced motion: nothing travels or scales, but fades and colour changes stay, because some carry meaning
+   (the counter's "then silence", a switch turning on). Only those properties keep their transition. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-property: opacity, color, background-color, border-color, outline-color, text-decoration-color !important;
     scroll-behavior: auto !important;
   }
 }

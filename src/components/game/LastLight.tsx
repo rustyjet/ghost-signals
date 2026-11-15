@@ -387,7 +387,7 @@ function Intro({ onStart }: { onStart: () => void }) {
       <button
         type="button"
         onClick={onStart}
-        className="mt-6 min-h-14 rounded-full bg-sun px-7 font-display text-xl font-extrabold text-ink transition-transform duration-150 ease-out hover:bg-[#fff1d6] active:scale-[0.97]"
+        className="mt-6 min-h-14 rounded-full bg-sun px-7 font-display text-xl font-extrabold text-ink transition-transform duration-150 ease-out hover:bg-sun-bright active:scale-[0.97]"
       >
         Start the storm
       </button>
@@ -463,7 +463,7 @@ function Ending({
       <button
         type="button"
         onClick={onRetry}
-        className="mt-5 min-h-12 rounded-full bg-sun px-6 font-display text-lg font-extrabold text-ink transition-transform duration-150 ease-out hover:bg-[#fff1d6] active:scale-[0.97]"
+        className="mt-5 min-h-12 rounded-full bg-sun px-6 font-display text-lg font-extrabold text-ink transition-transform duration-150 ease-out hover:bg-sun-bright active:scale-[0.97]"
       >
         Try again
       </button>

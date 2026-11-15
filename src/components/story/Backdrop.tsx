@@ -1,6 +1,7 @@
-import '@google/model-viewer'
 import type { ModelViewerElement } from '@google/model-viewer'
+import { useEffect } from 'react'
 import type { Model, Scene, SceneImage, View, World } from '../../data/types'
+import { loadModelViewer } from '../../lib/modelViewer'
 import { isNarrow } from '../../scroll/smoothScroll'
 import DustField from '../DustField'
 
@@ -193,7 +194,8 @@ export function makeBackdropController(
         lastTarget = target
         mv.cameraOrbit = orbit
         mv.cameraTarget = target
-        if (opts.reduced) mv.jumpCameraToGoal()
+        // Before model-viewer has loaded the element has no methods yet; the camera is set on upgrade anyway.
+        if (opts.reduced) mv.jumpCameraToGoal?.()
       }
       // The ground slides a little as the camera swings round, so the machine stands somewhere.
       // Never further than the strip's spare width, so its edge never shows.
@@ -390,6 +392,7 @@ export default function Backdrop(props: {
   world: World
 }) {
   const { shots, stormRef, rootRef } = props
+  useEffect(() => void loadModelViewer(), [])
   const seen = new Set<string>()
   const layers = shots.filter((s) => {
     const k = sceneKey(s.scene)

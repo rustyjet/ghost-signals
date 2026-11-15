@@ -1,7 +1,7 @@
-import '@google/model-viewer'
 import type { ModelViewerElement } from '@google/model-viewer'
 import { useEffect, useRef, useState } from 'react'
 import DustField from '../DustField'
+import { loadModelViewer } from '../../lib/modelViewer'
 import { isNarrow, prefersReducedMotion } from '../../scroll/smoothScroll'
 
 // "Lift off": spin Ingenuity's blades and hover at 3 metres. Lift grows with air density × speed²
@@ -41,6 +41,7 @@ export default function RotorLift() {
   const hudRef = useRef<HTMLDivElement>(null)
   const mvRef = useRef<ModelViewerElement>(null)
   const stormRef = useRef(0)
+  useEffect(() => void loadModelViewer(), [])
 
   const held = useRef(false)
   const airRef = useRef<Air>(air)
@@ -329,7 +330,7 @@ export default function RotorLift() {
               }}
               onBlur={() => hold(false)}
               onContextMenu={(e) => e.preventDefault()}
-              className="min-h-14 touch-none select-none rounded-full bg-sun px-7 font-display text-xl font-extrabold text-ink transition-[transform,background-color] duration-150 ease-out [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] data-[held=true]:scale-[0.97] data-[held=true]:bg-[#fff1d6] lg:min-h-20 lg:text-2xl"
+              className="min-h-14 touch-none select-none rounded-full bg-sun px-7 font-display text-xl font-extrabold text-ink transition-[transform,background-color] duration-150 ease-out [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] data-[held=true]:scale-[0.97] data-[held=true]:bg-sun-bright lg:min-h-20 lg:text-2xl"
             >
               Hold to spin
             </button>
