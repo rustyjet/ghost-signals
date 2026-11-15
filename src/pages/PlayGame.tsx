@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ChapterGame, Closing, NoSignal, Sources } from '../components/ChapterParts'
 import { getChapter } from '../data/chapters'
+import { rememberChapter } from '../components/journey/Journey'
 
 /** One game on its own, straight from the start page or the list of games, then what it teaches and the story's way in. */
 export default function PlayGame() {
@@ -10,7 +11,11 @@ export default function PlayGame() {
 
   useEffect(() => {
     window.scrollTo(0, 0)
-    if (chapter?.game) document.title = `${chapter.game.name} · Ghost Signals`
+    if (chapter?.game) {
+      document.title = `${chapter.game.name} · Ghost Signals`
+      // "Back to all the machines" lands on this machine's stop, as from its chapter
+      rememberChapter(chapter.slug)
+    }
   }, [chapter])
 
   if (!chapter?.game) return <NoSignal />

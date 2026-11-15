@@ -17,9 +17,11 @@ const hold = (t: number) => {
     screen and the machine stands above them; other stops are read in the middle on wide screens. */
 const focusLine = (low = false) => (low || isNarrow() ? 0.74 : 0.5)
 
-/** The chapter last opened, so coming back to the start page (by link or the browser's Back) lands on that
-    machine's stop instead of wherever the chapter's scroll left the page. Kept in the tab's session storage, not
-    in this module, which a hot reload would reset; used once, so a fresh load starts at Earth. */
+/** The machine last opened (its chapter or its game), so coming back to the start page (by link or the browser's
+    Back) lands on that machine's stop instead of wherever the last page's scroll left it. Kept in the tab's session
+    storage. It is not cleared when read: the start page can mount more than once on the way back, and every mount
+    must land in the same place. It is cleared when the page loads fresh (so a reload starts at Earth) and by
+    `forgetChapter` (the list of games, which is not a machine). */
 const RETURN_KEY = 'ghost-signals:return-to'
 export const rememberChapter = (slug: string) => {
   try {
@@ -28,12 +30,18 @@ export const rememberChapter = (slug: string) => {
     /* storage blocked: the start page just opens at Earth */
   }
 }
-function takeReturn() {
+export const forgetChapter = () => {
   try {
-    const slug = sessionStorage.getItem(RETURN_KEY)
-    // Cleared after this render, not now: React's StrictMode runs the setup twice and both need to see it.
-    if (slug) setTimeout(() => sessionStorage.removeItem(RETURN_KEY), 0)
-    return slug
+    sessionStorage.removeItem(RETURN_KEY)
+  } catch {
+    /* nothing to forget */
+  }
+}
+// This module runs once per page load: a fresh load starts at Earth.
+forgetChapter()
+function readReturn() {
+  try {
+    return sessionStorage.getItem(RETURN_KEY)
   } catch {
     return null
   }
@@ -188,11 +196,27 @@ export default function Journey() {
         onUpdate: apply,
       })
       measure()
-      // Back from a chapter: start at that machine's stop, at its reading line
-      const returnTo = takeReturn()
+      // Back from a chapter or a game: start at that machine's stop, at its reading line. Otherwise start at Earth,
+      // never at whatever scroll the last page left behind.
+      const returnTo = readReturn()
       const back = returnTo ? stops.findIndex((s) => s.machine?.slug === returnTo) : -1
-      if (back > 0) window.scrollTo(0, Math.max(0, centres[back] ?? 0))
+      const land = () => {
+        const y = back > 0 ? Math.max(0, centres[back] ?? 0) : 0
+        window.scrollTo(0, y)
+        return window.scrollY
+      }
+      const landed = land()
       apply()
+      // The display font can still be loading, and it changes how tall the words are: once it is in, measure
+      // again and land again, unless the reader has already scrolled away.
+      document.fonts.ready.then(
+        contextSafe!(() => {
+          if (Math.abs(window.scrollY - landed) > 2) return
+          measure()
+          land()
+          apply()
+        }),
+      )
 
       // Scrolling away from the title: the words go, and the dark behind later words comes in.
       const titleEl = root.querySelector<HTMLElement>('[data-title]')

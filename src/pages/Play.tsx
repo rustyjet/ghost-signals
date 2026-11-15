@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { chapters } from '../data/chapters'
+import { forgetChapter } from '../components/journey/Journey'
 
 /** One left and right edge for everything on the page. */
 const wrap = 'mx-auto w-full max-w-[72rem] px-5 md:px-10'
@@ -14,6 +15,8 @@ export default function Play() {
   useEffect(() => {
     window.scrollTo(0, 0)
     document.title = 'The five games · Ghost Signals'
+    // Back from here goes to the top of the start page, where "Play all five games" is
+    forgetChapter()
   }, [])
 
   const games = chapters.filter((c) => c.game)
