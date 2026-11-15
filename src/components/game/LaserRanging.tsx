@@ -419,9 +419,17 @@ export default function LaserRanging() {
 
     // Phones: the Moon fills the space above the words, never under them, measured from where the words start.
     const layout = () => {
+      // The smallest Moon a phone gets: most of the screen's width. The site badges keep a fixed minimum size
+      // (10.5 px type), so on a small Moon they crowd and cover each other; a wide Moon keeps them apart.
+      const MIN_MOON = Math.max(160, Math.round(root.clientWidth * 0.9))
+      // The words are pinned to the bottom, so on a short, narrow phone (320 px wide wraps them to many lines)
+      // they can leave less than that Moon above them. Grow the section until the Moon fits clear:
+      // its height R must satisfy 0.99 R - words - 12 >= MIN_MOON (the Moon's top margin is 1% of R).
+      const words = hudRef.current?.offsetHeight ?? 0
+      root.style.minHeight = isNarrow() && words ? `${Math.max(600, Math.ceil((words + MIN_MOON + 12) / 0.99) + 1)}px` : ''
       const hudTop = hudRef.current?.offsetTop ?? root.clientHeight
       const size = Math.min(root.clientWidth * 1.12, hudTop - root.clientHeight * 0.01 - 12)
-      root.style.setProperty('--moon', `${Math.max(160, size)}px`)
+      root.style.setProperty('--moon', `${Math.max(MIN_MOON, size)}px`)
     }
     layout()
     const ro = new ResizeObserver(layout)
