@@ -1,0 +1,12 @@
+# Raw screen recordings (too large for GitHub; Clip C is 140 MB)
+Clip *.mp4
+*Google Chrome*.mp4
+
+# Earlier renders and the first ffmpeg pipeline's scratch files; only the final video is kept
+ghost-signals-demo.mp4
+ghost-signals-demo-v[1-9].mp4
+work/
+clean/
+make.sh
+make2.sh
+remotion/public/music.wav

@@ -115,6 +115,15 @@ All from Photojournal, credits as Photojournal prints them; full-size files at `
 | `insight-seis-bare.webp` | "SEIS Deployed on Mars": the seismometer just set down, 19 Dec 2018, arm camera (PIA22956) | NASA/JPL-Caltech | WebP only. |
 | `insight-dome-arm.webp` (reused) | The dome over the seismometer, sol 110 (PIA23177) | NASA/JPL-Caltech | See the InSight chapter table. |
 
+## Demo video sound (downloaded 15 Nov 2026)
+
+Used only in the 30-second demo video (`demo-video/`), not on the site.
+
+| File | What | Credit | Source |
+|---|---|---|---|
+| `insight-wind.wav` | Mars wind heard by InSight's seismometer, "More Audible Sounds" (audio track of the NASA video) | NASA/JPL-Caltech/CNES/IPGP/Imperial College London/Oxford | https://science.nasa.gov/resource/more-audible-sounds-from-insights-seismometer-on-mars |
+| `music-energetic.wav` | Upbeat background music, 120 BPM (kick, hi-hat, bass, arpeggio in A minor) | Made for the video with ffmpeg, from code (no samples, no AI) | n/a |
+
 ## Plan my drive (Sojourner game) photos (downloaded 15 Nov 2026)
 
 | File | What | Credit | Changes |
