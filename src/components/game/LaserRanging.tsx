@@ -121,6 +121,10 @@ export default function LaserRanging() {
   const hudRef = useRef<HTMLDivElement>(null)
   const clockRef = useRef<HTMLSpanElement>(null)
   const distRef = useRef<HTMLSpanElement>(null)
+  const clockBoxRef = useRef<HTMLSpanElement>(null)
+  const outFillRef = useRef<HTMLSpanElement>(null)
+  const backFillRef = useRef<HTMLSpanElement>(null)
+  const backTrackRef = useRef<HTMLSpanElement>(null)
   const traceRef = useRef<SVGLineElement>(null)
   const headRef = useRef<SVGLineElement>(null)
   const photonRef = useRef<SVGCircleElement>(null)
@@ -148,7 +152,14 @@ export default function LaserRanging() {
     pulse.current = { t0: performance.now(), at, target, back, arrived: false }
     setBusy(true)
     setNews('Fired. The light is on its way to the Moon.')
-    if (distRef.current) distRef.current.textContent = '?'
+    if (distRef.current) {
+      distRef.current.textContent = '?'
+      distRef.current.dataset.wait = 'true'
+    }
+    if (clockBoxRef.current) clockBoxRef.current.dataset.run = 'true'
+    outFillRef.current?.style.setProperty('transform', 'scaleX(0)')
+    backFillRef.current?.style.setProperty('transform', 'scaleX(0)')
+    if (backTrackRef.current) backTrackRef.current.dataset.lost = 'false'
     kick.current()
   }
 
@@ -156,10 +167,23 @@ export default function LaserRanging() {
     const t = p.target
     if (p.back && t.kind === 'site') {
       const n = t.site.n
-      if (distRef.current) {
-        distRef.current.textContent = '385,000'
-        if (!prefersReducedMotion())
-          distRef.current.animate([{ transform: 'scale(1.08)' }, { transform: 'scale(1)' }], { duration: 320, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' })
+      // The distance comes from the time: it counts up to 385,000 as the light lands, then pops
+      const dist = distRef.current
+      if (dist) {
+        dist.dataset.wait = 'false'
+        const pop = () => dist.animate([{ transform: 'scale(1.08)' }, { transform: 'scale(1)' }], { duration: 320, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' })
+        if (prefersReducedMotion()) dist.textContent = '385,000'
+        else {
+          const t0 = performance.now()
+          const count = (now: number) => {
+            const k = Math.min(1, (now - t0) / 650)
+            const v = 385000 * (1 - (1 - k) ** 3)
+            dist.textContent = (Math.round(v / 1000) * 1000).toLocaleString('en-GB')
+            if (k < 1) requestAnimationFrame(count)
+            else pop()
+          }
+          requestAnimationFrame(count)
+        }
       }
       setCatches((c) => ({ ...c, [n]: (c[n] ?? 0) + 1 }))
       const first = !foundRef.current.includes(n)
@@ -188,6 +212,8 @@ export default function LaserRanging() {
     } else {
       setNews('That pulse missed the Moon and flew off into space.')
     }
+    if (distRef.current && !(p.back && t.kind === 'site')) distRef.current.dataset.wait = 'false'
+    if (clockBoxRef.current) clockBoxRef.current.dataset.run = 'false'
     pulse.current = null
     setBusy(false)
   }
@@ -231,6 +257,10 @@ export default function LaserRanging() {
         const e = (now - p.t0) / 1000
         const g = geometry(p.at)
         if (clockRef.current) clockRef.current.textContent = Math.min(e, TRIP).toFixed(2)
+        // The stopwatch's two legs: out to the Moon, then back (or, if nothing comes back, a dashed empty leg)
+        outFillRef.current?.style.setProperty('transform', `scaleX(${Math.min(1, e / HALF)})`)
+        backFillRef.current?.style.setProperty('transform', `scaleX(${p.back ? Math.min(1, Math.max(0, (e - HALF) / HALF)) : 0})`)
+        if (backTrackRef.current && !p.back && e >= HALF) backTrackRef.current.dataset.lost = 'true'
         set(gradRef.current, { x1: g.ox, y1: g.oy, x2: g.tx, y2: g.ty })
         set(traceRef.current, { x1: g.ox, y1: g.oy, x2: g.tx, y2: g.ty, opacity: 0.22 })
         const lerp = (k: number) => ({ x: g.ox + (g.tx - g.ox) * k, y: g.oy + (g.ty - g.oy) * k })
@@ -424,15 +454,32 @@ export default function LaserRanging() {
         </p>
         <div className="mt-3 flex items-end gap-8 sm:gap-12 lg:mt-6">
           <p>
-            <span className="block whitespace-nowrap font-display text-[clamp(2.2rem,10vw,4.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums">
+            <span
+              ref={clockBoxRef}
+              data-run="false"
+              className="block whitespace-nowrap font-display text-[clamp(2.2rem,10vw,4.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums transition-colors duration-200 data-[run=true]:text-laser"
+            >
               <span ref={clockRef}>0.00</span>
               <span className="ml-[0.12em] text-[0.36em] font-bold tracking-normal">s</span>
             </span>
             <span className="mt-2 block text-base text-sun/80">there and back</span>
+            {/* Two legs: out to the Moon, then back home */}
+            <span aria-hidden="true" className="mt-2.5 flex h-1.5 gap-1.5">
+              <span className="relative flex-1 overflow-hidden rounded-full bg-sun/20">
+                <span ref={outFillRef} className="absolute inset-0 origin-left rounded-full bg-laser" style={{ transform: 'scaleX(0)' }} />
+              </span>
+              <span
+                ref={backTrackRef}
+                data-lost="false"
+                className="relative flex-1 overflow-hidden rounded-full bg-sun/20 data-[lost=true]:bg-transparent data-[lost=true]:bg-[repeating-linear-gradient(90deg,rgb(242_226_194/0.35)_0_5px,transparent_5px_9px)]"
+              >
+                <span ref={backFillRef} className="absolute inset-0 origin-left rounded-full bg-laser" style={{ transform: 'scaleX(0)' }} />
+              </span>
+            </span>
           </p>
           <p>
             <span className="block whitespace-nowrap font-display text-[clamp(2.2rem,10vw,4.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums">
-              <span ref={distRef} className="inline-block origin-left">?</span>
+              <span ref={distRef} data-wait="false" className="inline-block origin-left transition-opacity duration-200 data-[wait=true]:opacity-45">?</span>
               <span className="ml-[0.12em] text-[0.36em] font-bold tracking-normal">km</span>
             </span>
             <span className="mt-2 block text-base text-sun/80">to the mirrors</span>
