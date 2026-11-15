@@ -31,6 +31,7 @@ export default function RotorLift() {
   const rootRef = useRef<HTMLElement>(null)
   const shakeRef = useRef<HTMLDivElement>(null)
   const worldRef = useRef<HTMLDivElement>(null)
+  const farRef = useRef<HTMLDivElement>(null)
   const heliRef = useRef<HTMLDivElement>(null)
   const shadowRef = useRef<HTMLDivElement>(null)
   const bandRef = useRef<HTMLDivElement>(null)
@@ -60,6 +61,8 @@ export default function RotorLift() {
     if (!root || !world || !heli) return
     const reduced = prefersReducedMotion()
     let k = 0 // pixels per metre
+    let groundY = 0 // screen y of the ground at rest
+    let topMargin = 0 // the camera follows only when the helicopter would pass this
     let raf = 0
     let last = 0
     let visible = false
@@ -74,7 +77,11 @@ export default function RotorLift() {
       // Phones: the ground sits just above the controls, wherever their top edge falls on this screen.
       const hudTop = hudRef.current?.offsetTop ?? H
       const ground = narrow ? Math.min(H * 0.4, hudTop - H * 0.02) : H * 0.64
-      k = narrow ? Math.min(H * 0.2, ground * 0.5) : H * 0.32
+      // Zoomed out far enough that the ground, the shadow and the 3 m band are all in view at the start:
+      // the climb to the band happens on screen, and the camera only follows above it.
+      k = narrow ? ground * 0.22 : H * 0.13
+      groundY = ground
+      topMargin = H * (narrow ? 0.03 : 0.05)
       root.style.setProperty('--k', `${k}px`)
       root.style.setProperty('--ground', `${ground}px`)
     }
@@ -152,14 +159,24 @@ export default function RotorLift() {
         )
       }
 
-      // The camera follows above 1.2 m, so the ground drops away as it climbs.
-      const cam = Math.max(0, s.h - 1.2)
+      // The camera follows only once the helicopter would pass the top of the screen; then the ground and the
+      // height pole drop away. The far ground moves a fifth as fast, so more distant ground shows as it climbs.
+      const heliTop = groundY - (1.05 + s.h) * k // the rotor top, not the frame top
+      const cam = Math.max(0, topMargin - heliTop)
       trauma = Math.max(0, trauma - 1.4 * dt)
       t += dt * 30
       const shake = reduced ? 0 : trauma * trauma
       if (shakeRef.current)
         shakeRef.current.style.transform = shake ? `translate3d(${14 * shake * Math.sin(t * 1.7)}px, ${10 * shake * Math.sin(t * 2.3)}px, 0)` : ''
-      world.style.transform = `translate3d(0, ${cam * k}px, 0)`
+      world.style.transform = `translate3d(0, ${cam}px, 0)`
+      // The band's label never sits among the words below: it hides once the band drops behind the controls
+      const bandLabel = bandRef.current?.firstElementChild as HTMLElement | null
+      if (bandLabel) {
+        const bandY = groundY - 3 * k + cam
+        const hudTop = hudRef.current?.offsetTop ?? Infinity
+        bandLabel.style.opacity = bandY < hudTop - 16 ? '1' : '0'
+      }
+      if (farRef.current) farRef.current.style.transform = `translate3d(0, ${cam * 0.2}px, 0)`
       heli.style.transform = `translate3d(-50%, ${-s.h * k}px, 0)`
       if (shadowRef.current) {
         const sc = 1 / (1 + s.h * 0.35)
@@ -212,6 +229,19 @@ export default function RotorLift() {
       className="relative isolate h-[100svh] min-h-[560px] overflow-hidden bg-[linear-gradient(to_bottom,var(--color-mars-sky),var(--color-mars-horizon))]"
     >
       <div ref={shakeRef} aria-hidden="true" className="absolute inset-0">
+        {/* Far crater floor: the same NASA photo at a finer scale, in haze. It moves a fifth as fast as the near
+            ground, so as the helicopter climbs and the near ground drops away, more distant ground shows behind it. */}
+        <div
+          ref={farRef}
+          className="absolute inset-x-0 top-[calc(var(--ground)-var(--k)*0.15)] h-[calc(100%-var(--ground)+40svh)] will-change-transform [mask-image:linear-gradient(to_bottom,transparent,black_5%)]"
+          style={{
+            backgroundImage:
+              'linear-gradient(to bottom, rgb(226 189 143 / 0.6), rgb(226 189 143 / 0.3) 35%, rgb(226 189 143 / 0.15)), url(photos/jezero-ground-wide.webp)',
+            backgroundSize: 'auto, 42% auto',
+            backgroundRepeat: 'no-repeat, repeat',
+            backgroundPosition: 'top, top center',
+          }}
+        />
         <div ref={worldRef} className="absolute inset-0 will-change-transform">
           {/* Jezero crater floor */}
           <picture>
@@ -229,19 +259,38 @@ export default function RotorLift() {
             data-inside="false"
             className="group absolute inset-x-0 top-[calc(var(--ground)-var(--k)*3.5)] h-[var(--k)] border-y border-dashed border-ink/35 bg-ink/5 transition-colors duration-200 data-[inside=true]:border-solid data-[inside=true]:border-sun data-[inside=true]:bg-sun/25"
           >
-            <p className="absolute left-5 top-1/2 -translate-y-1/2 font-display text-lg font-bold text-ink md:left-10 lg:text-xl">
+            <p className="absolute right-5 top-1/2 -translate-y-1/2 font-display text-lg font-bold text-ink md:right-10 lg:text-xl">
               3 m<span ref={bandTimeRef} className="tabular-nums" />
             </p>
           </div>
 
+          {/* A height pole standing on the ground beside the helicopter: a mark every half metre, a number every
+              metre. It belongs to the world, so once the camera follows, the marks slide past and the climb can be counted. */}
+          <div className="absolute left-[calc(50%-var(--k)*1.55)] top-[calc(var(--ground)-var(--k)*8)] h-[calc(var(--k)*8)] w-[2px] rounded-full bg-ink/30 lg:left-[calc(54%-var(--k)*1.55)]">
+            {Array.from({ length: 16 }, (_, i) => {
+              const m = (i + 1) / 2
+              const whole = Number.isInteger(m)
+              return (
+                <div key={m} className="absolute right-0 flex translate-y-1/2 items-center" style={{ bottom: `calc(var(--k) * ${m})` }}>
+                  {whole && (
+                    <span className={`mr-1.5 whitespace-nowrap font-display text-sm font-bold tabular-nums lg:text-base ${m === 3 ? 'text-ink' : 'text-ink/65'}`}>
+                      {m} m
+                    </span>
+                  )}
+                  <span className={`block rounded-full ${whole ? 'h-[2px] w-3.5 bg-ink/55' : 'h-px w-2 bg-ink/35'}`} />
+                </div>
+              )
+            })}
+          </div>
+
           <div
             ref={shadowRef}
-            className="absolute left-1/2 top-[calc(var(--ground)+var(--k)*0.05)] h-[calc(var(--k)*0.22)] w-[calc(var(--k)*1.1)] rounded-[50%] bg-black/70 blur-[6px] lg:left-[54%]"
+            className="absolute left-1/2 top-[calc(var(--ground)+var(--k)*0.05)] h-[calc(var(--k)*0.4)] w-[calc(var(--k)*2)] rounded-[50%] bg-black/70 blur-[6px] lg:left-[54%]"
             style={{ transform: 'translate(-50%, -50%)', opacity: 0.55 }}
           />
           <div
             ref={heliRef}
-            className="absolute left-1/2 top-[calc(var(--ground)-var(--k)*0.85)] h-[calc(var(--k)*1.2)] w-[calc(var(--k)*1.8)] lg:left-[54%]"
+            className="absolute left-1/2 top-[calc(var(--ground)-var(--k)*1.7)] h-[calc(var(--k)*2.4)] w-[calc(var(--k)*3.6)] lg:left-[54%]"
             style={{ transform: 'translate3d(-50%, 0, 0)' }}
           >
             <model-viewer
