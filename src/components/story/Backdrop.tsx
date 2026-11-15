@@ -27,6 +27,8 @@ export function sceneImages(scenes: Scene[]): SceneImage[] {
 
 /** How much of the scroll between two steps the cross-fade takes (0–1). Wide, so scenes dissolve rather than cut. */
 const FADE = 0.6
+/** Room to spare either side of the machine, and for the near side looking bigger in perspective. */
+const FIT_MARGIN = 1.1
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
@@ -42,7 +44,20 @@ const lerpView = (a: View, b: View, t: number): View => ({
 
 type Vec3 = [number, number, number]
 const parseOrbit = (o: string) => o.split(/\s+/).map(parseFloat) as [number, number, number]
-const parseTarget = (t: string): Vec3 | null => (t === 'auto' ? null : (t.split(/\s+/).map(parseFloat) as Vec3))
+/**
+ * The camera distance at which the whole machine fits across a box of this shape, seen from `theta` degrees.
+ * 0 until the model has loaded (its size is unknown before then).
+ */
+const fitRadius = (mv: ModelViewerElement, theta: number, aspect: number) => {
+  if (!mv.loaded || !mv.getDimensions) return 0
+  const d = mv.getDimensions()
+  const t = (theta * Math.PI) / 180
+  // How wide the machine's footprint looks from this side.
+  const across = Math.abs(d.x * Math.cos(t)) + Math.abs(d.z * Math.sin(t))
+  const halfFov = (mv.getFieldOfView() * Math.PI) / 360
+  return (across * FIT_MARGIN) / (2 * Math.tan(halfFov) * aspect)
+}
+const parseTarget =(t: string): Vec3 | null => (t === 'auto' ? null : (t.split(/\s+/).map(parseFloat) as Vec3))
 
 /**
  * Drives the backdrop from a scroll position. `f` is the story position: 0 = title, 1 = first step,
@@ -180,14 +195,19 @@ export function makeBackdropController(
       const [t0, p0, r0] = parseOrbit(scene.from.orbit)
       const [t1, p1, r1] = parseOrbit(scene.to.orbit)
       const narrow = isNarrow()
+      const aside = s !== 0
       const theta = lerp(t0, t1, c)
-      const orbit = `${theta.toFixed(2)}deg ${lerp(p0, p1, c).toFixed(2)}deg ${(lerp(r0, r1, c) * (narrow ? 1.3 : 1)).toFixed(3)}m`
+      const mv = opts.model()
+      // model-viewer frames by height, so a box narrower than it is tall cuts the sides off a wide machine
+      // (InSight's solar panels beside the words). Step the camera back until the machine's width fits.
+      const boxAspect = narrow ? vw / Math.max(1, vh * 0.48) : ((aside ? 0.36 : 0.62) * vw) / Math.max(1, vh)
+      const radius = Math.max(lerp(r0, r1, c) * (narrow ? 1.3 : 1), mv ? fitRadius(mv, theta, boxAspect) : 0)
+      const orbit = `${theta.toFixed(2)}deg ${lerp(p0, p1, c).toFixed(2)}deg ${radius.toFixed(3)}m`
       const ta = parseTarget(scene.from.target) ?? opts.autoTarget()
       const tb = parseTarget(scene.to.target) ?? opts.autoTarget()
       const target = ta.map((v, k) => `${lerp(v, tb[k], c).toFixed(3)}m`).join(' ')
-      const mv = opts.model()
       // After the title the words run down the middle, so on wide screens the machine steps to the right of them.
-      if (mv) mv.dataset.aside = s === 0 ? 'false' : 'true'
+      if (mv) mv.dataset.aside = aside ? 'true' : 'false'
       if (mv) hideAbove(mv, scene.hideAbove)
       if (mv && (orbit !== lastOrbit || target !== lastTarget)) {
         lastOrbit = orbit
