@@ -92,6 +92,7 @@ export default function RotorLift() {
   const motionPathRef = useRef<SVGPathElement>(null)
   const motionWordRef = useRef<HTMLSpanElement>(null)
   const holdRef = useRef<HTMLButtonElement>(null)
+  const spaceKeyRef = useRef<HTMLElement>(null)
   const bladeTopRef = useRef<SVGSVGElement>(null)
   const bladeLowRef = useRef<SVGSVGElement>(null)
   const blurDiscRef = useRef<HTMLSpanElement>(null)
@@ -115,9 +116,11 @@ export default function RotorLift() {
     setNews(item('air', a === 'earth' ? 'Air as thick as Earth’s. Hold the button and watch the speed.' : 'Back to thin Mars air.'))
   }
 
-  function hold(on: boolean) {
+  function hold(on: boolean, key = false) {
     held.current = on
     if (holdRef.current) holdRef.current.dataset.held = String(on)
+    // The drawn space key in the hint sinks only while the keyboard is holding
+    if (spaceKeyRef.current) spaceKeyRef.current.dataset.held = String(on && key)
   }
 
   useEffect(() => {
@@ -633,6 +636,8 @@ export default function RotorLift() {
               aria-describedby="rotor-help"
               onPointerDown={(e) => {
                 e.currentTarget.setPointerCapture(e.pointerId)
+                // Selected after a press in every browser (Safari doesn't by itself), so the space bar works next
+                e.currentTarget.focus({ preventScroll: true })
                 hold(true)
               }}
               onPointerUp={() => hold(false)}
@@ -641,7 +646,7 @@ export default function RotorLift() {
               onKeyDown={(e) => {
                 if (e.key === ' ' || e.key === 'Enter') {
                   e.preventDefault()
-                  if (!e.repeat) hold(true)
+                  if (!e.repeat) hold(true, true)
                 }
               }}
               onKeyUp={(e) => {
@@ -667,9 +672,21 @@ export default function RotorLift() {
               </span>
               Hold to spin
             </button>
-            <p id="rotor-help" className="text-sm text-sun/70 sm:text-base">
-              <span className="hidden lg:inline">The space bar works too. </span>The game&rsquo;s numbers are simpler than the real helicopter&rsquo;s.
-            </p>
+            {/* Two separate things: how to use a keyboard (only where there is a mouse, so most likely a keyboard), with
+                a drawn key that sinks while space is held; and the honest note about the numbers, quieter. */}
+            <div id="rotor-help" className="grid gap-1.5">
+              <p className="hidden flex-wrap items-center gap-x-2 gap-y-1 text-sm text-sun/80 sm:text-base [@media(hover:hover)_and_(pointer:fine)]:flex">
+                Or click it once, then hold
+                <kbd
+                  ref={spaceKeyRef}
+                  data-held="false"
+                  className="inline-flex h-7 min-w-[4.5rem] items-center justify-center rounded-md bg-sun/10 px-2.5 font-body text-sm font-bold text-sun shadow-[inset_0_0_0_1px_rgb(242_226_194/0.4),0_3px_0_rgb(242_226_194/0.28)] transition-[transform,box-shadow] duration-100 ease-out data-[held=true]:translate-y-[2px] data-[held=true]:bg-sun/20 data-[held=true]:shadow-[inset_0_0_0_1px_rgb(242_226_194/0.6),0_1px_0_rgb(242_226_194/0.28)]"
+                >
+                  space
+                </kbd>
+              </p>
+              <p className="text-sm text-sun/60">The game&rsquo;s numbers are simpler than the real helicopter&rsquo;s.</p>
+            </div>
           </div>
         </div>
       </div>
