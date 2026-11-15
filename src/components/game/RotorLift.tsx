@@ -7,6 +7,7 @@ import { addRotorBlur } from './rotorBlur'
 import { news as item, NewsLine, type News } from './LastLightHud'
 import { loadModelViewer } from '../../lib/modelViewer'
 import { isNarrow, prefersReducedMotion } from '../../scroll/smoothScroll'
+import { Key } from './Key'
 import { StageHeading } from './StageHeading'
 
 // "Lift off": spin Ingenuity's blades and hover at 3 metres. Lift grows with air density × speed²
@@ -732,13 +733,9 @@ export default function RotorLift() {
             <div id="rotor-help" className="grid gap-1.5">
               <p className="hidden flex-wrap items-center gap-x-2 gap-y-1 text-sm text-sun/80 sm:text-base [@media(hover:hover)_and_(pointer:fine)]:flex">
                 Or click it once, then hold
-                <kbd
-                  ref={spaceKeyRef}
-                  data-held="false"
-                  className="inline-flex h-7 min-w-[4.5rem] items-center justify-center rounded-md bg-sun/10 px-2.5 font-body text-sm font-bold text-sun shadow-[inset_0_0_0_1px_rgb(242_226_194/0.4),0_3px_0_rgb(242_226_194/0.28)] transition-[transform,box-shadow] duration-100 ease-out data-[held=true]:translate-y-[2px] data-[held=true]:bg-sun/20 data-[held=true]:shadow-[inset_0_0_0_1px_rgb(242_226_194/0.6),0_1px_0_rgb(242_226_194/0.28)]"
-                >
+                <Key ref={spaceKeyRef} data-held="false" className="min-w-[4.5rem] px-2.5">
                   space
-                </kbd>
+                </Key>
               </p>
               <p className="text-sm text-sun/60">The game&rsquo;s numbers are simpler than the real helicopter&rsquo;s.</p>
             </div>

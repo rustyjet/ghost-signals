@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { isNarrow, prefersReducedMotion } from '../../scroll/smoothScroll'
+import { Key } from './Key'
 import { StageHeading } from './StageHeading'
 
 // "Find the mirrors": fire a laser at the Moon and wait for the light to come back.
@@ -102,6 +103,12 @@ function MirrorSlot({ site, catchId }: { site?: Site; catchId: number }) {
   )
 }
 
+/** What a pulse fired here would hit, in a few words */
+const aimName = (x: number, y: number) => {
+  const t = targetAt(x, y)
+  return t.kind === 'site' ? `Apollo ${t.site.n}` : t.kind === 'ground' ? 'bare ground' : 'empty space'
+}
+
 const where = (x: number, y: number) => {
   const t = targetAt(x, y)
   return t.kind === 'site' ? `Aiming at Apollo ${t.site.n}.` : t.kind === 'ground' ? 'Aiming at bare ground.' : 'Aiming past the Moon.'
@@ -115,6 +122,10 @@ export default function LaserRanging() {
   const [busy, setBusy] = useState(false)
   const [aim, setAim] = useState({ x: 0.5, y: 0.5 })
   const [aimSaid, setAimSaid] = useState('')
+  // The hint follows what you are doing: pointing with a mouse, aiming with keys, or waiting for the light
+  const [pointing, setPointing] = useState(false)
+  const [keying, setKeying] = useState(false)
+  const [mouse] = useState(() => typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches)
 
   const rootRef = useRef<HTMLElement>(null)
   const shakeRef = useRef<HTMLDivElement>(null)
@@ -387,6 +398,10 @@ export default function LaserRanging() {
           onPointerMove={(e) => {
             if (e.pointerType === 'mouse' && !pulse.current) aimAt(pointerAt(e).x, pointerAt(e).y)
           }}
+          onPointerEnter={(e) => e.pointerType === 'mouse' && setPointing(true)}
+          onPointerLeave={() => setPointing(false)}
+          onFocus={(e) => setKeying(e.currentTarget.matches(':focus-visible'))}
+          onBlur={() => setKeying(false)}
           onKeyDown={(e) => {
             const step = e.shiftKey ? 0.05 : 0.01
             const d = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key]
@@ -505,16 +520,37 @@ export default function LaserRanging() {
           </div>
         </div>
         {/* How to fire: the Moon itself is the control (there is no separate button that would fire at a stale aim) */}
-        <p className="mt-4 flex items-start gap-2 text-base text-sun/85 lg:mt-5">
+        <p className="mt-4 flex items-start gap-2 text-base leading-snug text-sun/85 lg:mt-5 [@media(hover:hover)_and_(pointer:fine)]:min-h-[3.4em]">
           <svg viewBox="0 0 24 24" aria-hidden="true" className="mt-[0.2em] size-[1.1em] shrink-0 text-laser" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
             <circle cx="12" cy="12" r="7.5" />
             <path d="M12 1.5 V6 M12 18 V22.5 M1.5 12 H6 M18 12 H22.5" />
             <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
           </svg>
-          <span className="[@media(hover:hover)_and_(pointer:fine)]:hidden">Tap a spot on the Moon to fire.</span>
-          <span className="hidden [@media(hover:hover)_and_(pointer:fine)]:inline">
-            Click a spot on the Moon to fire. Or Tab to it, aim with the arrow keys and press Enter.
-          </span>
+          {busy ? (
+            <span>Wait for the light to come back.</span>
+          ) : keying ? (
+            <span className="leading-[2.1]">
+              Aim with{' '}
+              <span className="inline-flex gap-1 align-middle">
+                <Key aria-label="left">←</Key>
+                <Key aria-label="up">↑</Key>
+                <Key aria-label="down">↓</Key>
+                <Key aria-label="right">→</Key>
+              </span>
+              , fire with <Key className="px-2 align-middle">Enter</Key>. Hold <Key className="px-2 align-middle">Shift</Key> for bigger steps.
+              <span className="block leading-snug text-laser">Aiming at {aimName(aim.x, aim.y)}.</span>
+            </span>
+          ) : mouse && pointing ? (
+            <span>
+              Click to fire at <span className="font-bold text-laser">{aimName(aim.x, aim.y)}</span>.
+            </span>
+          ) : mouse ? (
+            <span className="leading-[1.9]">
+              Click a spot on the Moon to fire. Or press <Key className="px-2 align-middle">Tab</Key> to use the keys.
+            </span>
+          ) : (
+            <span>Tap a spot on the Moon to fire.</span>
+          )}
         </p>
         <p className="mt-2 text-sm text-sun/60">In the game, light comes back far more often than it really does.</p>
       </div>
