@@ -363,11 +363,13 @@ export default function Journey() {
           </div>
         </header>
 
-        {stops.slice(1).map((s) => {
+        {stops.slice(1).map((s, k, rest) => {
           const chapter = s.machine?.slug ? getChapter(s.machine.slug) : undefined
+          // Phones: a machine stop is longer, as its photo is held until its words have gone (see `gone`). The last
+          // has no next stop to hold for: at full length its photo stood still for a screen before the trip ended.
+          const held = s.machine && k < rest.length - 1
           return (
-            // Phones: a machine stop is longer, as its photo is held until its words have gone (see `gone`)
-            <article key={s.id} className={`flex items-start justify-center px-5 md:px-10 lg:min-h-stage-100 lg:items-center ${s.machine ? 'min-h-stage-110' : 'min-h-stage-80'}`}>
+            <article key={s.id} className={`flex items-start justify-center px-5 md:px-10 lg:min-h-stage-100 lg:items-center ${held ? 'min-h-stage-110' : 'min-h-stage-80'}`}>
               <div data-stop="" data-low={s.machine ? '' : undefined} className="w-full max-w-[34rem] text-center text-sun lg:w-[min(36rem,42vw)]">
                 <div data-words="">
                   {s.figure && (
