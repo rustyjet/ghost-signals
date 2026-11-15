@@ -98,9 +98,10 @@ More sources:
 | 8 | Passed marathon distance on 24 March 2015, sol 3,968; 42.198 km total (marathon = 42.195 km) | MARA | Checked |
 | 8 | "11 years and two months": landed January 2004, marathon March 2015 | MP, MARA (our arithmetic) | Checked |
 | 8 | Endeavour crater about 22 km across; route ended on its rim | MP, MARA map | Checked |
-| 9 | Sol 5,000 in February 2018 → "14 years on Mars" (January 2004 to February 2018, our arithmetic) | JPL "Opportunity's First Selfie" (sol 5,000 self-portrait, Feb 2018) | Checked via search summary |
-| 9 | Neither front wheel used for steering: right-front steering out since 2005, left-front stalled June 2017 | WALK17 | Checked via search summary |
-| 9 | Flash memory "amnesia" events and resets; rover switched to a no-flash mode | FLASH14 | Checked via search summary |
+| 9 | Self-portrait taken on sol 5,000 ("to celebrate the 5000th Martian Day, or sol") | JPL "Opportunity's First Selfie" (pia22222), read in browser 15 Nov 2026 | Checked |
+| 9 | "14 years on Mars" by sol 5,000: the page gives no calendar date; 2004 landing (MP) plus about 14 years is our arithmetic | MP, pia22222 | Checked (arithmetic ours) |
+| 9 | Front wheels: right-front steering not used "since 2005"; left-front stalled on 4 June, straightened 17 June; "we don't plan to use either front wheel for steering" for the immediate future. The page text sent does not show the year of the stall; WALK17 gives 2017, so check the date at the top of the page | JPL "Mars Rover Opportunity on Walkabout Near Rim", read in browser 15 Nov 2026 | Checked (year to confirm) |
+| 9 | Flash memory "amnesia" events and computer resets after reformatting; rover shifted to a working mode that avoids the flash storage (no-flash mode) | JPL "Opportunity Working in No-Flash Mode for Now", read in browser 15 Nov 2026 | Checked |
 | 9–12 | Ground photo: Perseverance Valley, Opportunity's last panorama, sols 5,084–5,111 | LEGACY | Checked |
 | 10 | Day 5,111 (10 June 2018): global dust storm; last image, dark and incomplete | LAST, END | Checked |
 | 11 | More than a thousand commands over an eight-month recovery effort; last commands late on 12 Feb 2019 | END | Checked |
@@ -114,7 +115,8 @@ Each photo is shown with the step it belongs to, so the picture itself is a clai
 |------|-------------|--------|---------|
 | 1–2 | Eagle crater with the lander and the tracks out of it (sols 58 and 60) | PIA05755 caption | Checked |
 | 3 | The "Berry Bowl" rock with spherules, brushed spot | PIA05634 caption (BOWL) | Checked |
-| 4 | Endurance crater's rim from about 70 m, sol 93 (shown with day 91, two sols earlier) | PIA05847 caption | Checked via search summary |
+| 4 | Endurance crater's rim from about 70 m, on the rover's 93rd sol ("approximately 70 meters (about 230 feet) from the rim of Endurance Crater on the rover's 93rd sol") | PIA05847, science.nasa.gov/photojournal/endurance-looms-on-the-horizon (read in browser 15 Nov 2026) | Checked |
+| 4 | "shown with day 91, two sols earlier": our day counter, not on the page | our arithmetic | Checked (arithmetic ours) |
 | 5 | Purgatory Dune ripples and the ruts from being stuck, sols 456–464 | PIA07216 caption | Checked |
 | 6 | Sky darkening, sols 1,205–1,235 (sol numbers printed on NASA's image) | DARK07 | Checked |
 | 7 | Dusty panels January 2014, clean panels March 2014 | PIA17759, PIA18079 captions | Checked |

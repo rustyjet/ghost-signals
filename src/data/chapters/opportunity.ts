@@ -190,7 +190,7 @@ export const opportunity: Chapter = {
       spine: 5000,
       figure: { value: 14, unit: 'years', label: 'on Mars by Day 5,000' },
       heading: 'I was getting old.',
-      body: 'Two of my wheels could no longer steer. My memory kept forgetting things. I kept going.',
+      body: 'For now, I do not steer with my front wheels. My memory kept forgetting things. I kept going.',
       storm: 0.1,
       scene: { kind: 'photo', image: sprained, from: { x: 0.15, y: 0.5, zoom: 1.05 }, to: { x: 0.7, y: 0.5, zoom: 1.05 } },
     },
