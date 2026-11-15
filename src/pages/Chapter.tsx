@@ -94,7 +94,7 @@ function Sources({ chapter }: { chapter: ChapterData }) {
     <footer className="border-t border-sun/15 bg-basalt px-5 pb-16 pt-12 text-sun/80 md:px-10">
       <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-[1.4fr_1fr]">
         <div>
-          <h2 className="font-display text-2xl text-sun">Where every number comes from</h2>
+          <h2 className="font-display text-2xl leading-[1.05]! text-sun">Where every number comes from</h2>
           <ul className="mt-4 space-y-1">
             {chapter.sources.map((s) => (
               <li key={s.url}>

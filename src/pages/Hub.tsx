@@ -15,7 +15,7 @@ export default function Hub() {
       <footer className="border-t border-sun/15 bg-black px-5 pb-16 pt-12 text-sun/80 md:px-10">
         <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-[1.2fr_1fr]">
           <div>
-            <h2 className="font-display text-2xl text-sun">Where every number comes from</h2>
+            <h2 className="font-display text-2xl leading-[1.05]! text-sun">Where every number comes from</h2>
             <ul className="mt-4 space-y-1">
               {journeySources.map((s) => (
                 <li key={s.url}>
