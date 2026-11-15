@@ -76,6 +76,7 @@ export default function RotorLift() {
   const bandTimeRef = useRef<HTMLSpanElement>(null)
   const bandFillRef = useRef<HTMLDivElement>(null)
   const bandLabelRef = useRef<HTMLParagraphElement>(null)
+  const poleMarkRef = useRef<HTMLDivElement>(null)
   const doneRef = useRef(new Set<Air>())
   const rpmRef = useRef<HTMLSpanElement>(null)
   const altRef = useRef<HTMLSpanElement>(null)
@@ -285,6 +286,10 @@ export default function RotorLift() {
       }
       if (farRef.current) farRef.current.style.transform = `translate3d(0, ${cam * 0.2}px, 0)`
       heli.style.transform = `translate3d(-50%, ${-s.h * k}px, 0)`
+      if (poleMarkRef.current) {
+        poleMarkRef.current.style.transform = `translate3d(0, ${-s.h * k}px, 0)`
+        poleMarkRef.current.style.opacity = s.h > 0.02 ? '1' : '0'
+      }
       if (shadowRef.current) {
         const sc = 1 / (1 + s.h * 0.35)
         shadowRef.current.style.transform = `translate(-50%, -50%) scale(${sc})`
@@ -413,23 +418,38 @@ export default function RotorLift() {
             </p>
           </div>
 
-          {/* A height pole standing on the ground beside the helicopter: a mark every half metre, a number every
-              metre. It belongs to the world, so once the camera follows, the marks slide past and the climb can be counted. */}
-          <div className="absolute left-[calc(50%-var(--k)*1.55)] top-[calc(var(--ground)-var(--k)*8)] h-[calc(var(--k)*8)] w-[2px] rounded-full bg-ink/30 lg:left-[calc(54%-var(--k)*1.55)]">
-            {Array.from({ length: 16 }, (_, i) => {
-              const m = (i + 1) / 2
-              const whole = Number.isInteger(m)
+          {/* A height pole standing on the ground beside the helicopter, striped like a surveyor's rod: each stripe is
+              half a metre, so the height can be counted at a glance; a number every metre. It belongs to the world, so
+              once the camera follows, the stripes slide past. A marker rides up the pole level with the helicopter's
+              feet, with a dotted line across to them, so the pole reads exactly where it is. */}
+          <div className="absolute left-[calc(50%-var(--k)*1.55)] top-[calc(var(--ground)-var(--k)*8)] h-[calc(var(--k)*8)] w-0 lg:left-[calc(54%-var(--k)*1.55)]">
+            <div
+              className="absolute inset-y-0 -left-[3px] w-[6px] rounded-t-full shadow-[0_0_0_1px_rgb(31_20_14/0.45)]"
+              style={{
+                background:
+                  'repeating-linear-gradient(to top, rgb(31 20 14 / 0.72) 0 calc(var(--k) * 0.5), rgb(242 226 194 / 0.9) calc(var(--k) * 0.5) var(--k))',
+              }}
+            />
+            <div className="absolute -bottom-[3px] -left-3 h-1.5 w-6 rounded-[50%] bg-black/45 blur-[2px]" />
+            {Array.from({ length: 8 }, (_, i) => {
+              const m = i + 1
               return (
-                <div key={m} className="absolute right-0 flex translate-y-1/2 items-center" style={{ bottom: `calc(var(--k) * ${m})` }}>
-                  {whole && (
-                    <span className={`mr-1.5 whitespace-nowrap font-display text-sm font-bold tabular-nums lg:text-base ${m === 3 ? 'text-ink' : 'text-ink/65'}`}>
-                      {m} m
-                    </span>
-                  )}
-                  <span className={`block rounded-full ${whole ? 'h-[2px] w-3.5 bg-ink/55' : 'h-px w-2 bg-ink/35'}`} />
+                <div key={m} className="absolute right-[3px] flex translate-y-1/2 items-center" style={{ bottom: `calc(var(--k) * ${m})` }}>
+                  <span
+                    className={`mr-1.5 whitespace-nowrap font-display font-bold tabular-nums [text-shadow:0_0_6px_rgb(226_189_143/0.85)] ${m === 3 ? 'text-base text-ink lg:text-lg' : 'text-sm text-ink/70 lg:text-base'}`}
+                  >
+                    {m} m
+                  </span>
+                  <span className="block h-[2px] w-3 rounded-full bg-ink/60" />
                 </div>
               )
             })}
+            <div ref={poleMarkRef} className="absolute bottom-0 left-[4px] flex h-0 items-center opacity-0 transition-opacity duration-200">
+              <svg viewBox="0 0 10 12" aria-hidden="true" className="h-3 w-2.5 shrink-0">
+                <path d="M0.8 6 L9.2 0.8 V11.2 Z" fill="#fff1d6" stroke="#1f140e" strokeWidth="1.4" strokeLinejoin="round" />
+              </svg>
+              <span className="block w-[calc(var(--k)*0.85)] border-t-2 border-dotted border-sun-bright [filter:drop-shadow(0_1px_0_rgb(31_20_14/0.6))]" />
+            </div>
           </div>
 
           <div
