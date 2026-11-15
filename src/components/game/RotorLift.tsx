@@ -74,6 +74,9 @@ export default function RotorLift() {
   const shadowRef = useRef<HTMLDivElement>(null)
   const bandRef = useRef<HTMLDivElement>(null)
   const bandTimeRef = useRef<HTMLSpanElement>(null)
+  const bandFillRef = useRef<HTMLDivElement>(null)
+  const bandLabelRef = useRef<HTMLParagraphElement>(null)
+  const doneRef = useRef(new Set<Air>())
   const rpmRef = useRef<HTMLSpanElement>(null)
   const altRef = useRef<HTMLSpanElement>(null)
   const rpmFillRef = useRef<HTMLSpanElement>(null)
@@ -124,6 +127,8 @@ export default function RotorLift() {
     let t = 0
     let bladeAngle = 0
     let motion: Motion = 'ground'
+    let slipped = false // the news says the helicopter slipped out of the band
+    let slipAt = -Infinity
     let rotors: ReturnType<ModelScene['getObjectByName']>[] = []
     let scene: ModelScene | null = null
 
@@ -181,7 +186,21 @@ export default function RotorLift() {
           if (s.v < HARD_LANDING) {
             trauma = Math.min(1, trauma + 0.6)
             say('hard', item('bump', 'Bump. A hard landing. Let go a little at a time to come down gently.', 'warn'), false)
-          } else say('soft', item('land', 'Down gently. That is how Ingenuity landed.'), false)
+          } else {
+            const done = doneRef.current
+            say(
+              'soft',
+              item(
+                'land',
+                done.has('mars') && done.has('earth')
+                  ? 'Down gently. That is how Ingenuity landed. You have flown in both kinds of air.'
+                  : done.has('mars') && airRef.current === 'mars'
+                    ? 'Down gently. Now switch to Earth air and fly again.'
+                    : 'Down gently. That is how Ingenuity landed.',
+              ),
+              false,
+            )
+          }
         }
         s.h = 0
         s.v = Math.max(0, s.v)
@@ -199,24 +218,49 @@ export default function RotorLift() {
           ),
         )
       }
-      if (!s.airborne && s.rpm > 1500 && airRef.current === 'mars') say('thin', item('air', 'Still on the ground. The air is too thin to push against. Keep holding.'))
+      if (!s.airborne && s.rpm > 1500 && airRef.current === 'mars' && !s.said.has('lift-mars')) say('thin', item('air', 'Still on the ground. The air is too thin to push against. Keep holding.'))
       if (s.h > BAND[1] + 1.5) say('high', item('high', 'Too high. Let go a little and it will sink.', 'warn'), true)
 
       // Hovering in the band counts up; drifting out drains it again, quickly but not all at once.
       const inside = s.h >= BAND[0] && s.h <= BAND[1]
+      const wasIn = bandRef.current?.dataset.inside === 'true'
+      const air = airRef.current
+      const doneHere = doneRef.current.has(air)
       s.inBand = inside ? s.inBand + dt : Math.max(0, s.inBand - 2 * dt)
-      if (bandTimeRef.current) bandTimeRef.current.textContent = s.inBand > 0.05 ? `, ${s.inBand.toFixed(1)} s` : ''
+      // Arriving says what to do next; slipping out says how to get back, and coming back in says so (a slip
+      // line at most every 2.5 s, so wobbling on the edge does not flicker the news)
+      if (inside && !wasIn && !doneHere) {
+        if (!s.said.has(`band-${air}`))
+          say(`band-${air}`, item('hover', 'You made it to 3 metres! Now stay in the band for 3 seconds. Short taps on the button keep it steady.'))
+        else if (slipped) say('back', item('hover', 'Back in the band. Keep it there.'), false)
+        slipped = false
+      }
+      if (!inside && wasIn && !doneHere && s.inBand > 0.3 && now - slipAt > 2500) {
+        say(
+          'slip',
+          item('hover', s.h > BAND[1] ? 'Out of the band, too high. Let go for a moment to sink back in.' : 'Out of the band, too low. Hold a little longer to climb back in.'),
+          false,
+        )
+        slipped = true
+        slipAt = now
+      }
       if (bandRef.current) bandRef.current.dataset.inside = String(inside)
-      if (s.inBand >= HOVER_GOAL) {
-        const done = airRef.current
+      // The band fills as the seconds count, and drains while you are out
+      if (bandFillRef.current) bandFillRef.current.style.transform = `scaleX(${doneHere ? 1 : Math.min(1, s.inBand / HOVER_GOAL)})`
+      const status = doneHere ? 'done' : s.inBand > 0.05 ? `${Math.min(s.inBand, HOVER_GOAL).toFixed(1)} of 3 s` : 'stay 3 s'
+      if (bandTimeRef.current && bandTimeRef.current.textContent !== status) bandTimeRef.current.textContent = status
+      if (s.inBand >= HOVER_GOAL && !doneHere) {
+        const done = air
+        doneRef.current.add(done)
+        slipped = false
         setHovered((h) => (h.includes(done) ? h : [...h, done]))
         say(
           `hover-${done}`,
           item(
             'goal',
             done === 'mars'
-              ? 'You hovered at 3 metres in Mars air. Ingenuity did that on 19 April 2021. Now switch to Earth air.'
-              : 'Hovered in Earth air. Same blades, a tenth of the speed: that is what thin air costs.',
+              ? 'You hovered at 3 metres in Mars air. Ingenuity did that on 19 April 2021. Land gently, then try Earth air.'
+              : 'Hovered in Earth air. Same blades, a tenth of the speed: that is what thin air costs. Now land gently.',
             'good',
           ),
         )
@@ -233,7 +277,7 @@ export default function RotorLift() {
         shakeRef.current.style.transform = shake ? `translate3d(${14 * shake * Math.sin(t * 1.7)}px, ${10 * shake * Math.sin(t * 2.3)}px, 0)` : ''
       world.style.transform = `translate3d(0, ${cam}px, 0)`
       // The band's label never sits among the words below: it hides once the band drops behind the controls
-      const bandLabel = bandRef.current?.firstElementChild as HTMLElement | null
+      const bandLabel = bandLabelRef.current
       if (bandLabel) {
         const bandY = groundY - 3 * k + cam
         const hudTop = hudRef.current?.offsetTop ?? Infinity
@@ -344,14 +388,28 @@ export default function RotorLift() {
             />
           </picture>
 
-          {/* The hover band, 2.5 to 3.5 metres */}
+          {/* The hover band, 2.5 to 3.5 metres. Dashed edges while it waits; solid and lit while the helicopter is
+              inside. It fills left to right as the 3 seconds count (and drains while out), and stays full with a
+              tick once done in this air. */}
           <div
             ref={bandRef}
             data-inside="false"
-            className="group absolute inset-x-0 top-[calc(var(--ground)-var(--k)*3.5)] h-[var(--k)] border-y border-dashed border-ink/35 bg-ink/5 transition-colors duration-200 data-[inside=true]:border-solid data-[inside=true]:border-sun data-[inside=true]:bg-sun/25"
+            data-done={hovered.includes(air)}
+            className="absolute inset-x-0 top-[calc(var(--ground)-var(--k)*3.5)] h-[var(--k)] border-y-2 border-dashed border-ink/35 bg-ink/5 transition-[background-color,border-color] duration-200 data-[done=true]:border-solid data-[done=true]:border-sun/80 data-[inside=true]:border-solid data-[inside=true]:border-sun data-[inside=true]:bg-sun/15"
           >
-            <p className="absolute right-5 top-1/2 -translate-y-1/2 font-display text-lg font-bold text-ink md:right-10 lg:text-xl">
-              3 m<span ref={bandTimeRef} className="tabular-nums" />
+            <div ref={bandFillRef} className="absolute inset-0 origin-left bg-sun/35" style={{ transform: 'scaleX(0)' }} />
+            <p ref={bandLabelRef} className="absolute right-5 top-1/2 -translate-y-1/2 text-right text-ink md:right-10">
+              <span className="flex items-center justify-end gap-1.5 font-display text-lg font-bold leading-tight lg:text-xl">
+                {hovered.includes(air) && (
+                  <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[0.9em] w-[0.9em]">
+                    <path d="M5 12.5 L10 17 L19 7.5" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+                3 m
+              </span>
+              <span ref={bandTimeRef} className="block whitespace-nowrap text-sm font-bold tabular-nums text-ink/75 lg:text-base">
+                stay 3 s
+              </span>
             </p>
           </div>
 

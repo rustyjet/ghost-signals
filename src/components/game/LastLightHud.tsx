@@ -239,7 +239,7 @@ export function Ending({
 export type NewsKind =
   | 'power' | 'cold' | 'warm' | 'sky' | 'gust' | 'rock' | 'radio' | 'pause'
   // Lift off (Ingenuity)
-  | 'rotor' | 'up' | 'high' | 'land' | 'bump' | 'goal' | 'air'
+  | 'rotor' | 'up' | 'high' | 'land' | 'bump' | 'goal' | 'air' | 'hover'
 /** info: plain; warn: act now (orange); cold: the electronics are cooling (frost); good: a goal reached (cream). Always a badge shape too. */
 export type NewsTone = 'info' | 'warn' | 'cold' | 'good'
 export interface News {
@@ -305,6 +305,7 @@ function NewsIcon({ kind, className }: { kind: NewsKind; className?: string }) {
       {kind === 'high' && <path d="M12 4.5 V19 M6 13 L12 19 L18 13" />}
       {kind === 'land' && <path d="M12 3.5 V13.5 M8 9.5 L12 13.5 L16 9.5 M4 19 H20" />}
       {kind === 'bump' && <path d="M4 19 H20 M12 8 V14 M6 10.5 L8.5 14.5 M18 10.5 L15.5 14.5" />}
+      {kind === 'hover' && <path d="M4 9 H20 M4 15 H20 M12 11.5 V12.5" />}
       {kind === 'goal' && <path d="M5 12.5 L10 17 L19 7.5" strokeWidth="3" />}
       {kind === 'air' && (
         <>
