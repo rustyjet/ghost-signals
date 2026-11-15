@@ -1,7 +1,9 @@
 import type { ModelViewerElement } from '@google/model-viewer'
+import type { Object3D } from 'three'
 import { useEffect, useRef, useState } from 'react'
 import DustField from '../DustField'
 import { createDownwash } from './downwash'
+import { addRotorBlur } from './rotorBlur'
 import { news as item, NewsLine, type News } from './LastLightHud'
 import { loadModelViewer } from '../../lib/modelViewer'
 import { isNarrow, prefersReducedMotion } from '../../scroll/smoothScroll'
@@ -138,6 +140,8 @@ export default function RotorLift() {
     let slipAt = -Infinity
     let rotors: ReturnType<ModelScene['getObjectByName']>[] = []
     let scene: ModelScene | null = null
+    let blur: Awaited<ReturnType<typeof addRotorBlur>> | null = null
+    let blurStarted = false
 
     const dust = dustCanvasRef.current ? createDownwash(dustCanvasRef.current, reduced) : null
     let heliX = 0 // screen x of the helicopter's centre
@@ -165,6 +169,10 @@ export default function RotorLift() {
       const sym = Object.getOwnPropertySymbols(mv).find((s) => s.description === 'scene')
       scene = sym ? ((mv as unknown as Record<symbol, ModelScene>)[sym] ?? null) : null
       rotors = scene ? [scene.getObjectByName('rotors_01'), scene.getObjectByName('rotors_02')].filter(Boolean) : []
+      if (rotors.length === 2 && !blurStarted) {
+        blurStarted = true
+        void addRotorBlur(rotors as unknown as Object3D[]).then((b) => (blur = b))
+      }
     }
     mvRef.current?.addEventListener('load', findRotors)
 
@@ -347,11 +355,14 @@ export default function RotorLift() {
       const wash = Math.min(1, lift) * Math.max(0, 1 - s.h / 3.2) ** 2
       dust?.step(dt, heliX, groundY, k, wash, s.h, cam)
 
-      // The blades turn: counter-rotating, at a speed the eye can follow.
+      // The blades turn: counter-rotating, at a speed the eye can follow. Past about a third of lift-off speed they
+      // start to blur: the blades fade and a soft disc grows over the circle they sweep, full by about 90%.
       if (rotors.length && scene) {
-        const turn = (s.rpm / MARS_RPM) * (reduced ? 1 : 4) * Math.PI * 2 * dt
+        const turn = (s.rpm / MARS_RPM) * (reduced ? 1 : 5) * Math.PI * 2 * dt
         rotors.forEach((r) => r?.rotateX(turn))
-        if (turn) scene.queueRender()
+        const x = Math.min(1, Math.max(0, (s.rpm / MARS_RPM - 0.3) / 0.6))
+        const changed = blur?.set(x * x * (3 - 2 * x)) ?? false
+        if (turn || changed) scene.queueRender()
       }
 
       if (visible) raf = requestAnimationFrame(frame)
