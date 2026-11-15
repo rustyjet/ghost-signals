@@ -12,7 +12,7 @@ import {
   type GameState,
   type Plan,
 } from './dustStormModel'
-import { BatteryCell, DayCounter, Ending, SentHome, Lever, NewsLine, news, newsFor, type News } from './LastLightHud'
+import { BatteryCell, DayCounter, Ending, SentHome, Lever, NewsLine, PauseButton, news, newsFor, type News } from './LastLightHud'
 
 const SOL_MS = 1500
 const PHOTO = { clean: 'photos/selfie-clean.webp', dusty: 'photos/selfie-dusty.webp' }
@@ -32,6 +32,8 @@ const stormShown = (sol: number) => (1 - sunlight(sol)) / 0.78
  */
 export default function LastLight() {
   const [phase, setPhase] = useState<Phase>('intro')
+  const phaseRef = useRef(phase)
+  phaseRef.current = phase
   const [state, setState] = useState<GameState>(initialState)
   const [plan, setPlan] = useState<Plan>({ heaters: true, radio: true })
   const [newsItem, setNews] = useState<News | null>(null)
@@ -85,7 +87,12 @@ export default function LastLight() {
   useEffect(() => {
     const root = rootRef.current
     if (!root) return
-    const pause = () => setPhase((p) => (p === 'running' ? 'paused' : p))
+    // Paused by itself (scrolled away, tab hidden): the news says why
+    const pause = () => {
+      if (phaseRef.current !== 'running') return
+      setPhase('paused')
+      setNews(news('pause', 'Paused while you were away. Keep going when you are ready.'))
+    }
     const io = new IntersectionObserver(([e]) => e.intersectionRatio < 0.5 && pause(), { threshold: [0, 0.5, 1] })
     io.observe(root)
     const onVis = () => document.hidden && pause()
@@ -165,6 +172,10 @@ export default function LastLight() {
     )
   }
 
+  function togglePause() {
+    setPhase((p) => (p === 'running' ? 'paused' : p === 'paused' ? 'running' : p))
+  }
+
   function start() {
     gsap.killTweensOf(curtainRef.current)
     gsap.set(curtainRef.current, { clipPath: 'inset(100% 0 0 0)' })
@@ -204,6 +215,12 @@ export default function LastLight() {
     <section
       ref={rootRef}
       aria-label="Last Light, a dust storm game"
+      onKeyDown={(e) => {
+        if (e.code === 'KeyP' && !e.repeat && !e.altKey && !e.ctrlKey && !e.metaKey && (phase === 'running' || phase === 'paused')) {
+          e.preventDefault()
+          togglePause()
+        }
+      }}
       className="relative isolate h-[100svh] min-h-[560px] overflow-hidden bg-basalt"
     >
       {/* The deck. Zoom (scrubbed on scroll) and shake live on separate wrappers so they never fight. */}
@@ -322,13 +339,7 @@ export default function LastLight() {
                     <p className="text-sm text-sun/75 sm:text-base">
                       Using {spend} a day.<span className="hidden sm:inline"> The computer always uses {COST_CORE}.</span>
                     </p>
-                    <button
-                      type="button"
-                      onClick={() => setPhase((p) => (p === 'running' ? 'paused' : 'running'))}
-                      className="min-h-11 shrink-0 rounded-full px-4 font-display text-lg font-bold text-sun underline decoration-sun/40 underline-offset-[6px] transition-[text-decoration-color,transform] duration-150 hover:decoration-sun active:scale-[0.97]"
-                    >
-                      {phase === 'running' ? 'Pause' : 'Keep going'}
-                    </button>
+                    <PauseButton paused={phase === 'paused'} onToggle={togglePause} />
                   </div>
                 </div>
               )}

@@ -12,7 +12,7 @@ import {
   type GameState,
   type Plan,
 } from '../dustStormModel'
-import { BatteryCell, DayCounter, Ending, SentHome, Lever, NewsLine, news, newsFor, type News } from '../LastLightHud'
+import { BatteryCell, DayCounter, Ending, SentHome, Lever, NewsLine, PauseButton, news, newsFor, type News } from '../LastLightHud'
 import LastLight from '../LastLight'
 import { RoverWorld, type DriveInput, type Status } from './RoverWorld'
 
@@ -120,7 +120,12 @@ function Game({ onFail }: { onFail: () => void }) {
   useEffect(() => {
     const root = rootRef.current
     if (!root) return
-    const pause = () => setPhase((p) => (p === 'running' ? 'paused' : p))
+    // Paused by itself (scrolled away, tab hidden): the news says why
+    const pause = () => {
+      if (phaseRef.current !== 'running') return
+      setPhase('paused')
+      setNews(news('pause', 'Paused while you were away. Keep going when you are ready.'))
+    }
     const io = new IntersectionObserver(
       ([e]) => {
         visibleRef.current = e.isIntersecting
@@ -243,7 +248,16 @@ function Game({ onFail }: { onFail: () => void }) {
     ({ ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right' })[
       e.code
     ]
+  function togglePause() {
+    setPhase((p) => (p === 'running' ? 'paused' : p === 'paused' ? 'running' : p))
+  }
+
   function onKeyDown(e: React.KeyboardEvent) {
+    if (e.code === 'KeyP' && !e.repeat && !e.altKey && !e.ctrlKey && !e.metaKey && (phase === 'running' || phase === 'paused')) {
+      e.preventDefault()
+      togglePause()
+      return
+    }
     if (phase !== 'running' || e.altKey || e.ctrlKey || e.metaKey) return
     const k = keyName(e)
     if (!k) return
@@ -410,13 +424,7 @@ function Game({ onFail }: { onFail: () => void }) {
                     <p className="text-sm text-sun/75 sm:text-base">
                       Using {spend} a day, up to {spend + COST_DRIVE} driving.
                     </p>
-                    <button
-                      type="button"
-                      onClick={() => setPhase((p) => (p === 'running' ? 'paused' : 'running'))}
-                      className="min-h-11 shrink-0 rounded-full px-4 font-display text-lg font-bold text-sun underline decoration-sun/40 underline-offset-[6px] transition-[text-decoration-color,transform] duration-150 hover:decoration-sun active:scale-[0.97]"
-                    >
-                      {phase === 'running' ? 'Pause' : 'Keep going'}
-                    </button>
+                    <PauseButton paused={phase === 'paused'} onToggle={togglePause} />
                   </div>
                 </div>
               )}

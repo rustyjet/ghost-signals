@@ -236,7 +236,7 @@ export function Ending({
 }
 
 /** What a news line is about; it picks the badge drawn beside it. */
-export type NewsKind = 'power' | 'cold' | 'warm' | 'sky' | 'gust' | 'rock' | 'radio'
+export type NewsKind = 'power' | 'cold' | 'warm' | 'sky' | 'gust' | 'rock' | 'radio' | 'pause'
 /** info: plain; warn: act now (orange); cold: the electronics are cooling (frost). Always a badge shape too. */
 export type NewsTone = 'info' | 'warn' | 'cold'
 export interface News {
@@ -283,6 +283,12 @@ function NewsIcon({ kind, className }: { kind: NewsKind; className?: string }) {
         <>
           <circle cx="12" cy="12" r="4" />
           <path d="M12 2.5 V4.5 M12 19.5 V21.5 M2.5 12 H4.5 M19.5 12 H21.5 M5.3 5.3 L6.7 6.7 M17.3 17.3 L18.7 18.7 M5.3 18.7 L6.7 17.3 M17.3 6.7 L18.7 5.3" />
+        </>
+      )}
+      {kind === 'pause' && (
+        <>
+          <rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor" stroke="none" />
+          <rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor" stroke="none" />
         </>
       )}
       {kind === 'gust' && <path d="M3 8.5 H13.5 A3 3 0 1 0 10.5 5.5 M3 12.5 H18 A3 3 0 1 1 15 15.5 M3 16.5 H9" />}
@@ -440,5 +446,37 @@ export function DayCounter({ sol, total, paused, hidden }: { sol: number; total:
         <span className="text-xs text-sun [text-shadow:0_1px_2px_rgb(0_0_0/0.6),0_0_10px_rgb(36_24_18/0.9)] lg:text-sm">sunlight</span>
       </div>
     </div>
+  )
+}
+
+
+/**
+ * Pause and Keep going, with a drawn glyph that swaps (two bars / a triangle) in a quick scale and blur crossfade.
+ * Running: a quiet dark button. Paused: nothing moves until it is pressed, so it turns cream and breathes a soft
+ * ring (still under reduced motion). The P key does the same while the game has focus.
+ */
+export function PauseButton({ paused, onToggle }: { paused: boolean; onToggle: () => void }) {
+  const glyph = 'absolute h-[0.95rem] w-[0.95rem] transition-[opacity,transform,filter] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]'
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-keyshortcuts="P"
+      className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full py-1.5 pl-1.5 pr-4 font-display text-lg font-bold transition-[transform,background-color,color,box-shadow] duration-200 ease-out active:scale-[0.97] ${paused ? 'bg-sun text-ink hover:bg-sun-bright motion-safe:animate-[breathe_2.4s_ease-out_infinite]' : 'bg-basalt/70 text-sun shadow-[inset_0_0_0_1px_rgb(242_226_194/0.3)] hover:shadow-[inset_0_0_0_1px_rgb(242_226_194/0.6)]'}`}
+    >
+      <span
+        aria-hidden="true"
+        className={`relative grid h-8 w-8 place-items-center rounded-full transition-colors duration-200 ${paused ? 'bg-ink text-sun' : 'bg-sun text-ink'}`}
+      >
+        <svg viewBox="0 0 24 24" fill="currentColor" className={`${glyph} ${paused ? 'scale-50 opacity-0 blur-[2px]' : 'scale-100 opacity-100 blur-0'}`}>
+          <rect x="5.5" y="4.5" width="4.5" height="15" rx="1.4" />
+          <rect x="14" y="4.5" width="4.5" height="15" rx="1.4" />
+        </svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" className={`${glyph} translate-x-[1px] ${paused ? 'scale-100 opacity-100 blur-0' : 'scale-50 opacity-0 blur-[2px]'}`}>
+          <path d="M7.5 5.3 V18.7 A1.2 1.2 0 0 0 9.3 19.7 L19.6 13 A1.2 1.2 0 0 0 19.6 11 L9.3 4.3 A1.2 1.2 0 0 0 7.5 5.3 Z" />
+        </svg>
+      </span>
+      {paused ? 'Keep going' : 'Pause'}
+    </button>
   )
 }

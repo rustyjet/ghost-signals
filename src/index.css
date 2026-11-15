@@ -86,6 +86,12 @@ h3 {
   from { opacity: 0; }
 }
 
+/* The Keep going button while a game waits */
+@keyframes breathe {
+  0% { box-shadow: 0 0 0 0 rgb(242 226 194 / 0.5); }
+  70%, 100% { box-shadow: 0 0 0 10px rgb(242 226 194 / 0); }
+}
+
 @keyframes rise {
   0% { opacity: 0; transform: translateY(6px); }
   15% { opacity: 1; transform: translateY(0); }
