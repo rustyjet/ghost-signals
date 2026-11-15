@@ -1,6 +1,7 @@
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { news as item, NewsLine, type News } from './LastLightHud'
-import { gsap, isNarrow, prefersReducedMotion, useGSAP } from '../../scroll/smoothScroll'
+import { isNarrow, prefersReducedMotion } from '../../scroll/smoothScroll'
+import { StageHeading } from './StageHeading'
 
 // "Listen for marsquakes": InSight's seismometer draws a line, and a quake is a wiggle in it.
 // What is real (docs/FACTS.md, "Listen for marsquakes"): Mars is "extremely quiet", so the seismometer could pick up
@@ -71,7 +72,6 @@ export default function Seismometer() {
   const shakeRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const countRef = useRef<HTMLSpanElement>(null)
-  const riseRef = useRef<HTMLSpanElement>(null)
   const hudRef = useRef<HTMLDivElement>(null)
 
   // Everything the loop reads lives in refs, so the line never re-renders React.
@@ -89,15 +89,6 @@ export default function Seismometer() {
     pressedInWind: false,
   })
   const kick = useRef<() => void>(() => {})
-
-  useGSAP(() => {
-    if (prefersReducedMotion() || !riseRef.current) return
-    gsap.from(riseRef.current, {
-      yPercent: 110,
-      ease: 'none',
-      scrollTrigger: { trigger: riseRef.current, start: 'top 100%', end: 'top 70%', scrub: 0.5 },
-    })
-  })
 
   function toStage(s: Stage) {
     game.current.stage = s
@@ -498,21 +489,11 @@ export default function Seismometer() {
       </div>
 
       <div ref={hudRef} className="absolute inset-x-0 bottom-0 px-5 pb-6 md:px-10 lg:inset-y-0 lg:right-auto lg:flex lg:w-[min(36rem,40vw)] lg:flex-col lg:justify-end lg:pb-10">
-        <h2 className="-mb-[0.12em] overflow-hidden pb-[0.12em] text-[clamp(2rem,9vw,4rem)] [@media(max-height:760px)_and_(max-width:1023px)]:hidden [@media(max-height:780px)_and_(min-width:1024px)]:text-[2.75rem]">
-          <span ref={riseRef} className="block">
-            {/* The space sits between the word masks, not inside one: an inline-block drops a trailing space */}
-            {HEADING[stage].split(' ').map((word, i, all) => (
-              <Fragment key={`${stage}-${i}`}>
-                <span className="-mb-[0.12em] inline-block overflow-hidden pb-[0.12em] align-bottom">
-                  <span className="inline-block motion-safe:animate-[word-up_700ms_cubic-bezier(0.16,1,0.3,1)_both]" style={{ animationDelay: `${i * 70}ms` }}>
-                    {word}
-                  </span>
-                </span>
-                {i < all.length - 1 && ' '}
-              </Fragment>
-            ))}
-          </span>
-        </h2>
+        {/* Short wide screens: a smaller heading, so the line above keeps its room */}
+        <StageHeading
+          text={HEADING[stage]}
+          className="text-[clamp(2rem,9vw,4rem)] [@media(max-height:760px)_and_(max-width:1023px)]:hidden [@media(max-height:780px)_and_(min-width:1024px)]:text-[2.75rem]"
+        />
         {/* Room for three lines of news on phones, so the line above never jumps when the news changes */}
         <div className="mt-2 min-h-[4.3em] text-base sm:text-lg lg:min-h-0">
           <NewsLine item={news} />
