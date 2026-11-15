@@ -61,7 +61,7 @@ const where = (x: number, y: number) => {
 }
 
 export default function LaserRanging() {
-  const [news, setNews] = useState('Each number marks where an Apollo crew landed. Tap 11 to fire a laser at Eagle’s mirrors.')
+  const [news, setNews] = useState('Each number marks where an Apollo crew landed. Start with 11: that is where Eagle left its mirrors.')
   const [found, setFound] = useState<number[]>([])
   const [busy, setBusy] = useState(false)
   const [aim, setAim] = useState({ x: 0.5, y: 0.5 })
@@ -319,7 +319,7 @@ export default function LaserRanging() {
               if (!e.repeat) fire()
             }
           }}
-          className="absolute left-1/2 top-[1svh] aspect-square w-[var(--moon,min(112vw,62svh))] -translate-x-1/2 cursor-crosshair rounded-full outline-none [-webkit-tap-highlight-color:transparent] focus-visible:ring-2 focus-visible:ring-sun focus-visible:ring-offset-4 focus-visible:ring-offset-black lg:left-auto lg:right-[3vw] lg:top-1/2 lg:h-[min(96svh,60vw)] lg:w-auto lg:-translate-y-1/2 lg:translate-x-0"
+          className={`absolute left-1/2 top-[1svh] aspect-square w-[var(--moon,min(112vw,62svh))] -translate-x-1/2 ${busy ? 'cursor-progress' : 'cursor-crosshair'} rounded-full outline-none [-webkit-tap-highlight-color:transparent] focus-visible:ring-2 focus-visible:ring-sun focus-visible:ring-offset-4 focus-visible:ring-offset-black lg:left-auto lg:right-[3vw] lg:top-1/2 lg:h-[min(96svh,60vw)] lg:w-auto lg:-translate-y-1/2 lg:translate-x-0`}
         >
           <img
             src="photos/moon-near.webp"
@@ -389,18 +389,42 @@ export default function LaserRanging() {
             <span className="mt-2 block text-base text-sun/80">to the mirrors</span>
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => fire()}
-          aria-disabled={busy}
-          className="mt-5 min-h-14 w-full rounded-full bg-sun px-7 font-display text-xl font-extrabold text-ink transition-[transform,background-color,opacity] duration-150 ease-out [-webkit-tap-highlight-color:transparent] active:scale-[0.97] aria-disabled:opacity-60 aria-disabled:active:scale-100 lg:mt-8 lg:min-h-16 lg:w-auto lg:self-start lg:text-2xl"
-        >
-          {busy ? 'Waiting for the light' : 'Fire the laser'}
-        </button>
-        <p className="mt-3 text-sm text-sun/70 sm:text-base">
-          {found.length > 0 && <span className="sr-only">Mirrors found: {found.map((n) => `Apollo ${n}`).join(', ')}. </span>}
-          In the game, light comes back far more often than it really does.
+        {/* Mirrors found: one slot per mirror site, filled in green with its Apollo number once light has come back
+            from it. Empty slots don't say where the others are, so the hunt stays a hunt. */}
+        <div className="mt-5 flex items-center gap-3 lg:mt-7">
+          <span className="flex gap-1.5" aria-hidden="true">
+            {Array.from({ length: MIRRORS }, (_, i) => {
+              const n = found[i]
+              return n ? (
+                <span
+                  key={n}
+                  className="grid size-9 place-items-center rounded-full border-2 border-laser bg-laser/15 font-display text-sm font-extrabold text-laser motion-safe:animate-[news-in_340ms_cubic-bezier(0.23,1,0.32,1)]"
+                >
+                  {n}
+                </span>
+              ) : (
+                <span key={`empty-${i}`} className="size-9 rounded-full border-2 border-dashed border-sun/35" />
+              )
+            })}
+          </span>
+          <span className="text-base text-sun/85">
+            {found.length} of {MIRRORS} mirrors found
+            {found.length > 0 && <span className="sr-only">: {found.map((n) => `Apollo ${n}`).join(', ')}</span>}
+          </span>
+        </div>
+        {/* How to fire: the Moon itself is the control (there is no separate button that would fire at a stale aim) */}
+        <p className="mt-4 flex items-start gap-2 text-base text-sun/85 lg:mt-5">
+          <svg viewBox="0 0 24 24" aria-hidden="true" className="mt-[0.2em] size-[1.1em] shrink-0 text-laser" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+            <circle cx="12" cy="12" r="7.5" />
+            <path d="M12 1.5 V6 M12 18 V22.5 M1.5 12 H6 M18 12 H22.5" />
+            <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
+          </svg>
+          <span className="[@media(hover:hover)_and_(pointer:fine)]:hidden">Tap a spot on the Moon to fire.</span>
+          <span className="hidden [@media(hover:hover)_and_(pointer:fine)]:inline">
+            Click a spot on the Moon to fire. Or Tab to it, aim with the arrow keys and press Enter.
+          </span>
         </p>
+        <p className="mt-2 text-sm text-sun/60">In the game, light comes back far more often than it really does.</p>
       </div>
     </section>
   )
