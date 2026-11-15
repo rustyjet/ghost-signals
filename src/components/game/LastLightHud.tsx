@@ -179,3 +179,75 @@ export function newsFor(prev: GameState, next: GameState, plan: Plan): string | 
   if (plan.heaters && up(prev.warmth, next.warmth, 90)) return 'Warm enough. The heaters could rest for a while.'
   return null
 }
+
+/**
+ * Science sent to Earth, with the radio that sends it. A drawn dish beside the count; the findings waiting on
+ * board stand in a small stack, one bar each, and leave from the top when the radio sends one (a light rises from
+ * the dish, the count pops). Radio off: the dish dims and the label says so. Sized in em from its own font size.
+ */
+export function SentHome({ sent, waiting, radio }: { sent: number; waiting: number; radio: boolean }) {
+  const countRef = useRef<HTMLSpanElement>(null)
+  const dotRef = useRef<HTMLSpanElement>(null)
+  const wavesRef = useRef<SVGGElement>(null)
+  const last = useRef(sent)
+
+  useLayoutEffect(() => {
+    const before = last.current
+    last.current = sent
+    if (sent <= before) return
+    const reduced = prefersReducedMotion()
+    // The signal arcs flash in either case; motion only without reduced motion
+    if (wavesRef.current) gsap.fromTo(wavesRef.current, { opacity: 1 }, { opacity: 0, duration: 0.9, ease: 'power2.out' })
+    if (reduced) return
+    if (countRef.current) gsap.fromTo(countRef.current, { scale: 1.22 }, { scale: 1, duration: 0.45, ease: 'back.out(3)' })
+    if (dotRef.current)
+      gsap.fromTo(
+        dotRef.current,
+        { y: 0, opacity: 1, scale: 1 },
+        { y: '-1.6em', opacity: 0, scale: 0.6, duration: 0.95, ease: 'power2.in' },
+      )
+  }, [sent])
+
+  const shown = Math.min(waiting, 5)
+  return (
+    <div>
+      <p className="flex items-end gap-[0.18em] font-display text-[clamp(2rem,9vw,4.25rem)] font-extrabold leading-[0.85] text-sun">
+        {/* Opportunity's dish, drawn: bowl, feed, mast. Arcs show a send. */}
+        <span aria-hidden="true" className={`relative block h-[0.82em] w-[0.82em] shrink-0 transition-opacity duration-300 ${radio ? 'opacity-100' : 'opacity-40'}`}>
+          <svg viewBox="0 0 24 24" className="h-full w-full" fill="none" stroke="currentColor" strokeWidth="2.7" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 7 A9.5 9.5 0 0 0 17 20 Z" fill="currentColor" fillOpacity="0.18" />
+            <path d="M10.5 13.5 L15.5 8.5" />
+            <circle cx="16.4" cy="7.6" r="1.4" fill="currentColor" />
+            <path d="M9 18.5 L6.5 23 M3.5 23 H11" />
+            <g ref={wavesRef} opacity="0">
+              <path d="M18.6 4.2 A4.5 4.5 0 0 1 20.4 6" />
+              <path d="M19.8 1.4 A8 8 0 0 1 23.2 4.8" />
+            </g>
+          </svg>
+          {/* The finding on its way to Earth */}
+          <span ref={dotRef} className="absolute left-[64%] top-[22%] block h-[0.14em] w-[0.14em] -translate-x-1/2 rounded-full bg-sun-bright opacity-0 shadow-[0_0_0.12em_rgb(255_241_214/0.8)]" />
+        </span>
+        <span ref={countRef} className="inline-block origin-bottom-left tabular-nums">
+          {sent}
+        </span>
+        {/* Findings waiting on board: blocks in an open tray, two to a row (five at most drawn; the label has the number) */}
+        <span
+          aria-hidden="true"
+          className={`ml-[0.1em] flex w-[0.56em] flex-wrap-reverse content-start gap-[0.04em] rounded-b-[0.06em] p-[0.05em] shadow-[inset_0.04em_0_0_currentColor,inset_-0.04em_0_0_currentColor,inset_0_-0.04em_0_currentColor] transition-opacity duration-200 ${shown ? 'opacity-90' : 'opacity-0'}`}
+        >
+          {Array.from({ length: Math.max(shown, 1) }, (_, i) => (
+            <span key={i} className={`block h-[0.19em] w-[0.19em] rounded-[0.035em] bg-sun ${shown ? '' : 'invisible'}`} />
+          ))}
+        </span>
+      </p>
+      <p className="mt-2 text-base text-sun/80">
+        sent home
+        {waiting > 0 ? (
+          <span className="text-sun">, <span className="whitespace-nowrap">{waiting} to send</span></span>
+        ) : (
+          !radio && <span>, radio off</span>
+        )}
+      </p>
+    </div>
+  )
+}

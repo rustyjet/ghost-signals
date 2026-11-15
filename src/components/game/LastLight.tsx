@@ -12,7 +12,7 @@ import {
   type GameState,
   type Plan,
 } from './dustStormModel'
-import { BatteryCell, Ending, Lever, newsFor } from './LastLightHud'
+import { BatteryCell, Ending, SentHome, Lever, newsFor } from './LastLightHud'
 
 const SOL_MS = 1500
 const PHOTO = { clean: 'photos/selfie-clean.webp', dusty: 'photos/selfie-dusty.webp' }
@@ -42,7 +42,6 @@ export default function LastLight() {
   const gustRef = useRef<HTMLImageElement>(null)
   const wipeRef = useRef<HTMLSpanElement>(null)
   const curtainRef = useRef<HTMLDivElement>(null)
-  const sentRef = useRef<HTMLSpanElement>(null)
   const endingRef = useRef<HTMLHeadingElement>(null)
 
   // The tick reads refs so each day is computed exactly once, outside React's render.
@@ -127,14 +126,9 @@ export default function LastLight() {
 
   /** Everything one day changes: the numbers, the news, and the feedback for gusts and packets. */
   function onDay(prev: GameState, next: GameState) {
-    const reduced = prefersReducedMotion()
     const d = Math.round(next.battery) - Math.round(prev.battery)
     setDelta({ sol: next.sol, value: d })
 
-
-    if (next.data > prev.data && sentRef.current && !reduced) {
-      gsap.fromTo(sentRef.current, { scale: 1.25 }, { scale: 1, duration: 0.45, ease: 'back.out(3)' })
-    }
 
     if (next.gust) gust(dustShown(prev.dust))
 
@@ -283,9 +277,9 @@ export default function LastLight() {
                   </p>
                 )}
 
-                <div className={`mt-4 flex items-end gap-8 sm:gap-12 ${phase === 'over' ? 'hidden' : ''}`}>
+                <div className={`mt-4 flex items-end gap-6 sm:gap-12 ${phase === 'over' ? 'hidden' : ''}`}>
                   <div>
-                    <p className="relative inline-block font-display text-[clamp(3rem,13vw,5.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em]">
+                    <p className="relative inline-block font-display text-[clamp(2.6rem,13vw,5.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em]">
                       <BatteryCell value={state.battery} instantKey={gameKey} />
                       {delta && phase !== 'over' && (
                         <span
@@ -307,14 +301,7 @@ export default function LastLight() {
                       )}
                     </p>
                   </div>
-                  <div>
-                    <p className="font-display text-[clamp(2rem,8vw,3.25rem)] font-extrabold leading-[0.85] tabular-nums">
-                      <span ref={sentRef} className="inline-block origin-bottom-left">
-                        {state.data}
-                      </span>
-                    </p>
-                    <p className="mt-2 text-base text-sun/80">sent home</p>
-                  </div>
+                  <SentHome sent={state.data} waiting={state.stored} radio={plan.radio} />
                 </div>
               </div>
 

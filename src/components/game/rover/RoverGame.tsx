@@ -12,7 +12,7 @@ import {
   type GameState,
   type Plan,
 } from '../dustStormModel'
-import { BatteryCell, Ending, Lever, newsFor } from '../LastLightHud'
+import { BatteryCell, Ending, SentHome, Lever, newsFor } from '../LastLightHud'
 import LastLight from '../LastLight'
 import { RoverWorld, type DriveInput, type Status } from './RoverWorld'
 
@@ -57,7 +57,6 @@ function Game({ onFail }: { onFail: () => void }) {
   const viewRef = useRef<HTMLDivElement>(null)
   const pointerRef = useRef<HTMLDivElement>(null)
   const curtainRef = useRef<HTMLDivElement>(null)
-  const sentRef = useRef<HTMLSpanElement>(null)
   const endingRef = useRef<HTMLHeadingElement>(null)
   const worldRef = useRef<RoverWorld | null>(null)
 
@@ -176,13 +175,11 @@ function Game({ onFail }: { onFail: () => void }) {
   }, [phase])
 
   function onDay(prev: GameState, next: GameState) {
-    const reduced = prefersReducedMotion()
     const world = worldRef.current
     setDelta({ sol: next.sol, value: Math.round(next.battery) - Math.round(prev.battery) })
 
     if (next.sent) {
       world?.sendPacket()
-      if (sentRef.current && !reduced) gsap.fromTo(sentRef.current, { scale: 1.25 }, { scale: 1, duration: 0.45, ease: 'back.out(3)' })
     }
     if (next.gust) world?.gust()
 
@@ -358,9 +355,9 @@ function Game({ onFail }: { onFail: () => void }) {
                   </p>
                 )}
 
-                <div className={`mt-4 flex items-end gap-8 sm:gap-12 ${phase === 'over' ? 'hidden' : ''}`}>
+                <div className={`mt-4 flex items-end gap-6 sm:gap-12 ${phase === 'over' ? 'hidden' : ''}`}>
                   <div>
-                    <p className="relative inline-block font-display text-[clamp(3rem,13vw,5.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em]">
+                    <p className="relative inline-block font-display text-[clamp(2.6rem,13vw,5.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em]">
                       <BatteryCell value={state.battery} instantKey={gameKey} />
                       {delta && phase !== 'over' && (
                         <span
@@ -382,16 +379,7 @@ function Game({ onFail }: { onFail: () => void }) {
                       )}
                     </p>
                   </div>
-                  <div>
-                    <p className="font-display text-[clamp(2rem,8vw,3.25rem)] font-extrabold leading-[0.85] tabular-nums">
-                      <span ref={sentRef} className="inline-block origin-bottom-left">
-                        {state.data}
-                      </span>
-                    </p>
-                    <p className="mt-2 text-base text-sun/80">
-                      sent home{waiting > 0 && <span className="text-sun">, {waiting} to send</span>}
-                    </p>
-                  </div>
+                  <SentHome sent={state.data} waiting={waiting} radio={plan.radio} />
                 </div>
 
                 {/* The thumb stick rides above the words on the right, over the open ground */}
