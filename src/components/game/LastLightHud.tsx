@@ -1,6 +1,91 @@
+import { useLayoutEffect, useRef } from 'react'
+import { gsap, prefersReducedMotion } from '../../scroll/smoothScroll'
 import { sunlight, type GameState, type Plan } from './dustStormModel'
 
-/** The pieces both Last Light games share: the switches, the ending and the daily news. */
+/** The pieces both Last Light games share: the battery, the switches, the ending and the daily news. */
+
+/**
+ * The battery as a cell with a terminal nub. The fill tracks the charge as it counts; where the fill passes behind
+ * the number, the digits turn dark (a clipped copy), so it reads at every level. Power lost today lingers as a
+ * faint band, then drains away. Low turns it orange, always with the word "low" beside it.
+ * Sized in em: it takes the font size of its parent.
+ */
+export function BatteryCell({ value, instantKey }: { value: number; /** Change it to jump to `value` with no animation (a new game). */ instantKey: number }) {
+  const shown = useRef({ level: value })
+  const ghost = useRef({ level: value })
+  const rootRef = useRef<HTMLSpanElement>(null)
+  const baseRef = useRef<HTMLSpanElement>(null)
+  const inkRef = useRef<HTMLSpanElement>(null)
+  const fillRef = useRef<HTMLSpanElement>(null)
+  const ghostRef = useRef<HTMLSpanElement>(null)
+
+  // Clip from the right: the inner edge sits 0.07em inside the outline
+  const clip = (level: number) => `inset(0 calc(0.07em + (100% - 0.14em) * ${(1 - Math.min(100, Math.max(0, level)) / 100).toFixed(4)}) 0 0)`
+  function draw() {
+    const n = String(Math.round(shown.current.level))
+    if (baseRef.current) baseRef.current.textContent = n
+    if (inkRef.current) inkRef.current.textContent = n
+    if (fillRef.current) fillRef.current.style.clipPath = clip(shown.current.level)
+    if (ghostRef.current) ghostRef.current.style.clipPath = clip(Math.max(ghost.current.level, shown.current.level))
+    rootRef.current?.setAttribute('aria-label', `Battery ${n} percent`)
+  }
+
+  // A new game: no counting, no drain band
+  useLayoutEffect(() => {
+    gsap.killTweensOf([shown.current, ghost.current])
+    shown.current.level = ghost.current.level = value
+    draw()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [instantKey])
+
+  // Each day: count to the new charge; a loss leaves its band for a moment, then it drains
+  useLayoutEffect(() => {
+    const reduced = prefersReducedMotion()
+    const from = shown.current.level
+    gsap.killTweensOf([shown.current, ghost.current])
+    if (reduced) {
+      shown.current.level = ghost.current.level = value
+      draw()
+      return
+    }
+    if (value < from) ghost.current.level = Math.max(ghost.current.level, from)
+    else ghost.current.level = value
+    gsap.to(shown.current, { level: value, duration: 0.6, ease: 'power3.out', onUpdate: draw })
+    if (value < from) gsap.to(ghost.current, { level: value, delay: 0.45, duration: 0.55, ease: 'power2.inOut', onUpdate: draw })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value])
+
+  const low = value < 20
+  return (
+    <span ref={rootRef} role="img" className={`inline-flex items-center align-bottom ${low ? 'text-warn' : 'text-sun'}`}>
+      <span className="relative block h-[1.06em] w-[2.55em] rounded-[0.2em] bg-black/40 shadow-[inset_0_0_0_0.055em_currentColor]">
+        {/* Power lost today, draining away */}
+        <span ref={ghostRef} aria-hidden="true" className="absolute inset-0">
+          <span className="absolute inset-[0.07em] rounded-[0.13em] bg-current opacity-30" />
+        </span>
+        {/* The number on the empty part of the cell */}
+        <span aria-hidden="true" className="absolute inset-0 grid place-items-center">
+          <span className="text-[0.78em] leading-none tabular-nums">
+            <span ref={baseRef} />
+            <span className="text-[0.45em]">%</span>
+          </span>
+        </span>
+        {/* The charge, with the same number in dark where it covers it */}
+        <span ref={fillRef} aria-hidden="true" className="absolute inset-0">
+          <span className="absolute inset-[0.07em] rounded-[0.13em] bg-current" />
+          <span className="absolute inset-0 grid place-items-center text-ink">
+            <span className="text-[0.78em] leading-none tabular-nums">
+              <span ref={inkRef} />
+              <span className="text-[0.45em]">%</span>
+            </span>
+          </span>
+        </span>
+      </span>
+      {/* Terminal nub */}
+      <span aria-hidden="true" className="ml-[0.045em] block h-[0.4em] w-[0.1em] rounded-r-[0.07em] bg-current" />
+    </span>
+  )
+}
 
 /** A big two-way switch. Up is on. */
 export function Lever({

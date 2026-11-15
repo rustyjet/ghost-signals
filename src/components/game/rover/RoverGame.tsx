@@ -12,7 +12,7 @@ import {
   type GameState,
   type Plan,
 } from '../dustStormModel'
-import { Ending, Lever, newsFor } from '../LastLightHud'
+import { BatteryCell, Ending, Lever, newsFor } from '../LastLightHud'
 import LastLight from '../LastLight'
 import { RoverWorld, type DriveInput, type Status } from './RoverWorld'
 
@@ -57,7 +57,6 @@ function Game({ onFail }: { onFail: () => void }) {
   const viewRef = useRef<HTMLDivElement>(null)
   const pointerRef = useRef<HTMLDivElement>(null)
   const curtainRef = useRef<HTMLDivElement>(null)
-  const batteryRef = useRef<HTMLSpanElement>(null)
   const sentRef = useRef<HTMLSpanElement>(null)
   const endingRef = useRef<HTMLHeadingElement>(null)
   const worldRef = useRef<RoverWorld | null>(null)
@@ -66,7 +65,7 @@ function Game({ onFail }: { onFail: () => void }) {
   const planRef = useRef(plan)
   planRef.current = plan
   const foundRef = useRef(0)
-  const shown = useRef({ battery: state.battery })
+  const [gameKey, setGameKey] = useState(0)
   const visibleRef = useRef(false)
   const phaseRef = useRef(phase)
   phaseRef.current = phase
@@ -181,16 +180,6 @@ function Game({ onFail }: { onFail: () => void }) {
     const world = worldRef.current
     setDelta({ sol: next.sol, value: Math.round(next.battery) - Math.round(prev.battery) })
 
-    const counter = shown.current
-    gsap.to(counter, {
-      battery: next.battery,
-      duration: reduced ? 0 : 0.6,
-      ease: 'power3.out',
-      onUpdate: () => {
-        if (batteryRef.current) batteryRef.current.textContent = String(Math.round(counter.battery))
-      },
-    })
-
     if (next.sent) {
       world?.sendPacket()
       if (sentRef.current && !reduced) gsap.fromTo(sentRef.current, { scale: 1.25 }, { scale: 1, duration: 0.45, ease: 'back.out(3)' })
@@ -225,8 +214,7 @@ function Game({ onFail }: { onFail: () => void }) {
     gsap.set(curtainRef.current, { clipPath: 'inset(100% 0 0 0)' })
     const fresh = initialState()
     stateRef.current = fresh
-    shown.current.battery = fresh.battery
-    if (batteryRef.current) batteryRef.current.textContent = String(fresh.battery)
+    setGameKey((k) => k + 1)
     foundRef.current = 0
     warnedIdle.current = false
     setFound(0)
@@ -282,10 +270,9 @@ function Game({ onFail }: { onFail: () => void }) {
     ;(window as unknown as Record<string, unknown>).__lastLight = {
       set: (s: Partial<GameState>) => {
         stateRef.current = { ...stateRef.current, ...s }
-        shown.current.battery = stateRef.current.battery
-        if (batteryRef.current) batteryRef.current.textContent = String(Math.round(stateRef.current.battery))
         setState(stateRef.current)
       },
+      delta: (value: number) => setDelta({ sol: Math.random(), value }),
       gust: () => worldRef.current?.gust(),
       packet: () => worldRef.current?.sendPacket(),
     }
@@ -362,7 +349,7 @@ function Game({ onFail }: { onFail: () => void }) {
 
           {phase !== 'intro' && (
             <div className="grid gap-4 sm:gap-5 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-10">
-              <div>
+              <div className="relative">
                 {phase === 'over' ? (
                   <Ending state={state} headingRef={endingRef} onRetry={start} />
                 ) : (
@@ -373,21 +360,13 @@ function Game({ onFail }: { onFail: () => void }) {
 
                 <div className={`mt-4 flex items-end gap-8 sm:gap-12 ${phase === 'over' ? 'hidden' : ''}`}>
                   <div>
-                    <p className="relative font-display text-[clamp(3rem,13vw,5.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums">
-                      {/* No React children: the counting tween owns this text */}
-                      <span
-                        ref={(el) => {
-                          batteryRef.current = el
-                          if (el && !el.textContent) el.textContent = String(Math.round(shown.current.battery))
-                        }}
-                        className={lowBattery ? 'text-warn' : 'text-sun'}
-                      />
-                      <span className="ml-1 text-[0.4em] text-sun/70">%</span>
+                    <p className="relative inline-block font-display text-[clamp(3rem,13vw,5.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em]">
+                      <BatteryCell value={state.battery} instantKey={gameKey} />
                       {delta && phase !== 'over' && (
                         <span
                           key={delta.sol}
                           aria-hidden="true"
-                          className={`absolute -top-1 left-full ml-2 text-[0.32em] font-bold motion-safe:animate-[rise_1.1s_cubic-bezier(0.23,1,0.32,1)_forwards] ${delta.value >= 0 ? 'text-sun' : 'text-warn'}`}
+                          className={`absolute -top-[0.3em] left-full ml-2 text-[0.32em] font-bold tabular-nums motion-safe:animate-[rise_1.1s_cubic-bezier(0.23,1,0.32,1)_forwards] ${delta.value >= 0 ? 'text-sun' : 'text-warn'}`}
                         >
                           {delta.value >= 0 ? '+' : '−'}
                           {Math.abs(delta.value)}
@@ -395,7 +374,12 @@ function Game({ onFail }: { onFail: () => void }) {
                       )}
                     </p>
                     <p className="mt-2 text-base text-sun/80">
-                      battery{lowBattery && <span className="font-bold text-warn">, low</span>}
+                      battery
+                      {lowBattery ? (
+                        <span className="font-bold text-warn">, low</span>
+                      ) : (
+                        delta && delta.value > 0 && <span className="text-sun">, charging</span>
+                      )}
                     </p>
                   </div>
                   <div>
@@ -408,15 +392,19 @@ function Game({ onFail }: { onFail: () => void }) {
                       sent home{waiting > 0 && <span className="text-sun">, {waiting} to send</span>}
                     </p>
                   </div>
-                  {touch && phase === 'running' && (
+                </div>
+
+                {/* The thumb stick rides above the words on the right, over the open ground */}
+                {touch && phase === 'running' && (
+                  <div className="absolute bottom-full right-0 mb-5 lg:right-auto lg:left-0">
                     <Stick
                       onChange={(v) => {
                         stick.current = v
                         pushInput()
                       }}
                     />
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
 
               {phase !== 'over' && (

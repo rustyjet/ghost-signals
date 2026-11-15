@@ -182,6 +182,8 @@ export class RoverWorld {
   private marker = new THREE.Group()
   private markerRing: THREE.Mesh
   private markerFill: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>
+  private markerTrack: THREE.Mesh
+  private ringBase = new Map<THREE.Mesh, Float32Array>()
   private markerPop = 0
   private pointer: HTMLElement | null = null
 
@@ -337,13 +339,25 @@ export class RoverWorld {
     this.scene.add(this.puffs)
 
     // The rock to study: a pale ring on the ground, a ring that fills while working, a thin marker pole
-    const markMat = new THREE.MeshBasicMaterial({ color: MARK, transparent: true, opacity: 0.9, fog: false, depthWrite: false })
-    this.markerRing = new THREE.Mesh(new THREE.RingGeometry(2.3, 2.55, 64).rotateX(-Math.PI / 2), markMat)
+    // The rings are laid onto the ground's shape (drape) so dunes never cut them.
+    const flat = { fog: false, depthWrite: false, transparent: true, polygonOffset: true, polygonOffsetFactor: -4 }
+    this.markerRing = new THREE.Mesh(
+      new THREE.RingGeometry(2.3, 2.55, 96).rotateX(-Math.PI / 2),
+      new THREE.MeshBasicMaterial({ color: MARK, opacity: 0.9, ...flat }),
+    )
+    // The work ring: a faint full track, and the fill that grows round it while the rover studies
+    this.markerTrack = new THREE.Mesh(
+      new THREE.RingGeometry(2.75, 3.15, 96, 1).rotateX(-Math.PI / 2),
+      new THREE.MeshBasicMaterial({ color: MARK, opacity: 0.22, ...flat }),
+    )
     this.markerFill = new THREE.Mesh(
-      new THREE.RingGeometry(2.75, 3.15, 64, 1).rotateX(-Math.PI / 2),
-      new THREE.MeshBasicMaterial({ color: '#fff1d6', transparent: true, opacity: 1, fog: false, depthWrite: false }),
+      new THREE.RingGeometry(2.75, 3.15, 96, 1).rotateX(-Math.PI / 2),
+      new THREE.MeshBasicMaterial({ color: '#fff1d6', opacity: 1, ...flat }),
     )
     this.markerFill.geometry.setDrawRange(0, 0)
+    for (const m of [this.markerRing, this.markerTrack, this.markerFill]) {
+      this.ringBase.set(m, (m.geometry.attributes.position.array as Float32Array).slice())
+    }
     const pole = new THREE.Mesh(
       new THREE.CylinderGeometry(0.04, 0.04, 14, 6).translate(0, 7, 0),
       new THREE.MeshBasicMaterial({ color: MARK, transparent: true, opacity: 0.55, fog: false, depthWrite: false }),
@@ -354,7 +368,7 @@ export class RoverWorld {
     )
     rock.castShadow = true
     rock.position.y = 0.15
-    this.marker.add(this.markerRing, this.markerFill, pole, rock)
+    this.marker.add(this.markerRing, this.markerTrack, this.markerFill, pole, rock)
     this.scene.add(this.marker)
     this.placeMarker()
 
@@ -720,10 +734,15 @@ export class RoverWorld {
     const near = d < NEAR
     const working = near && Math.abs(this.speed) < 0.4
     if (working) {
+      // The fill starts at the far side of the ring, like the top of a clock face seen from the camera
+      if (this.progress === 0) {
+        const away = Math.atan2(-(t.z - this.camera.position.z), t.x - this.camera.position.x)
+        this.drape(this.markerFill, away)
+      }
       this.progress = Math.min(1, this.progress + dt / STUDY_SECONDS)
       this.setStatus('studying')
     } else this.setStatus(near ? 'near' : 'far')
-    this.markerFill.geometry.setDrawRange(0, Math.floor(this.progress * 64) * 6)
+    this.markerFill.geometry.setDrawRange(0, Math.floor(this.progress * 96) * 6)
 
     if (this.progress >= 1) {
       this.flash = 1
@@ -737,7 +756,28 @@ export class RoverWorld {
     // A short pop on the new marker so the eye finds it
     this.markerPop = Math.max(0, this.markerPop - dt * 2.5)
     const pop = this.reduced ? 1 : 1 + Math.sin((1 - this.markerPop) * Math.PI) * this.markerPop * 0.35
-    this.markerRing.scale.setScalar(pop)
+    this.markerRing.scale.set(pop, 1, pop)
+  }
+
+  /** Lays a flat ring onto the ground under it, turned by `angle` round the marker. */
+  private drape(mesh: THREE.Mesh, angle = 0) {
+    const base = this.ringBase.get(mesh)
+    if (!base) return
+    mesh.rotation.y = angle
+    const pos = mesh.geometry.attributes.position as THREE.BufferAttribute
+    const c = Math.cos(angle)
+    const s = Math.sin(angle)
+    const { x: mx, y: my, z: mz } = this.marker.position
+    for (let i = 0; i < pos.count; i++) {
+      const lx = base[i * 3]
+      const lz = base[i * 3 + 2]
+      // Local → world offset for a turn about y
+      const wx = lx * c + lz * s
+      const wz = -lx * s + lz * c
+      pos.setY(i, heightAt(mx + wx, mz + wz) - my + 0.05)
+    }
+    pos.needsUpdate = true
+    mesh.geometry.computeBoundingSphere()
   }
 
   private setStatus(s: Status) {
@@ -749,6 +789,8 @@ export class RoverWorld {
   private placeMarker() {
     const t = this.path[this.target]
     this.marker.position.set(t.x, heightAt(t.x, t.z) + 0.12, t.z)
+    this.marker.updateMatrixWorld()
+    for (const m of this.ringBase.keys()) this.drape(m)
     this.markerFill.geometry.setDrawRange(0, 0)
   }
 
@@ -783,7 +825,7 @@ export class RoverWorld {
     // Aimed below the rover, so it rides in the open upper part of the screen, clear of the controls
     const back = this.narrow ? 9 : 7.4
     pos.set(this.x - fx * back, this.lift + (this.narrow ? 4.4 : 3.3), this.z - fz * back)
-    look.set(this.x + fx * 3.5, this.lift + (this.narrow ? -2.2 : 0.1), this.z + fz * 3.5)
+    look.set(this.x + fx * 3.5, this.lift + (this.narrow ? -3.2 : 0.1), this.z + fz * 3.5)
   }
 
   private updateCamera(dt: number) {

@@ -12,7 +12,7 @@ import {
   type GameState,
   type Plan,
 } from './dustStormModel'
-import { Ending, Lever, newsFor } from './LastLightHud'
+import { BatteryCell, Ending, Lever, newsFor } from './LastLightHud'
 
 const SOL_MS = 1500
 const PHOTO = { clean: 'photos/selfie-clean.webp', dusty: 'photos/selfie-dusty.webp' }
@@ -42,7 +42,6 @@ export default function LastLight() {
   const gustRef = useRef<HTMLImageElement>(null)
   const wipeRef = useRef<HTMLSpanElement>(null)
   const curtainRef = useRef<HTMLDivElement>(null)
-  const batteryRef = useRef<HTMLSpanElement>(null)
   const sentRef = useRef<HTMLSpanElement>(null)
   const endingRef = useRef<HTMLHeadingElement>(null)
 
@@ -52,7 +51,7 @@ export default function LastLight() {
   planRef.current = plan
   const stormRef = useRef(0)
   const trauma = useRef(0)
-  const shown = useRef({ battery: state.battery })
+  const [gameKey, setGameKey] = useState(0)
 
   // Scroll: the deck comes up out of the dark as the section arrives, scrubbed and reversible.
   useGSAP(
@@ -132,15 +131,6 @@ export default function LastLight() {
     const d = Math.round(next.battery) - Math.round(prev.battery)
     setDelta({ sol: next.sol, value: d })
 
-    const counter = shown.current
-    gsap.to(counter, {
-      battery: next.battery,
-      duration: reduced ? 0 : 0.6,
-      ease: 'power3.out',
-      onUpdate: () => {
-        if (batteryRef.current) batteryRef.current.textContent = String(Math.round(counter.battery))
-      },
-    })
 
     if (next.data > prev.data && sentRef.current && !reduced) {
       gsap.fromTo(sentRef.current, { scale: 1.25 }, { scale: 1, duration: 0.45, ease: 'back.out(3)' })
@@ -186,8 +176,7 @@ export default function LastLight() {
     gsap.set(curtainRef.current, { clipPath: 'inset(100% 0 0 0)' })
     const fresh = initialState()
     stateRef.current = fresh
-    shown.current.battery = fresh.battery
-    if (batteryRef.current) batteryRef.current.textContent = String(fresh.battery)
+    setGameKey((k) => k + 1)
     setState(fresh)
     setPlan({ heaters: true, radio: true })
     setDelta(null)
@@ -205,8 +194,6 @@ export default function LastLight() {
     ;(window as unknown as Record<string, unknown>).__lastLight = {
       set: (s: Partial<GameState>) => {
         stateRef.current = { ...stateRef.current, ...s }
-        shown.current.battery = stateRef.current.battery
-        if (batteryRef.current) batteryRef.current.textContent = String(Math.round(stateRef.current.battery))
         setState(stateRef.current)
       },
       gust: () => gust(dustShown(stateRef.current.dust)),
@@ -298,21 +285,13 @@ export default function LastLight() {
 
                 <div className={`mt-4 flex items-end gap-8 sm:gap-12 ${phase === 'over' ? 'hidden' : ''}`}>
                   <div>
-                    <p className="relative font-display text-[clamp(3rem,13vw,5.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums">
-                      {/* No React children: the counting tween owns this text */}
-                      <span
-                        ref={(el) => {
-                          batteryRef.current = el
-                          if (el && !el.textContent) el.textContent = String(Math.round(shown.current.battery))
-                        }}
-                        className={lowBattery ? 'text-warn' : 'text-sun'}
-                      />
-                      <span className="ml-1 text-[0.4em] text-sun/70">%</span>
+                    <p className="relative inline-block font-display text-[clamp(3rem,13vw,5.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em]">
+                      <BatteryCell value={state.battery} instantKey={gameKey} />
                       {delta && phase !== 'over' && (
                         <span
                           key={delta.sol}
                           aria-hidden="true"
-                          className={`absolute -top-1 left-full ml-2 text-[0.32em] font-bold motion-safe:animate-[rise_1.1s_cubic-bezier(0.23,1,0.32,1)_forwards] ${delta.value >= 0 ? 'text-sun' : 'text-warn'}`}
+                          className={`absolute -top-[0.3em] left-full ml-2 text-[0.32em] font-bold tabular-nums motion-safe:animate-[rise_1.1s_cubic-bezier(0.23,1,0.32,1)_forwards] ${delta.value >= 0 ? 'text-sun' : 'text-warn'}`}
                         >
                           {delta.value >= 0 ? '+' : '−'}
                           {Math.abs(delta.value)}
@@ -320,7 +299,12 @@ export default function LastLight() {
                       )}
                     </p>
                     <p className="mt-2 text-base text-sun/80">
-                      battery{lowBattery && <span className="font-bold text-warn">, low</span>}
+                      battery
+                      {lowBattery ? (
+                        <span className="font-bold text-warn">, low</span>
+                      ) : (
+                        delta && delta.value > 0 && <span className="text-sun">, charging</span>
+                      )}
                     </p>
                   </div>
                   <div>

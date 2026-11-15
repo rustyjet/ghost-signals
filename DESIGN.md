@@ -54,10 +54,11 @@ The Moon: a chapter page with `data-world="moon"` swaps the tokens: black sky to
   - a gust: the camera shakes a little and a burst of dust blows through;
   - heaters on: a warm glow under the rover;
   - driving: the body pitches and rolls over the ground, dust puffs from the wheels, tracks stay behind (the model's wheels are one piece with it, so they don't turn);
-  - the rock: a pale ring and a thin marker pole; an arrow at the screen edge (never in the bottom part where the words are) when it is off screen;
+  - the rock: a pale ring laid onto the ground's shape (so dunes never cut it) and a thin marker pole; while studying, a second ring fills over a faint track, starting at the far side; an arrow at the screen edge (never in the bottom part where the words are) when it is off screen;
   - the radio: a small light leaves the antenna and rises out of view;
   - cold and signal lost: the frost and the black curtain below, laid over the 3D view.
-- Controls: arrow keys or W A S D only while the 3D view has focus ("Start the storm" puts it there; elsewhere the arrows scroll the page). Touch screens get a thumb stick beside the numbers. Heaters and Radio switches and Pause as before.
+- The battery (both versions, `BatteryCell` in `LastLightHud.tsx`): a drawn cell with a terminal nub and the number inside it. The fill counts with the number; digits over the fill turn dark (a clipped copy), so they read at every level. A day's loss lingers as a faint band, then drains. Below 20 the cell turns warn orange with the word "low"; a gaining day says "charging". Reduced motion: no counting, no band.
+- Controls: arrow keys or W A S D only while the 3D view has focus ("Start the storm" puts it there; elsewhere the arrows scroll the page). Touch screens get a thumb stick above the words on the right. Heaters and Radio switches and Pause as before.
 - Framing: the camera aims below the rover so it rides in the open upper part of the screen; the intro orbit keeps it right of the words on wide screens and above them on phones.
 - Reduced motion: no shake, sway or orbit, the camera follows rigidly, the air dust stands still; driving still works because the player moves it.
 - No WebGL, or the model fails to load: the photo version below plays instead (`LastLight.tsx`).
