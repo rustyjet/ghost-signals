@@ -623,7 +623,7 @@ export default function LaserRanging() {
             <span
               ref={clockBoxRef}
               data-run="false"
-              className="block whitespace-nowrap font-display text-[clamp(2.2rem,10vw,4.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums transition-colors duration-200 data-[run=true]:text-laser"
+              className="block whitespace-nowrap font-display text-[clamp(1.8rem,10vw,4.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums transition-colors duration-200 data-[run=true]:text-laser"
             >
               <span ref={clockRef}>0.00</span>
               <span className="ml-[0.12em] text-[0.36em] font-bold tracking-normal">s</span>
@@ -644,7 +644,7 @@ export default function LaserRanging() {
             </span>
           </p>
           <p>
-            <span className="block whitespace-nowrap font-display text-[clamp(2.2rem,10vw,4.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums">
+            <span className="block whitespace-nowrap font-display text-[clamp(1.8rem,10vw,4.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums">
               <span ref={distRef} data-wait="false" className="inline-block origin-left transition-opacity duration-200 data-[wait=true]:opacity-45">?</span>
               <span className="ml-[0.12em] text-[0.36em] font-bold tracking-normal">km</span>
             </span>
