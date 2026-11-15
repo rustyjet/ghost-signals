@@ -281,7 +281,9 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
             <p data-intro-only="" className="text-on-sky">
               {chapter.place}
             </p>
-            <p data-day="" aria-hidden="true" className="invisible absolute left-0 top-0 whitespace-nowrap text-sun opacity-0">
+            {/* One line while it fits; on the narrowest phones the ending ("of 5 planned, then grounded") drops to a
+                second line instead of running off the screen */}
+            <p data-day="" aria-hidden="true" className="invisible absolute left-0 top-0 w-max max-w-[calc(100vw-2.5rem)] text-sun opacity-0 md:max-w-[calc(100vw-5rem)]">
               {chapter.spine.before}{' '}
               <span ref={dayRef} className="tabular-nums">
                 {fmt(firstDay)}

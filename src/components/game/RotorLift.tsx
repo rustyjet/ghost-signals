@@ -612,8 +612,8 @@ export default function RotorLift() {
 
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[64%] bg-gradient-to-t from-basalt from-40% via-basalt/80 to-transparent lg:h-[40%] lg:from-20% lg:via-basalt/70" />
 
-      <div ref={hudRef} className="absolute inset-x-0 bottom-0 px-5 pb-6 md:px-10 lg:pb-10">
-        <div className="mx-auto grid max-w-6xl gap-4 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-10">
+      <div ref={hudRef} className="absolute inset-x-0 bottom-0 px-5 pb-6 md:px-10 lg:pb-10 [@media(max-height:700px)_and_(max-width:1023px)]:pb-4">
+        <div className="mx-auto grid max-w-6xl gap-4 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-10 [@media(max-height:700px)_and_(max-width:1023px)]:gap-2.5">
           <div>
             <StageHeading
               ref={headingRef}
@@ -625,22 +625,22 @@ export default function RotorLift() {
             <div className="mt-2 grid">
               {RESERVE.map((r) => (
                 <div key={r.text} aria-hidden="true" className="invisible [grid-area:1/1]">
-                  <NewsLine item={r} className="" />
+                  <NewsLine item={r} className="[@media(max-height:700px)_and_(max-width:1023px)]:text-[0.875rem]" />
                 </div>
               ))}
               <div className="[grid-area:1/1]">
-                <NewsLine item={news} />
+                <NewsLine item={news} className="min-h-[2.8em] [@media(max-height:700px)_and_(max-width:1023px)]:text-[0.875rem]" />
               </div>
             </div>
             {/* The speed carries a track with a lift-off mark for the air you are in (it slides when the air changes);
                 the fill brightens once it passes. The height says what the helicopter is doing, and warns in orange
                 (with the words) when it is coming down fast enough for a hard landing. */}
-            <div className="mt-3 flex items-start gap-5 min-[380px]:gap-8 sm:gap-12">
+            <div className="mt-3 flex items-start gap-5 min-[380px]:gap-8 sm:gap-12 [@media(max-height:700px)_and_(max-width:1023px)]:mt-2">
               <p className="w-[clamp(6.25rem,30vw,12rem)] shrink-0">
-                <span ref={rpmRef} className="block whitespace-nowrap font-display text-[clamp(2.2rem,10vw,4.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums">
+                <span ref={rpmRef} className="block whitespace-nowrap font-display text-[clamp(1.8rem,10vw,4.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums">
                   0
                 </span>
-                <span className="mt-2 block whitespace-nowrap text-base text-sun/80">turns a minute</span>
+                <span className="mt-2 block whitespace-nowrap text-base text-sun/80 [@media(max-height:700px)_and_(max-width:1023px)]:mt-1 [@media(max-height:700px)_and_(max-width:1023px)]:text-sm">turns a minute</span>
                 <span aria-hidden="true" className="relative mt-2.5 block h-1.5 rounded-full bg-sun/20">
                   <span
                     ref={rpmFillRef}
@@ -673,11 +673,11 @@ export default function RotorLift() {
                 </span>
               </p>
               <p>
-                <span className="block whitespace-nowrap font-display text-[clamp(2.2rem,10vw,4.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums">
+                <span className="block whitespace-nowrap font-display text-[clamp(1.8rem,10vw,4.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums">
                   <span ref={altRef}>0.0</span>
                   <span className="ml-[0.08em] text-[0.42em] font-bold tracking-normal">m</span>
                 </span>
-                <span className="mt-2 block text-base text-sun/80">off the ground</span>
+                <span className="mt-2 block text-base text-sun/80 [@media(max-height:700px)_and_(max-width:1023px)]:mt-1 [@media(max-height:700px)_and_(max-width:1023px)]:text-sm">off the ground</span>
                 <span ref={motionRef} data-motion="ground" className="mt-2 flex items-center gap-1.5 whitespace-nowrap text-sm text-sun/80 data-[motion=fast]:font-bold data-[motion=fast]:text-warn">
                   <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 shrink-0">
                     <path ref={motionPathRef} d={MOTION.ground.d} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -688,7 +688,7 @@ export default function RotorLift() {
             </div>
           </div>
 
-          <div className="grid gap-3 lg:w-[24rem]">
+          <div className="grid gap-3 lg:w-[24rem] [@media(max-height:700px)_and_(max-width:1023px)]:gap-2">
             {/* Narrow phones: once a side is done, its tick takes the place of the drawing so the words fit.
                 Two sides, one cream thumb that slides. The thumb is a dark-lettered copy of the labels clipped to
                 one half, so the lettering changes colour exactly at the thumb's edge as it slides. Each side draws
@@ -757,7 +757,7 @@ export default function RotorLift() {
               }}
               onBlur={() => hold(false)}
               onContextMenu={(e) => e.preventDefault()}
-              className="group/hold mb-1.5 inline-flex min-h-14 touch-none select-none items-center justify-center gap-3 rounded-full bg-sun px-7 font-display text-xl font-extrabold text-ink shadow-[0_6px_0_rgb(150_118_80),0_10px_18px_rgb(0_0_0/0.35)] transition-[transform,box-shadow,background-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] data-[held=true]:translate-y-[5px] data-[held=true]:bg-sun-bright data-[held=true]:shadow-[0_1px_0_rgb(150_118_80),0_2px_6px_rgb(0_0_0/0.3)] data-[held=true]:duration-75 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-sun-bright lg:min-h-20 lg:gap-4 lg:text-2xl"
+              className="group/hold mb-1.5 inline-flex min-h-14 touch-none select-none items-center justify-center gap-3 rounded-full bg-sun px-7 font-display text-xl font-extrabold text-ink shadow-[0_6px_0_rgb(150_118_80),0_10px_18px_rgb(0_0_0/0.35)] transition-[transform,box-shadow,background-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] data-[held=true]:translate-y-[5px] data-[held=true]:bg-sun-bright data-[held=true]:shadow-[0_1px_0_rgb(150_118_80),0_2px_6px_rgb(0_0_0/0.3)] data-[held=true]:duration-75 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-sun-bright lg:min-h-20 lg:gap-4 lg:text-2xl [@media(max-height:700px)_and_(max-width:1023px)]:min-h-12"
             >
               {/* Ingenuity's two rotors from above: they turn with the blades in the scene */}
               <span aria-hidden="true" className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-ink lg:h-12 lg:w-12">
