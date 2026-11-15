@@ -240,6 +240,8 @@ export type NewsKind =
   | 'power' | 'cold' | 'warm' | 'sky' | 'gust' | 'rock' | 'radio' | 'pause'
   // Lift off (Ingenuity)
   | 'rotor' | 'up' | 'high' | 'land' | 'bump' | 'goal' | 'air' | 'hover'
+  // Find the mirrors (Eagle)
+  | 'moon' | 'laser' | 'again' | 'none' | 'past'
   // Listen for marsquakes (InSight)
   | 'quake' | 'dome'
 /** info: plain; warn: act now (orange); cold: the electronics are cooling (frost); good: a goal reached (cream). Always a badge shape too. */
@@ -307,6 +309,32 @@ function NewsIcon({ kind, className }: { kind: NewsKind; className?: string }) {
       {kind === 'high' && <path d="M12 4.5 V19 M6 13 L12 19 L18 13" />}
       {kind === 'land' && <path d="M12 3.5 V13.5 M8 9.5 L12 13.5 L16 9.5 M4 19 H20" />}
       {kind === 'bump' && <path d="M4 19 H20 M12 8 V14 M6 10.5 L8.5 14.5 M18 10.5 L15.5 14.5" />}
+      {kind === 'moon' && (
+        <>
+          <circle cx="12" cy="12" r="8.5" />
+          <circle cx="9.5" cy="10" r="1.6" fill="currentColor" stroke="none" />
+          <circle cx="14.5" cy="14.5" r="1.2" fill="currentColor" stroke="none" />
+        </>
+      )}
+      {kind === 'laser' && (
+        <>
+          <path d="M5 19 L17 7" />
+          <circle cx="18.5" cy="5.5" r="2.2" fill="currentColor" stroke="none" />
+        </>
+      )}
+      {kind === 'again' && <path d="M17 6 A7 7 0 1 0 19 12 M17 2.5 V6.5 H13" />}
+      {kind === 'none' && (
+        <>
+          <circle cx="12" cy="12" r="8" />
+          <path d="M6.5 17.5 L17.5 6.5" />
+        </>
+      )}
+      {kind === 'past' && (
+        <>
+          <circle cx="9" cy="14" r="5" />
+          <path d="M5 4 L20 9.5 M16 6.5 L20 9.5 L16.5 12.5" />
+        </>
+      )}
       {kind === 'hover' && <path d="M4 9 H20 M4 15 H20 M12 11.5 V12.5" />}
       {kind === 'goal' && <path d="M5 12.5 L10 17 L19 7.5" strokeWidth="3" />}
       {kind === 'quake' && <path d="M2.5 12 H6 L8 8 L10.5 16.5 L13 5.5 L15.5 18 L17.5 9.5 L19 12 H21.5" strokeWidth="2.2" />}
@@ -341,11 +369,11 @@ const TEXT: Record<NewsTone, string> = { info: 'text-sun', warn: 'font-bold text
  * The rover's news: a drawn badge for what it is about, then the line. Each new line rises in as its blur clears;
  * under reduced motion it only fades. Warnings are orange, cold is frost, each with its own badge shape.
  */
-export function NewsLine({ item }: { item: News | null }) {
+export function NewsLine({ item, className = 'min-h-[2.8em]' }: { item: News | null; className?: string }) {
   return (
     <p
       aria-live="polite"
-      className="min-h-[2.8em] max-w-[36ch] text-base leading-snug [text-shadow:0_1px_2px_rgb(0_0_0/0.6),0_0_18px_rgb(36_24_18/0.9)] sm:text-lg lg:text-xl"
+      className={`${className} max-w-[36ch] text-base leading-snug [text-shadow:0_1px_2px_rgb(0_0_0/0.6),0_0_18px_rgb(36_24_18/0.9)] sm:text-lg lg:text-xl`}
     >
       {item && (
         <span

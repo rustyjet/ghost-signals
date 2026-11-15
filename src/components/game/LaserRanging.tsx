@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { isNarrow, prefersReducedMotion } from '../../scroll/smoothScroll'
 import { Key } from './Key'
+import { news as item, NewsLine, type News } from './LastLightHud'
 import { StageHeading } from './StageHeading'
 
 // "Find the mirrors": fire a laser at the Moon and wait for the light to come back.
@@ -118,7 +119,7 @@ const where = (x: number, y: number) => {
 }
 
 export default function LaserRanging() {
-  const [news, setNews] = useState('Each number marks where an Apollo crew landed. Start with 11: that is where Eagle left its mirrors.')
+  const [news, setNews] = useState<News>(() => item('moon', 'Each number marks where an Apollo crew landed. Start with 11: that is where Eagle left its mirrors.'))
   const [found, setFound] = useState<number[]>([])
   // Sites fired at that turned out to have no mirrors: their labels are crossed out, so the hunt narrows
   const [ruledOut, setRuledOut] = useState<number[]>([])
@@ -180,7 +181,7 @@ export default function LaserRanging() {
     const to = target.kind === 'site' ? { x: target.site.x, y: target.site.y } : at
     pulse.current = { t0: performance.now(), at: to, target, back, arrived: false, started: false }
     setBusy(true)
-    setNews('Fired. The light is on its way to the Moon.')
+    setNews(item('laser', 'Fired. The light is on its way to the Moon.'))
     if (distRef.current) {
       distRef.current.textContent = '?'
       distRef.current.dataset.wait = 'true'
@@ -223,25 +224,25 @@ export default function LaserRanging() {
       }
       setNews(
         all
-          ? 'All three found. Real lasers have it far harder: only 1 bit of light in 25 million even reaches Eagle’s mirrors.'
+          ? item('goal', 'All three found. Real lasers have it far harder: only 1 bit of light in 25 million even reaches Eagle’s mirrors.', 'good')
           : !first
-            ? 'Light came back again, 2.5 seconds later.'
+            ? item('again', 'Light came back again, 2.5 seconds later.')
             : n === 11
-              ? 'Light came back after 2.5 seconds, so the Moon is about 385,000 km away. Two more crews left mirrors. Can you find them?'
+              ? item('goal', 'Light came back after 2.5 seconds, so the Moon is about 385,000 km away. Two more crews left mirrors. Can you find them?', 'good')
               : n === 15
-                ? 'Apollo 15 left mirrors too: 300 of them, so light comes back more often.'
-                : 'Apollo 14 left 100 mirrors, just like Eagle’s.',
+                ? item('goal', 'Apollo 15 left mirrors too: 300 of them, so light comes back more often.', 'good')
+                : item('goal', 'Apollo 14 left 100 mirrors, just like Eagle’s.', 'good'),
       )
     } else if (t.kind === 'site' && t.site.cubes > 0) {
-      setNews(`The light reached Apollo ${t.site.n}’s mirrors, but none of it made it back this time. Fire again.`)
+      setNews(item('none', `The light reached Apollo ${t.site.n}’s mirrors, but none of it made it back this time. Fire again.`))
     } else if (t.kind === 'site') {
       const n = t.site.n
       setRuledOut((r) => (r.includes(n) ? r : [...r, n]))
-      setNews(`Apollo ${n} left no mirrors. Nothing came back.`)
+      setNews(item('none', `Apollo ${n} left no mirrors. Nothing came back.`))
     } else if (t.kind === 'ground') {
-      setNews('No mirrors there. Nothing came back.')
+      setNews(item('none', 'No mirrors there. Nothing came back.'))
     } else {
-      setNews('That pulse missed the Moon and flew off into space.')
+      setNews(item('past', 'That pulse missed the Moon and flew off into space.'))
     }
     if (distRef.current && !(p.back && t.kind === 'site')) distRef.current.dataset.wait = 'false'
     if (clockBoxRef.current) clockBoxRef.current.dataset.run = 'false'
@@ -599,11 +600,13 @@ export default function LaserRanging() {
         {/* The heading is how the hunt is going */}
         <StageHeading
           text={['Find the mirrors.', 'Two more to find.', 'One more to find.', 'All three found.'][found.length] ?? 'All three found.'}
-          className="text-[clamp(2rem,min(9vw,8svh),5rem)] [@media(max-height:760px)_and_(max-width:1023px)]:hidden"
+          className="text-[clamp(2rem,min(9vw,8svh),5rem)] lg:flex lg:min-h-[2.15em] lg:flex-col lg:justify-end [@media(max-height:760px)_and_(max-width:1023px)]:hidden"
         />
-        <p aria-live="polite" className="mt-2 min-h-[4.2em] max-w-[36ch] text-base leading-snug text-sun sm:text-lg lg:mt-4 lg:text-xl">
-          {news}
-        </p>
+        {/* The same news line as the other games: a drawn badge for what happened, the line rising in as its blur
+            clears. Room for three lines (four on wide screens, where a found mirror is in bold), so the words never jump. */}
+        <div className="mt-2 lg:mt-4">
+          <NewsLine item={news} className="min-h-[4.2em] lg:min-h-[5.6em]" />
+        </div>
         <p id="laser-aim" className="sr-only" aria-live="polite">
           {aimSaid}
         </p>
@@ -655,7 +658,7 @@ export default function LaserRanging() {
           </div>
         </div>
         {/* How to fire: the Moon itself is the control (there is no separate button that would fire at a stale aim) */}
-        <p className="mt-4 flex items-start gap-2 text-base leading-snug text-sun/85 lg:mt-5 [@media(hover:hover)_and_(pointer:fine)]:min-h-[3.4em]">
+        <p className="mt-4 flex items-start gap-2 text-base leading-snug text-sun/85 lg:mt-5 [@media(hover:hover)_and_(pointer:fine)]:min-h-[3.8em]">
           <svg viewBox="0 0 24 24" aria-hidden="true" className="mt-[0.2em] size-[1.1em] shrink-0 text-laser" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
             <circle cx="12" cy="12" r="7.5" />
             <path d="M12 1.5 V6 M12 18 V22.5 M1.5 12 H6 M18 12 H22.5" />
