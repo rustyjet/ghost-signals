@@ -123,7 +123,7 @@ export const opportunity: Chapter = {
       storm: 0,
       // Wide screens: the lander stands right of the words here and left of them on the next step, so the
       // pan carries it across between the two. Phones keep the original pan.
-      scene: { kind: 'photo', image: eagle, from: { x: 0.25, y: 0.5, zoom: 1.2 }, to: { x: 0.5, y: 0.5, zoom: 1.2 }, narrow: [{ x: 0.28, y: 0.5, zoom: 1.05 }, { x: 0.47, y: 0.5, zoom: 1.05 }] },
+      scene: { kind: 'photo', image: eagle, from: { x: 0.25, y: 0.5, zoom: 1.2 }, to: { x: 0.5, y: 0.5, zoom: 1.2 }, narrow: [{ x: 0.28, y: 0.5, zoom: 1.05 }, { x: 0.49, y: 0.5, zoom: 1.05 }] },
     },
     {
       spine: 1,

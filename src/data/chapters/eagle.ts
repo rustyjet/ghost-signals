@@ -102,7 +102,8 @@ export const eagle: Chapter = {
       heading: 'Alarm 1202.',
       body: 'On the way down, my computer warned it had too many jobs at once. Mission Control said keep going, and Neil and Buzz did.',
       storm: 0,
-      scene: { kind: 'photo', image: orbit, from: { x: 0.6, y: 0.3, zoom: 1.05 }, to: { x: 0.6, y: 0.42, zoom: 1.25 } },
+      // Phones: the lander is half the photo's width, so the camera stays wide and centred on it.
+      scene: { kind: 'photo', image: orbit, from: { x: 0.6, y: 0.3, zoom: 1.05 }, to: { x: 0.6, y: 0.42, zoom: 1.25 }, narrow: [{ x: 0.7, y: 0.4, zoom: 1 }, { x: 0.7, y: 0.5, zoom: 1.06 }] },
     },
     {
       spine: 1,
@@ -150,7 +151,8 @@ export const eagle: Chapter = {
         // Wide screens: the sensor stays in the left third as the camera moves in.
         from: { x: 1, y: 0.62, zoom: 1.3 },
         to: { x: 0.75, y: 0.68, zoom: 1.6 },
-        narrow: [{ x: 0.4, y: 0.5, zoom: 1.15 }, { x: 0.3, y: 0.8, zoom: 1.7 }],
+        // Phones: the sensor with both its solar panels (the words say sunlight powered it) fits only this wide.
+        narrow: [{ x: 0.3, y: 0.5, zoom: 1 }, { x: 0.31, y: 0.75, zoom: 1.1 }],
       },
     },
     {
