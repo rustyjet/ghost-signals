@@ -53,3 +53,4 @@ Vite, React, TypeScript, Tailwind CSS, GSAP ScrollTrigger and SplitText, Google'
 
 - Live site: [URL once deployed]
 - Source code: [repository URL]
+- Project demo (required): [link to the video or slide deck]. Either a video of 30 seconds or less, or a slide deck of up to seven slides including the title. Hosted on YouTube, Google Drive, GitHub or similar, publicly viewable with no login. Include the team name, team members, the challenge, and how NASA data made the project possible. Slide decks must be in English; a video in another language needs English subtitles. No images, video or audio of anyone under 18.
