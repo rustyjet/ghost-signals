@@ -8,6 +8,8 @@ import { pathToFileURL } from 'node:url'
 const MAX_HEADING_WORDS = 5
 const MAX_BODY_CHARS = 150
 const MAX_TAGLINE_CHARS = 70
+const MAX_SOUND_LABEL_WORDS = 6
+const MAX_SOUND_CAPTION_CHARS = 140
 const BANNED = [/\bjourney\b/i, /look closer/i, /!/, /\?$/]
 
 const dir = join(import.meta.dirname, '..', 'src', 'data', 'chapters')
@@ -27,6 +29,15 @@ for (const file of files) {
       if (s.body.length > MAX_BODY_CHARS) problems.push(`${where}: body has ${s.body.length} chars (max ${MAX_BODY_CHARS})`)
       for (const re of BANNED) {
         if (re.test(s.heading) || re.test(s.body)) problems.push(`${where}: uses banned pattern ${re}`)
+      }
+      if (s.sound) {
+        const labelWords = s.sound.label.trim().split(/\s+/).length
+        if (labelWords > MAX_SOUND_LABEL_WORDS) problems.push(`${where}: sound label has ${labelWords} words (max ${MAX_SOUND_LABEL_WORDS})`)
+        if (s.sound.caption.length > MAX_SOUND_CAPTION_CHARS)
+          problems.push(`${where}: sound caption has ${s.sound.caption.length} chars (max ${MAX_SOUND_CAPTION_CHARS})`)
+        for (const re of BANNED) {
+          if (re.test(s.sound.label) || re.test(s.sound.caption)) problems.push(`${where}: sound uses banned pattern ${re}`)
+        }
       }
     })
   }

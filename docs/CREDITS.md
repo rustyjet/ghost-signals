@@ -130,3 +130,14 @@ Used only in the demo videos (`demo-video/`: the 30-second pitch and the 3-minut
 |---|---|---|---|
 | `sojourner-drive-day3.webp` | "Sojourner, 'Barnacle Bill,' & 'Yogi'", sol 3, black and white (PIA00660) | NASA/JPL | The right 8% cut off (outside the colour view), so both photos share one frame: 1028 x 840. WebP. |
 | `sojourner-drive-yogi.webp` | "Area of 360 Degree Color Panorama", sols 8 to 10 (PIA00751) | NASA/JPL | Cut and scaled (x 0.99 from 489, 288) to lie exactly on the sol 3 photo, found by image matching; no other change. WebP. |
+
+## Story sounds (downloaded 16 Nov 2026)
+
+Played on the site only when a reader presses "Hear it" (`public/audio/`). Every clip is mono, 96 kb/s MP3, levelled to the same loudness (ffmpeg `loudnorm`).
+
+| File | What | Credit | Source | Changes |
+|---|---|---|---|---|
+| `ingenuity-flight4.mp3` | Ingenuity's fourth flight, 30 Apr 2021, heard by Perseverance's SuperCam microphone (NASA already isolated and boosted the 84 Hz blade hum) | NASA/JPL-Caltech/ASU/MSSS/LANL/CNES/CNRS/ISAE-Supaéro | https://science.nasa.gov/resource/listen-to-nasas-ingenuity-mars-helicopter-in-flight/ (640 px video) | Audio only, 1:44 to 2:04, short fades. |
+| `apollo11-landing.mp3` | "Tranquility Base here. The Eagle has landed." | NASA | https://nssdc.gsfc.nasa.gov/planetary/lunar/a11landing.aiff | MP3 from the 8-bit AIFF, 0.4 s of silence at the end. |
+| `insight-wind.mp3` | Wind on InSight's solar panels, heard by its seismometer, raised two octaves by NASA | NASA/JPL-Caltech/CNES/IPGP/Imperial College London/Oxford | https://science.nasa.gov/resource/more-audible-sounds-from-insights-seismometer-on-mars | Same 20 s as the demo video's `insight-wind.wav`, short fades. |
+| `perseverance-wind.mp3` | Mars wind, sol 4 (22 Feb 2021), Perseverance's SuperCam microphone | NASA/JPL-Caltech/LANL/CNES/CNRS/ISAE-Supaéro | https://science.nasa.gov/resource/perseverance-rovers-supercam-records-wind-on-mars/ | 0:10 to 0:30, short fades. |

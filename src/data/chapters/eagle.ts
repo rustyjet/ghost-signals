@@ -112,6 +112,15 @@ export const eagle: Chapter = {
       body: '20 July 1969. I touched down in the Sea of Tranquility. No Apollo landing ever had less fuel to spare.',
       storm: 0,
       scene: { kind: 'photo', image: lmWindow, from: { x: 0.5, y: 0.35, zoom: 1.05 }, to: { x: 0.5, y: 0.6, zoom: 1.15 } },
+      // docs/FACTS.md, Story sounds: Eagle 2
+      sound: {
+        src: 'audio/apollo11-landing.mp3',
+        label: 'Hear the real radio call',
+        caption: 'Neil Armstrong on the radio to Houston, 20 July 1969.',
+        credit: 'NASA',
+        name: "Neil Armstrong's radio call, 20 July 1969",
+        url: 'https://nssdc.gsfc.nasa.gov/planetary/sound/index.html',
+      },
     },
     {
       spine: 2,

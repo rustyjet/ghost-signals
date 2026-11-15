@@ -107,6 +107,15 @@ export const ingenuity: Chapter = {
       body: 'My blades turn about 2,400 times a minute. That is many times faster than a passenger helicopter on Earth.',
       storm: 0,
       scene: { kind: 'photo', image: rotor, from: { x: 0.85, y: 0.1, zoom: 1.1 }, to: { x: 0.6, y: 0.25, zoom: 1.2 } },
+      // docs/FACTS.md, Story sounds: Ingenuity 3
+      sound: {
+        src: 'audio/ingenuity-flight4.mp3',
+        label: 'Hear my blades on Mars',
+        caption: 'My fourth flight, 30 April 2021, heard by the Perseverance rover 80 metres away. NASA made the hum louder.',
+        credit: 'NASA/JPL-Caltech/ASU/MSSS/LANL/CNES/CNRS/ISAE-Supaéro',
+        name: 'My blades on my fourth flight, heard by Perseverance',
+        url: 'https://science.nasa.gov/resource/listen-to-nasas-ingenuity-mars-helicopter-in-flight/',
+      },
     },
     {
       spine: 1,

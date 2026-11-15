@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Chapter, Figure } from '../data/types'
 import { gsap, isNarrow, prefersReducedMotion, ScrollTrigger, SplitText, splitTitle, TITLE_RISE, useGSAP } from '../scroll/smoothScroll'
 import Backdrop, { makeBackdropController, type Shot } from './story/Backdrop'
+import StepSound from './story/StepSound'
 
 /** Numbers as the story shows them: grouped thousands (unless `plain`), and a true minus sign. */
 const fmt = (n: number, decimals = 0, plain = false) =>
@@ -357,6 +358,15 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
                     {s.body}
                   </p>
                 </div>
+                {/* A real NASA recording of this moment, off until pressed. Its own fading part, so it leaves
+                    the screen on its own like the rest of the words; data-body gives it the body's entrance. */}
+                {s.sound && (
+                  <div data-fade="" className={wordsShade}>
+                    <div data-body="">
+                      <StepSound sound={s.sound} />
+                    </div>
+                  </div>
+                )}
                 <SceneDescription scene={s.scene} />
               </div>
             </div>

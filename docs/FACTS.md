@@ -437,3 +437,26 @@ The rover's outline, the drive, its speed, the rock outlines, how much it slips 
 | Drawn for the game (covered by "My rover and the drive are drawn for the game"): the rover's look and its tuned size, the bumps and rocking, the dust, the jolt, the wheel climbing Yogi in any game bump (the real one was the left rear wheel, PIA00670), the Earth to Mars strip and its light, the frame glow, the touch pulse. The drawing has no antenna, since where it sat is not checked | ours | Scene |
 
 Traps (drive game): the top speed differs between sources (NSSDCA/NASA History "0.39 inch per second", about 1 cm/s; ICES "about 0.7 cm/sec"; OPS "~0.4 meter/minute"); the game shows no speed. ICES says "over 500 images" from the rover, the PDS mission page "over 600": the game uses neither.
+
+
+### Story sounds (16 Nov 2026)
+
+Four steps have a "Hear it" button that plays a real NASA recording, off until pressed. Each caption says who recorded it and what NASA changed. Clips are trimmed and made mono (docs/CREDITS.md). Pages read directly on 16 Nov 2026, except where noted.
+
+- **HELIAUD** = NASA Science, "Listen to NASA's Ingenuity Mars Helicopter in Flight" — https://science.nasa.gov/resource/listen-to-nasas-ingenuity-mars-helicopter-in-flight/ (the clip is cut from this page's video; the video's own end card is quoted below)
+- **HELINEWS** = JPL, "NASA's Perseverance Captures Video, Audio of Fourth Ingenuity Flight" — https://www.jpl.nasa.gov/news/nasas-perseverance-captures-video-audio-of-fourth-ingenuity-flight/ (JPL resets automated requests; read through search summaries only)
+- **SOUNDAGE** = NSSDCA, "Sounds of the Space Age" — https://nssdc.gsfc.nasa.gov/planetary/sound/index.html (file: https://nssdc.gsfc.nasa.gov/planetary/lunar/a11landing.aiff)
+- **ALSJL** = see the Eagle sources above (Apollo Lunar Surface Journal, the landing)
+- **WINDAUD** = NASA Science, "More Audible Sounds from InSight's Seismometer on Mars" (published 7 Dec 2018) — https://science.nasa.gov/resource/more-audible-sounds-from-insights-seismometer-on-mars
+- **SCAMWIND** = NASA Science, "Perseverance Rover's SuperCam Records Wind on Mars" — https://science.nasa.gov/resource/perseverance-rovers-supercam-records-wind-on-mars/
+
+| Step | Claim | Source | Checked |
+|------|-------|--------|---------|
+| Ingenuity 3 | Perseverance recorded Ingenuity's fourth flight, 30 April 2021: "The Perseverance rover recorded Ingenuity's fourth flight on Mars, capturing video – as well as audio"; "At the time, the rover was 262 feet (80 meters) away"; "It recorded the sound as Ingenuity flew an 872-foot (266-meter) round trip on April 30, 2021" (on-screen text in the video) | HELIAUD, HELINEWS | Checked |
+| Ingenuity 3 | "NASA made the hum louder": "Scientists made it easier to hear by isolating the 84 hertz helicopter blade sound, reducing the frequencies below 80 hertz and above 90 hertz, and increasing the volume of the remaining signal" (video end card) | HELIAUD | Checked |
+| Ingenuity 3 | The clip is 20 seconds from 1:44 of the video, where the helicopter passes the camera ("loudest when the helicopter passes through the field of view of the camera") | HELIAUD | Checked |
+| Eagle 2 | The clip is NSSDCA's "Tranquility Base here. The Eagle has landed." | SOUNDAGE | Checked |
+| Eagle 2 | Neil Armstrong said it: "102:45:58 Armstrong (onboard): Houston, Tranquility Base here. The Eagle has landed." | ALSJL | Checked |
+| InSight 3 | The sound is "vibrations caused by Martian wind moving over the lander's solar panels", recorded by InSight's seismometer; the page is dated 7 Dec 2018, before the seismometer was set on the ground on 19 Dec 2018 (SEISPIA), so "before my arm put it down" | WINDAUD, SEISPIA | Checked |
+| InSight 3 | "the data have been processed to raise the frequencies by two octaves to make them more audible" → "NASA raised the sound two octaves" | WINDAUD | Checked |
+| Opportunity 7 | Opportunity carried no microphone; the wind is Perseverance's: "This recording was made on Feb. 22, 2021, on the fourth sol (Martian day) by the SuperCam instrument on NASA's Perseverance rover"; "Some wind can be heard, especially around 20 seconds into the recording" (the clip is 0:10 to 0:30) | SCAMWIND | Checked (NSSDCA lists Pancam, Mini-TES, APXS, MB, MI, RAT and the navigation and hazard cameras; no microphone) |

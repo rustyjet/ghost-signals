@@ -3,6 +3,7 @@ import { news as item, NewsLine, type News } from './LastLightHud'
 import { isNarrow, prefersReducedMotion } from '../../scroll/smoothScroll'
 import { Key } from './Key'
 import { StageHeading } from './StageHeading'
+import { SoundIcon } from '../SoundIcon'
 
 // "Listen for marsquakes": InSight's seismometer draws a line, and a quake is a wiggle in it.
 // What is real (docs/FACTS.md, "Listen for marsquakes"): Mars is "extremely quiet", so the seismometer could pick up
@@ -73,15 +74,6 @@ const STAGES = Object.values(HEADING)
 /** How hard the wind is gusting at game time t, 0.35 to 1 (the same gusts the line shows). */
 function gustAt(t: number, ph: number[]) {
   return 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * 0.8 + ph[0])) * (0.5 + 0.5 * Math.sin(t * 1.9 + ph[1]))
-}
-
-function SoundIcon({ on, className }: { on: boolean; className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 9.5 H7.5 L12 5.5 V18.5 L7.5 14.5 H4 Z" />
-      {on ? <path d="M15.5 9 A4 4 0 0 1 15.5 15 M18 6.5 A7.5 7.5 0 0 1 18 17.5" /> : <path d="M16 9.5 L21 14.5 M21 9.5 L16 14.5" />}
-    </svg>
-  )
 }
 
 function DomeIcon({ className }: { className?: string }) {

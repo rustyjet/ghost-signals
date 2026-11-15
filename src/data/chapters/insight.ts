@@ -126,6 +126,15 @@ export const insight: Chapter = {
       storm: 0,
       // Wide screens: the claw above the words, the top of the dome below them.
       scene: { kind: 'photo', image: domeArm, from: { x: 0.5, y: 0.38, zoom: 1 }, to: { x: 0.5, y: 0.55, zoom: 1.08 }, narrow: [{ x: 0.45, y: 0.75, zoom: 1.05 }, { x: 0.45, y: 0.9, zoom: 1.15 }] },
+      // docs/FACTS.md, Story sounds: InSight 3
+      sound: {
+        src: 'audio/insight-wind.mp3',
+        label: 'Hear the wind on my panels',
+        caption: 'Before my arm set it down, my seismometer felt the wind on my solar panels. NASA raised the sound two octaves so we can hear it.',
+        credit: 'NASA/JPL-Caltech/CNES/IPGP/Imperial College London/Oxford',
+        name: 'Wind on my solar panels, felt by my seismometer',
+        url: 'https://science.nasa.gov/resource/more-audible-sounds-from-insights-seismometer-on-mars',
+      },
     },
     {
       spine: 128,

@@ -90,6 +90,7 @@ function Sources({ chapter }: { chapter: ChapterData }) {
     ...sceneImages([chapter.title.scene, ...chapter.steps.map((s) => s.scene)]).map((i) => ({ what: i.name, credit: i.credit })),
     ...((chapter.interaction && gamePictures[chapter.interaction]) || []),
   ]
+  const sounds = chapter.steps.flatMap((s) => (s.sound ? [s.sound] : []))
   return (
     <footer className="border-t border-sun/15 bg-basalt px-5 pb-16 pt-12 text-sun/80 md:px-10">
       <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-[1.4fr_1fr]">
@@ -119,6 +120,27 @@ function Sources({ chapter }: { chapter: ChapterData }) {
               </li>
             ))}
           </ul>
+          {sounds.length > 0 && (
+            <>
+              <h2 className="mt-10 font-display text-2xl text-sun">Sounds</h2>
+              {/* Credits like NASA/JPL-Caltech/ASU/MSSS/LANL/… have no spaces; let them wrap at 320 px */}
+              <ul className="mt-4 space-y-3 text-base [overflow-wrap:anywhere]">
+                {sounds.map((s) => (
+                  <li key={s.src}>
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline decoration-sun/30 underline-offset-4 transition-[text-decoration-color] duration-200 hover:decoration-sun"
+                    >
+                      {s.name}
+                    </a>
+                    : {s.credit}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
           <p className="mt-6 text-base">{chapter.name}&rsquo;s voice is imagined. What it says happened.</p>
           <Link to="/" className="mt-6 inline-flex min-h-11 items-center font-display text-lg font-bold text-sun underline decoration-1 underline-offset-[6px]">
             Back to all the machines

@@ -65,6 +65,24 @@ export type Scene =
   /** Nothing: the signal is gone. */
   | { kind: 'black' }
 
+/**
+ * A real NASA recording a step can play, off until pressed ("Hear it"). Every one has a checked row in
+ * docs/FACTS.md ("Story sounds") and a file row in docs/CREDITS.md.
+ */
+export interface StepSound {
+  /** e.g. "audio/ingenuity-flight4.mp3" (relative, no leading slash). */
+  src: string
+  /** The button's words: what you will hear, e.g. "Hear my blades on Mars". */
+  label: string
+  /** Who recorded it, when, and what NASA changed. Shown once pressed; one or two short sentences. */
+  caption: string
+  credit: string
+  /** Short name for the sound credits. */
+  name: string
+  /** The NASA page the recording comes from. */
+  url: string
+}
+
 /** The big number on a step. It counts up from zero as the step arrives. */
 export interface Figure {
   value: number
@@ -92,6 +110,7 @@ export interface Step {
   /** 0 = clear air, 1 = full dust storm (dust in the air, darker sky). */
   storm: number
   scene: Scene
+  sound?: StepSound
 }
 
 export type InteractionId = 'dust-storm' | 'laser-ranging' | 'rotor-lift' | 'seismometer' | 'drive-plan'

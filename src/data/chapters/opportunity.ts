@@ -180,6 +180,15 @@ export const opportunity: Chapter = {
       body: 'Dust kept settling on my solar panels. In March 2014 the wind blew most of it off, and my power went up.',
       storm: 0,
       scene: { kind: 'compare', before: dusty, after: clean, from: { x: 0.5, y: 0.2, zoom: 1.22 }, to: { x: 0.5, y: 0.5, zoom: 1.3 }, narrow: [{ x: 0.5, y: 0.6, zoom: 1.28 }, { x: 0.5, y: 0.6, zoom: 1.36 }] },
+      // docs/FACTS.md, Story sounds: Opportunity 7
+      sound: {
+        src: 'audio/perseverance-wind.mp3',
+        label: 'Hear the wind on Mars',
+        caption: 'I had no microphone. This is Mars wind, heard by the Perseverance rover on 22 February 2021.',
+        credit: 'NASA/JPL-Caltech/LANL/CNES/CNRS/ISAE-Supaéro',
+        name: 'Mars wind, heard by Perseverance on 22 February 2021',
+        url: 'https://science.nasa.gov/resource/perseverance-rovers-supercam-records-wind-on-mars/',
+      },
     },
     {
       spine: 3968,
