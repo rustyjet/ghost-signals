@@ -43,6 +43,7 @@ interface Pulse {
   target: Target
   back: boolean
   arrived: boolean
+  started: boolean
 }
 
 function targetAt(x: number, y: number): Target {
@@ -149,6 +150,12 @@ export default function LaserRanging() {
   const splashRef = useRef<SVGCircleElement>(null)
   const catchRef = useRef<SVGCircleElement>(null)
   const gradRef = useRef<SVGLinearGradientElement>(null)
+  const coneRef = useRef<SVGPolygonElement>(null)
+  const headGlowRef = useRef<SVGLineElement>(null)
+  const flashRef = useRef<SVGCircleElement>(null)
+  const spotRef = useRef<SVGCircleElement>(null)
+  const photonGlowRef = useRef<SVGCircleElement>(null)
+  const tailRef = useRef<SVGLineElement>(null)
 
   const pulse = useRef<Pulse | null>(null)
   const misses = useRef(new Map<number, number>())
@@ -167,7 +174,7 @@ export default function LaserRanging() {
       back = m >= 2 || Math.random() < odds(target.site)
       misses.current.set(target.site.n, back ? 0 : m + 1)
     }
-    pulse.current = { t0: performance.now(), at, target, back, arrived: false }
+    pulse.current = { t0: performance.now(), at, target, back, arrived: false, started: false }
     setBusy(true)
     setNews('Fired. The light is on its way to the Moon.')
     if (distRef.current) {
@@ -284,17 +291,52 @@ export default function LaserRanging() {
         set(gradRef.current, { x1: g.ox, y1: g.oy, x2: g.tx, y2: g.ty })
         set(traceRef.current, { x1: g.ox, y1: g.oy, x2: g.tx, y2: g.ty, opacity: 0.22 })
         const lerp = (k: number) => ({ x: g.ox + (g.tx - g.ox) * k, y: g.oy + (g.ty - g.oy) * k })
+        // The beam spreads on its way: a faint cone widening from the station to the Moon
+        const len = Math.hypot(g.tx - g.ox, g.ty - g.oy) || 1
+        const nx = -(g.ty - g.oy) / len
+        const ny = (g.tx - g.ox) / len
+        const spread = (moonRef.current?.clientWidth ?? 600) * 0.014
+        const cone = (tip: { x: number; y: number }, half: number) =>
+          set(coneRef.current, {
+            points: [
+              [g.ox + nx, g.oy + ny],
+              [tip.x + nx * half, tip.y + ny * half],
+              [tip.x - nx * half, tip.y - ny * half],
+              [g.ox - nx, g.oy - ny],
+            ]
+              .map((q) => q.join(','))
+              .join(' '),
+            opacity: 1,
+          })
+        if (!p.started) {
+          // A flash where the beam leaves the station
+          p.started = true
+          set(flashRef.current, { cx: g.ox, cy: g.oy })
+          flashRef.current?.animate(
+            [
+              { opacity: 0.95, transform: reduced ? 'none' : 'scale(0.4)' },
+              { opacity: 0, transform: reduced ? 'none' : 'scale(1.5)' },
+            ],
+            { duration: 450, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
+          )
+        }
         if (e < HALF) {
-          // Out: a short bright pulse climbs the trace. Reduced motion: the whole beam shows at once.
+          // Out: a short bright pulse with a soft glow climbs the trace, the cone growing behind it.
+          // Reduced motion: the whole beam shows at once.
           const k = e / HALF
           const a = reduced ? { x: g.ox, y: g.oy } : lerp(Math.max(0, k - 0.14))
           const b = reduced ? { x: g.tx, y: g.ty } : lerp(k)
           set(headRef.current, { x1: a.x, y1: a.y, x2: b.x, y2: b.y, opacity: 1 })
+          set(headGlowRef.current, { x1: a.x, y1: a.y, x2: b.x, y2: b.y, opacity: 0.6 })
+          cone(b, 1 + spread * (reduced ? 1 : k))
         } else {
           set(headRef.current, { opacity: 0 })
+          set(headGlowRef.current, { opacity: 0 })
+          cone({ x: g.tx, y: g.ty }, 1 + spread)
           if (!p.arrived) {
             p.arrived = true
             set(splashRef.current, { cx: g.tx, cy: g.ty })
+            set(spotRef.current, { cx: g.tx, cy: g.ty, r: spread * 1.2 })
             splashRef.current?.animate(
               [
                 { opacity: 0.9, transform: 'scale(0.6)' },
@@ -302,16 +344,29 @@ export default function LaserRanging() {
               ],
               { duration: 520, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
             )
+            // The spot of light where it lands, glowing and fading
+            spotRef.current?.animate([{ opacity: 0.85 }, { opacity: 0 }], { duration: 900, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' })
           }
-          // Back: one dot of light, if any, falls home along the same line.
+          // Back: one dot of light, if any, falls home along the same line, with a glow and a short tail.
           if (p.back && e < TRIP) {
-            const c = reduced ? { x: g.tx, y: g.ty } : lerp(1 - (e - HALF) / HALF)
+            const k = 1 - (e - HALF) / HALF
+            const c = reduced ? { x: g.tx, y: g.ty } : lerp(k)
+            const t = lerp(Math.min(1, k + 0.06))
             set(photonRef.current, { cx: c.x, cy: c.y, opacity: 1 })
-          } else set(photonRef.current, { opacity: 0 })
+            set(photonGlowRef.current, { cx: c.x, cy: c.y, opacity: 0.55 })
+            set(tailRef.current, { x1: c.x, y1: c.y, x2: t.x, y2: t.y, opacity: reduced ? 0 : 0.7 })
+          } else {
+            set(photonRef.current, { opacity: 0 })
+            set(photonGlowRef.current, { opacity: 0 })
+            set(tailRef.current, { opacity: 0 })
+          }
         }
         if (e >= TRIP) {
           set(traceRef.current, { opacity: 0 })
+          set(coneRef.current, { opacity: 0 })
           set(photonRef.current, { opacity: 0 })
+          set(photonGlowRef.current, { opacity: 0 })
+          set(tailRef.current, { opacity: 0 })
           if (clockRef.current) clockRef.current.textContent = TRIP.toFixed(2)
           if (p.back) {
             trauma = Math.min(1, trauma + 0.35)
@@ -491,12 +546,22 @@ export default function LaserRanging() {
               <stop offset="0" stopColor="var(--color-laser)" stopOpacity="0" />
               <stop offset="0.18" stopColor="var(--color-laser)" />
             </linearGradient>
+            {/* A soft glow behind the bright parts (in screen units, so a straight-up beam still glows) */}
+            <filter id="laser-glow" filterUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
+              <feGaussianBlur stdDeviation="3.5" />
+            </filter>
           </defs>
+          <polygon ref={coneRef} fill="url(#laser-beam)" fillOpacity="0.16" opacity="0" />
+          <circle ref={flashRef} r="22" fill="var(--color-laser)" opacity="0" filter="url(#laser-glow)" style={{ transformBox: 'fill-box', transformOrigin: 'center' }} />
+          <circle ref={spotRef} r="8" fill="var(--color-laser)" opacity="0" filter="url(#laser-glow)" />
+          <line ref={headGlowRef} stroke="var(--color-laser)" strokeWidth="11" strokeLinecap="round" opacity="0" filter="url(#laser-glow)" />
           {/* Each green mark sits on a dark casing, so it still reads on the bright Moon */}
           <line ref={traceRef} stroke="url(#laser-beam)" strokeWidth="2" opacity="0" />
-          <line ref={headRef} stroke="url(#laser-beam)" strokeWidth="4" strokeLinecap="round" opacity="0" style={{ filter: 'drop-shadow(0 1px 2px rgb(0 0 0 / 0.7))' }} />
+          <line ref={headRef} stroke="#eafff0" strokeWidth="3" strokeLinecap="round" opacity="0" />
           <circle ref={splashRef} r="18" fill="none" stroke="var(--color-laser)" strokeWidth="3" opacity="0" style={{ transformBox: 'fill-box', transformOrigin: 'center', filter: 'drop-shadow(0 1px 2px rgb(0 0 0 / 0.7))' }} />
-          <circle ref={photonRef} r="5" fill="var(--color-laser)" stroke="rgb(0 0 0 / 0.6)" strokeWidth="2" opacity="0" />
+          <line ref={tailRef} stroke="var(--color-laser)" strokeWidth="3" strokeLinecap="round" opacity="0" />
+          <circle ref={photonGlowRef} r="11" fill="var(--color-laser)" opacity="0" filter="url(#laser-glow)" />
+          <circle ref={photonRef} r="4" fill="#eafff0" stroke="rgb(0 0 0 / 0.55)" strokeWidth="1.5" opacity="0" />
           <circle ref={catchRef} r="14" fill="var(--color-laser)" opacity="0" style={{ transformBox: 'fill-box', transformOrigin: 'center' }} />
         </svg>
       </div>
