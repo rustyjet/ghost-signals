@@ -6,7 +6,8 @@ import { gsap, prefersReducedMotion, useGSAP } from '../../scroll/smoothScroll'
  * the game arrives, scrubbed to the scroll like the story's headings (and back on the way up). When the stage
  * changes, the new words rise in one by one out of their masks; reduced motion: it just changes.
  * `reserve` lists the other stages: they sit invisibly in the same place, so the heading is always as tall as the
- * tallest of them and nothing below it moves when the stage changes.
+ * tallest of them and nothing below it moves when the stage changes. A shorter stage sits at the bottom of that room,
+ * next to the words under it.
  */
 export function StageHeading({
   text,
@@ -30,7 +31,7 @@ export function StageHeading({
   })
   const words = text.split(' ')
   return (
-    <h2 ref={ref} className={`-mb-[0.12em] grid overflow-hidden pb-[0.12em] ${className}`}>
+    <h2 ref={ref} className={`-mb-[0.12em] grid items-end overflow-hidden pb-[0.12em] ${className}`}>
       {reserve.map((r) => (
         <span key={r} aria-hidden="true" className="invisible [grid-area:1/1]">
           {r}

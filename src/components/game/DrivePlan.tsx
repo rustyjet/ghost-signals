@@ -3,7 +3,8 @@ import { news as item, NewsLine, type News } from './LastLightHud'
 import { isNarrow, prefersReducedMotion } from '../../scroll/smoothScroll'
 import { Key } from './Key'
 import { StageHeading } from './StageHeading'
-import { dist, footprint, headingTo, pxPerMetre, rockAt, rocksOnGround, toGround, toPhoto, type Lens, type Pt, type Rock } from './driveGround'
+import { drawSojourner, WHEEL_R, WHEELS, type RoverLook } from './sojournerDraw'
+import { dist, headingTo, pxPerMetre, rockAt, rocksOnGround, toGround, toPhoto, type Lens, type Pt, type Rock } from './driveGround'
 
 // "Plan my drive": Sojourner could not be steered live. What is real (docs/FACTS.md, "Plan my drive"): commands took
 // 10 to 15 minutes to reach Mars; drivers sent a day's commands at a time, choosing spots on the lander's stereo
@@ -57,10 +58,17 @@ function inside(poly: Pt[], p: Pt) {
 
 /** Where the real rover parked at Yogi (the days 8 to 10 photo): park inside this ring. */
 const RING = { c: toGround(LENS, { x: 641, y: 259 }), r: 0.32 }
-/** Where the real rover stood in the day 3 photo, and which way it faced (0 = away from the camera). */
-const START = { p: toGround(LENS, { x: 424, y: 618 }), heading: (187 * Math.PI) / 180 }
-/** The outline: the size of the real rover's deck in the day 3 photo, so it sits on it at the start. */
-const ROVER = { length: 0.6, width: 0.4, deck: 0.21, r: 0.23, track: 0.17 }
+/** Where the real rover stood in the day 3 photo (the middle of its panel, fitted to the panel's corners in the photo), and which way it
+    faced (0 = away from the camera). */
+const START = { p: toGround(LENS, { x: 432, y: 640 }), heading: (188.5 * Math.PI) / 180 }
+/** The rover's size for bumping into things, and how far apart its wheel tracks are (the drawing is in
+    sojournerDraw.ts, sized on the real rover in the day 3 photo, so it sits on it at the start). */
+const ROVER = { r: 0.23, track: 0.2 }
+/** Which way the real rover faces in the days 8 to 10 photo: from the back of its panel to the front, on the
+    ground, and where it stands (inside the ring, fitted to its panel in that photo). At the end it drives there and
+    turns to this, so the drawing lands on the real rover as that photo comes up. */
+const REAL_SPOT = toGround(LENS, { x: 652, y: 250 })
+const REAL_HEADING = headingTo(toGround(LENS, { x: 720, y: 210 }), toGround(LENS, { x: 600, y: 223 }))
 
 const FIRST_DAY = 3
 const REAL_DAY = 6
@@ -69,6 +77,11 @@ const SPEED = 0.5 // m a second in the game (the real rover: about 1 cm a second
 const TURN = 2.4 // radians a second
 const DELAY = 2.6 // seconds the commands take to reach Mars, in the game (really 10 to 15 minutes)
 const NIGHT = 1.1 // seconds of night between days
+const STEER = 9 // how fast the front and rear wheels swing in or straighten (per second, eased)
+
+/** Small bumps in the ground under each wheel, from a fixed pattern of where it is, so the rover rocks over the same
+    stones every time it passes. Drawing only: the photo's ground has no height data. */
+const bumpAt = (g: Pt) => 0.006 * (Math.sin(g.x * 23 + g.y * 7) + 0.6 * Math.sin(g.x * 11 - g.y * 19) + 0.4 * Math.sin(g.y * 31 + g.x * 3))
 
 type Phase = 'plan' | 'send' | 'drive' | 'night' | 'done'
 type Bump = { rock: Rock | null; lander: boolean } | null
@@ -80,6 +93,21 @@ function onLander(p: Pt) {
   return p.y > 790
 }
 const offPhoto = (p: Pt) => p.x < 8 || p.x > PHOTO.w - 8 || p.y < 110 || p.y > PHOTO.h - 4
+
+// The longest news lines, sitting invisibly under the shown one so the controls keep one height (on phones that
+// height sets the photo's size, so a line that grew used to shift the photo). Keep the longest of any new line here.
+const RESERVE = [
+  'You can’t steer me live. Pick spots on the lander’s photo to plan my whole drive, then send it.',
+  'That’s Yogi, or ground hidden behind it. Pick a spot in the ring beside it.',
+  'Sending. Real commands took 10 to 15 minutes to reach me. Here, a few seconds.',
+  'In the ring on day 12. The real me reached Yogi on day 6, and drove a wheel right up onto it.',
+  'My wheel drove up onto Yogi. The real me did that too, on day 6. Back me off and try again.',
+  'Not in the ring yet. I slip a little, and I only know where I am by counting wheel turns.',
+  'On day 4 a real driver wrote: “We should take the time to learn how to drive on Mars.”',
+  'My gyro drifted left when I turned. Aim a little to the right, and keep the last drive short.',
+  'Here’s the lander’s real photo from days 8 to 10: the real me beside Yogi, with my real tracks.',
+].map((t) => item('goal', t, 'good'))
+const STAGES = ['Drive me to Yogi.', 'Day 10. Not there yet.', 'Parked at Yogi.']
 
 const HEADING = (phase: Phase, day: number) => (phase === 'done' ? 'Parked at Yogi.' : day === FIRST_DAY ? 'Drive me to Yogi.' : `Day ${day}. Not there yet.`)
 
@@ -109,6 +137,7 @@ export default function DrivePlan() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const hudRef = useRef<HTMLDivElement>(null)
   const dayRef = useRef<HTMLSpanElement>(null)
+  const pulseRef = useRef<HTMLSpanElement>(null)
 
   // Everything the loop reads lives in refs, so a drive never re-renders React.
   const sim = useRef({
@@ -137,6 +166,19 @@ export default function DrivePlan() {
     revealTold: false,
     /** The night has passed its middle and the day has counted on. */
     dayTurned: false,
+    // How the rover looks while it moves (sojournerDraw.ts)
+    spinL: 0,
+    spinR: 0,
+    steer: 0,
+    lift: [0, 0, 0, 0, 0, 0],
+    liftTo: [0, 0, 0, 0, 0, 0],
+    arm: 0,
+    glowT: -9,
+    joltT: -9,
+    dipT: -9,
+    dust: [] as { g: Pt; up: number; vx: number; vz: number; age: number; life: number }[],
+    /** Parked: the last moves into place beside Yogi, then the sensor reaches out. */
+    end: { moves: [] as ({ turn: number } | { roll: number })[], studyT: -1, told: false },
   })
   const kick = useRef<() => void>(() => {})
   const layout = useRef({ s: 1, ox: 0, oy: 0 })
@@ -221,6 +263,18 @@ export default function DrivePlan() {
     if (parked) {
       toPhase('done')
       s.ringPop = s.t
+      // Into the real rover's place: face (or back) towards the middle of the ring, roll there, turn the way the real
+      // rover stands, so the sensor on its back is towards Yogi
+      const d = dist(s.pose.p, REAL_SPOT)
+      const moves: ({ turn: number } | { roll: number })[] = []
+      if (d > 0.03) {
+        const toward = headingTo(s.pose.p, REAL_SPOT)
+        const off = Math.atan2(Math.sin(toward - s.pose.heading), Math.cos(toward - s.pose.heading))
+        const back = Math.abs(off) > Math.PI / 2
+        moves.push({ turn: back ? toward + Math.PI : toward }, { roll: back ? -d : d })
+      }
+      moves.push({ turn: REAL_HEADING })
+      s.end = { moves, studyT: -1, told: false }
       shake.current = Math.min(1, shake.current + 0.3)
       setNews(item('goal', `In the ring on day ${s.day}. The real me reached Yogi on day ${REAL_DAY}, and drove a wheel right up onto it.`, 'good'))
       return
@@ -248,6 +302,7 @@ export default function DrivePlan() {
     setStops(0)
     s.from = { ...s.pose.p }
     s.bump = null
+    s.liftTo = [0, 0, 0, 0, 0, 0] // overnight the wheel comes back down off Yogi
   }
 
   function again() {
@@ -264,6 +319,12 @@ export default function DrivePlan() {
     s.misses = 0
     s.reveal = 0
     s.revealTold = false
+    s.lift = [0, 0, 0, 0, 0, 0]
+    s.liftTo = [0, 0, 0, 0, 0, 0]
+    s.arm = 0
+    s.steer = 0
+    s.dust = []
+    s.end = { moves: [], studyT: -1, told: false }
     toPhase('plan')
     setNews(item('path', 'Back to day 3. Plan my drive to Yogi.'))
     kick.current()
@@ -352,6 +413,23 @@ export default function DrivePlan() {
       return { x: L.ox + p.x * L.s, y: L.oy + p.y * L.s }
     }
     const metre = (g: Pt) => pxPerMetre(LENS, g) * layout.current.s
+    /** A wheel's spot on the ground, from the rover's pose. */
+    const wheelAt = (wh: { u: number; v: number }) => {
+      const hd = s.pose.heading
+      return { x: s.pose.p.x + Math.sin(hd) * wh.u + Math.cos(hd) * wh.v, y: s.pose.p.y + Math.cos(hd) * wh.u - Math.sin(hd) * wh.v }
+    }
+    // One soft dust blot, drawn once and stamped for every puff
+    const puff = document.createElement('canvas')
+    puff.width = puff.height = 48
+    {
+      const pc = puff.getContext('2d')!
+      const g = pc.createRadialGradient(24, 24, 0, 24, 24, 24)
+      g.addColorStop(0, 'rgba(226,214,196,1)')
+      g.addColorStop(0.5, 'rgba(214,200,180,0.5)')
+      g.addColorStop(1, 'rgba(200,186,166,0)')
+      pc.fillStyle = g
+      pc.fillRect(0, 0, 48, 48)
+    }
 
     function line(pts: Pt[], width: number, color: string, dash: number[] = [], offset = 0) {
       if (pts.length < 2) return
@@ -436,12 +514,34 @@ export default function DrivePlan() {
       label('Yogi', scr({ x: YOGI.X + 0.1, y: YOGI.Z }, 0.62))
       label('Barnacle Bill', scr({ x: BILL.X, y: BILL.Z }, 0.42))
 
-      // Wheel tracks: two dark lines, one under each side
+      // Wheel tracks: two dark lines, one under each side, with the marks of the wheel cleats across them where
+      // they are near enough to see
       for (const tr of s.tracks) {
         if (tr.length < 2) continue
         for (const side of [-1, 1]) {
-          const pts = tr.map(({ p, h: hd }) => scr({ x: p.x + side * ROVER.track * Math.cos(hd), y: p.y - side * ROVER.track * Math.sin(hd) }))
-          line(pts, Math.max(1.5, 0.045 * metre(tr[tr.length - 1].p)), 'rgba(16,10,6,0.42)')
+          const ground = tr.map(({ p, h: hd }) => ({ x: p.x + side * ROVER.track * Math.cos(hd), y: p.y - side * ROVER.track * Math.sin(hd), hd }))
+          line(
+            ground.map((g) => scr(g)),
+            Math.max(1.5, 0.045 * metre(tr[tr.length - 1].p)),
+            'rgba(16,10,6,0.42)',
+          )
+          let run = 0
+          for (let i = 1; i < ground.length; i++) {
+            const a = ground[i - 1]
+            const b = ground[i]
+            const len = dist(a, b)
+            if (metre(b) < 160) {
+              run = 0
+              continue
+            }
+            for (run += len; run >= 0.045; run -= 0.045) {
+              const k = 1 - (run - 0.045) / Math.max(len, 1e-6)
+              const at = { x: a.x + (b.x - a.x) * Math.min(1, k), y: a.y + (b.y - a.y) * Math.min(1, k) }
+              const cx = Math.cos(b.hd) * 0.025
+              const cz = -Math.sin(b.hd) * 0.025
+              line([scr({ x: at.x - cx, y: at.y - cz }), scr({ x: at.x + cx, y: at.y + cz })], 1.2, 'rgba(16,10,6,0.35)')
+            }
+          }
         }
       }
 
@@ -496,24 +596,33 @@ export default function DrivePlan() {
         }
       }
 
-      // Me: my footprint on the ground, and my deck (the solar panel) above it, the front edge bolder
-      const foot = footprint(s.pose.p, s.pose.heading, ROVER.length, ROVER.width)
-      const base = foot.map((p) => scr(p))
-      const deck = foot.map((p) => scr(p, ROVER.deck))
-      ctx!.fillStyle = 'rgba(16,10,6,0.35)'
-      ctx!.beginPath()
-      base.forEach((p, i) => (i ? ctx!.lineTo(p.x, p.y) : ctx!.moveTo(p.x, p.y)))
-      ctx!.closePath()
-      ctx!.fill()
-      for (let i = 0; i < 4; i++) line([base[i], deck[i]], 1.5, 'rgba(255,241,214,0.55)')
-      ctx!.fillStyle = 'rgba(255,241,214,0.16)'
-      ctx!.beginPath()
-      deck.forEach((p, i) => (i ? ctx!.lineTo(p.x, p.y) : ctx!.moveTo(p.x, p.y)))
-      ctx!.closePath()
-      ctx!.fill()
-      line([...deck, deck[0]], 5, 'rgba(20,12,8,0.5)')
-      line([...deck, deck[0]], 2.25, BRIGHT)
-      line([deck[0], deck[1]], 4.5, BRIGHT)
+      // Dust off the wheels: soft puffs that rise a little, grow and fade
+      for (const d of s.dust) {
+        const e = d.age / d.life
+        const at = scr(d.g, d.up)
+        const r = (0.03 + 0.09 * e) * metre(d.g)
+        ctx!.globalAlpha = fade * 0.6 * (1 - e) * Math.min(1, d.age * 8)
+        ctx!.drawImage(puff, at.x - r, at.y - r, r * 2, r * 2)
+      }
+      ctx!.globalAlpha = fade
+
+      // Me: drawn from simple shapes in the photo's perspective. A bumper touch jolts me back a little and I settle.
+      const je = (s.t - s.joltT) / 0.35
+      const jolt = reduced || je >= 1 ? 0 : -0.035 * Math.sin(je * Math.PI) * (1 - je)
+      const de = (s.t - s.dipT) / 0.45
+      const look: RoverLook = {
+        spinL: s.spinL,
+        spinR: s.spinR,
+        steer: s.steer,
+        ground: WHEELS.map((wh) => (reduced ? 0 : bumpAt(wheelAt(wh)))),
+        lift: s.lift,
+        arm: s.arm,
+        glow: Math.max(0, 1 - (s.t - s.glowT) / 0.9),
+        touch: s.end.studyT >= 0 && s.arm > 0.98 && !reduced ? ((s.t - s.end.studyT) / 1.2) % 1 : 0,
+        dip: reduced || de >= 1 ? 0 : -0.06 * Math.sin(de * Math.PI) * (1 - de),
+      }
+      const at = { x: s.pose.p.x + Math.sin(s.pose.heading) * jolt, y: s.pose.p.y + Math.cos(s.pose.heading) * jolt }
+      drawSojourner(ctx!, scr, metre(at), LENS.h, at, s.pose.heading, look, { sun: SUN, bright: BRIGHT, ink: INK })
       ctx!.globalAlpha = 1
     }
 
@@ -527,6 +636,49 @@ export default function DrivePlan() {
       raf = visible ? requestAnimationFrame(frame) : 0
     }
 
+    /** Turning in place: the front and rear wheels swing in first, then the two sides turn opposite ways. True once
+        facing `target`. */
+    function turnTo(target: number, dt: number) {
+      s.steer = Math.min(1, s.steer + (1 - s.steer) * Math.min(1, dt * STEER) + dt)
+      let d = target - s.pose.heading
+      d = Math.atan2(Math.sin(d), Math.cos(d))
+      if (s.steer < 0.97) return false
+      const turn = Math.sign(d) * Math.min(Math.abs(d), TURN * dt)
+      s.pose.heading += turn
+      // the wheels roll round a circle about 0.3 m out: forward on one side, back on the other
+      s.spinL += (turn * 0.3) / WHEEL_R
+      s.spinR -= (turn * 0.3) / WHEEL_R
+      dustRate((Math.abs(turn) * 0.3) / Math.max(dt, 1e-4), dt)
+      if (Math.abs(d) <= TURN * dt) {
+        s.pose.heading = target
+        return true
+      }
+      return false
+    }
+    /** The front and rear wheels straighten; true once straight. */
+    function straighten(dt: number) {
+      s.steer = Math.max(0, s.steer - s.steer * Math.min(1, dt * STEER) - dt)
+      return s.steer < 0.03
+    }
+    /** Puffs off the wheels, as many as the wheels are moving fast (none under reduced motion). */
+    let owed = 0
+    function dustRate(speed: number, dt: number) {
+      owed += Math.min(1, speed / SPEED) * 22 * dt
+      const n = Math.floor(owed)
+      owed -= n
+      kickDust(n)
+    }
+    function kickDust(n: number) {
+      if (reduced) return
+      for (let i = 0; i < n && s.dust.length < 90; i++) {
+        const wh = WHEELS[Math.floor(Math.random() * 6)]
+        const g = wheelAt(wh)
+        const a = Math.random() * Math.PI * 2
+        const sp = 0.04 + Math.random() * 0.1
+        s.dust.push({ g, up: 0.02, vx: Math.cos(a) * sp, vz: Math.sin(a) * sp, age: 0, life: 0.8 + Math.random() * 0.7 })
+      }
+    }
+
     /** One step: the commands travel, the rover turns and rolls, the night passes, the real photo arrives. */
     function step(dt: number) {
       s.t += dt
@@ -537,18 +689,15 @@ export default function DrivePlan() {
         s.phaseT = 0
         setPhase('drive')
         setNews(item('path', 'Driving myself. I count my wheel turns to know where I am.'))
+        s.glowT = s.t
         fns.current.startLeg()
       }
       if (s.phase === 'drive') {
         if (s.turning) {
-          let d = s.goal.heading - s.pose.heading
-          d = Math.atan2(Math.sin(d), Math.cos(d))
-          const turn = TURN * dt
-          if (Math.abs(d) <= turn) {
-            s.pose.heading = s.goal.heading
-            s.turning = false
-          } else s.pose.heading += Math.sign(d) * turn
+          if (turnTo(s.goal.heading, dt)) s.turning = false
           s.tracks[s.tracks.length - 1].push({ p: { ...s.pose.p }, h: s.pose.heading })
+        } else if (!straighten(dt)) {
+          // the front and rear wheels straighten before it rolls
         } else {
           const move = Math.min(s.goal.left, SPEED * dt)
           const next = { x: s.pose.p.x + Math.sin(s.pose.heading) * move, y: s.pose.p.y + Math.cos(s.pose.heading) * move }
@@ -557,16 +706,27 @@ export default function DrivePlan() {
           if (k || lander) {
             s.bump = { rock: k, lander: !k && lander }
             s.flash = { rock: k, t0: s.t }
+            s.joltT = s.t
+            kickDust(10)
+            // Into Yogi, the wheel nearest it climbs up onto the rock (as the real rover's left rear wheel did)
+            if (k === YOGI) {
+              const near = WHEELS.map((wh, i) => [i, dist(wheelAt(wh), { x: YOGI.X, y: YOGI.Z })]).sort((a, b) => a[1] - b[1])[0][0]
+              s.liftTo = s.liftTo.map((_, i) => (i === near ? 0.07 : 0))
+            }
             shake.current = Math.min(1, shake.current + (k === YOGI ? 0.55 : 0.4))
             fns.current.endDay()
           } else {
             s.pose.p = next
             s.goal.left -= move
+            s.spinL += move / WHEEL_R
+            s.spinR += move / WHEEL_R
+            dustRate(move / dt, dt)
             const tr = s.tracks[s.tracks.length - 1]
             const lastPt = tr[tr.length - 1]
             if (dist(lastPt.p, next) > 0.03) tr.push({ p: { ...next }, h: s.pose.heading })
             if (s.goal.left <= 1e-4) {
               tr.push({ p: { ...next }, h: s.pose.heading })
+              s.dipT = s.t
               s.leg += 1
               if (s.leg < s.stops.length) fns.current.startLeg()
               else fns.current.endDay()
@@ -574,6 +734,53 @@ export default function DrivePlan() {
           }
         }
       }
+      // The commands on their way: a light crossing from Earth to Mars over the delay (in steps under reduced motion)
+      if (pulseRef.current) {
+        const e = s.phase === 'send' ? Math.min(1, s.phaseT / DELAY) : 0
+        pulseRef.current.style.left = `${(reduced ? Math.floor(e * 4) / 4 : e) * 100}%`
+        pulseRef.current.style.opacity = s.phase === 'send' ? '1' : '0'
+      }
+
+      // Parked: the last moves into place, then the sensor on my back reaches out to Yogi and studies it
+      if (s.phase === 'done' && s.reveal === 0) {
+        const m = s.end.moves[0]
+        if (m && 'turn' in m) {
+          if (turnTo(m.turn, dt)) s.end.moves.shift()
+        } else if (m && 'roll' in m) {
+          if (straighten(dt)) {
+            const move = Math.sign(m.roll) * Math.min(Math.abs(m.roll), SPEED * 0.6 * dt)
+            s.pose.p = { x: s.pose.p.x + Math.sin(s.pose.heading) * move, y: s.pose.p.y + Math.cos(s.pose.heading) * move }
+            m.roll -= move
+            s.spinL += move / WHEEL_R
+            s.spinR += move / WHEEL_R
+            dustRate(Math.abs(move) / dt, dt)
+            s.tracks[s.tracks.length - 1].push({ p: { ...s.pose.p }, h: s.pose.heading })
+            if (Math.abs(m.roll) < 1e-4) {
+              s.end.moves.shift()
+              s.dipT = s.t
+            }
+          }
+        } else if (straighten(dt)) {
+          s.arm = reduced ? 1 : Math.min(1, s.arm + dt / 0.8)
+          if (s.arm >= 1 && s.end.studyT < 0) s.end.studyT = s.t
+          if (s.end.studyT >= 0 && !s.end.told) {
+            s.end.told = true
+            setNews(item('goal', 'Now the sensor on my back touches Yogi, to find out what it is made of.', 'good'))
+          }
+        }
+      }
+
+      // The look eases: a wheel up on a rock comes down slowly, the dust drifts and fades
+      for (let i = 0; i < 6; i++) s.lift[i] += (s.liftTo[i] - s.lift[i]) * Math.min(1, dt * (s.liftTo[i] > s.lift[i] ? 14 : 3))
+      for (const d of s.dust) {
+        d.age += dt
+        d.g = { x: d.g.x + d.vx * dt, y: d.g.y + d.vz * dt }
+        d.vx *= Math.exp(-2 * dt)
+        d.vz *= Math.exp(-2 * dt)
+        d.up += 0.05 * dt
+      }
+      s.dust = s.dust.filter((d) => d.age < d.life)
+
       // Night: the photo darkens, the day counts on, morning brings a new plan
       let dark = 0
       if (s.phase === 'night') {
@@ -587,7 +794,7 @@ export default function DrivePlan() {
       }
       if (nightRef.current) nightRef.current.style.opacity = dark.toFixed(3)
       // Parked: the real photo of the rover at Yogi comes up and the drawing goes
-      if (s.phase === 'done' && s.phaseT > 2.2) {
+      if (s.phase === 'done' && s.end.studyT >= 0 && s.t - s.end.studyT > 2.6) {
         s.reveal = reduced ? 1 : Math.min(1, s.reveal + dt / 1.2)
         if (!s.revealTold && s.reveal > 0.5) {
           s.revealTold = true
@@ -734,10 +941,18 @@ export default function DrivePlan() {
       <div ref={hudRef} className="pointer-events-none absolute inset-x-0 bottom-0 px-5 pb-6 md:px-10 lg:inset-y-0 lg:right-auto lg:flex lg:w-[min(34rem,36vw)] lg:flex-col lg:justify-end lg:pb-10">
         <StageHeading
           text={HEADING(phase, day)}
+          reserve={STAGES}
           className="text-[clamp(2rem,9vw,4rem)] [@media(max-height:760px)_and_(max-width:1023px)]:hidden [@media(max-height:780px)_and_(min-width:1024px)]:text-[2.75rem]"
         />
-        <div className="mt-2 min-h-[4.3em] text-base sm:text-lg lg:min-h-0">
-          <NewsLine item={news} />
+        <div className="mt-2 grid text-base sm:text-lg">
+          {RESERVE.map((r) => (
+            <div key={r.text} aria-hidden="true" className="invisible [grid-area:1/1]">
+              <NewsLine item={r} className="" />
+            </div>
+          ))}
+          <div className="[grid-area:1/1]">
+            <NewsLine item={news} className="" />
+          </div>
         </div>
         <p id="drive-said" className="sr-only" aria-live="polite">
           {said}
@@ -774,23 +989,36 @@ export default function DrivePlan() {
           )}
         </div>
 
-        {phase !== 'done' && (
+        {/* The trip the commands make: Earth to Mars, a light crossing while they travel (dim the rest of the time) */}
+          <div aria-hidden="true" data-on={phase === 'send'} className={`${phase === 'done' ? 'invisible' : ''} mt-4 flex max-w-[24rem] items-center gap-2.5 text-sm text-sun/70 opacity-55 transition-opacity duration-200 data-[on=true]:opacity-100 lg:mt-6`}>
+            <span className="h-3.5 w-3.5 shrink-0 rounded-full bg-[#8fb8de] shadow-[0_0_0_2px_rgb(20_12_8/0.6)]" />
+            Earth
+            <span className="relative h-[2px] flex-1 rounded-full bg-sun/25">
+              <span
+                ref={pulseRef}
+                className="absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-sun-bright shadow-[0_0_10px_3px_rgb(255_241_214/0.55)]"
+                style={{ left: '0%', opacity: 0 }}
+              />
+            </span>
+            Mars
+            <span className="h-3.5 w-3.5 shrink-0 rounded-full bg-[#c98a5a] shadow-[0_0_0_2px_rgb(20_12_8/0.6)]" />
+          </div>
           <button
             type="button"
             onClick={send}
+            // Parked: hidden but keeping its room, so the photo does not move as the ending plays
             aria-disabled={!canSend}
             aria-describedby="drive-help"
-            className="pointer-events-auto mt-4 inline-flex min-h-12 w-full select-none items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-sun px-5 font-display text-xl font-extrabold text-ink shadow-[0_6px_0_rgb(150_118_80),0_10px_18px_rgb(0_0_0/0.35)] transition-[transform,box-shadow,background-color,opacity] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] [-webkit-tap-highlight-color:transparent] aria-[disabled=false]:active:translate-y-[5px] aria-[disabled=false]:active:bg-sun-bright aria-[disabled=false]:active:shadow-[0_1px_0_rgb(150_118_80),0_2px_6px_rgb(0_0_0/0.3)] aria-[disabled=false]:active:duration-75 aria-disabled:cursor-default aria-disabled:bg-sun/35 aria-disabled:shadow-none [@media(hover:hover)_and_(pointer:fine)]:aria-[disabled=false]:hover:bg-sun-bright sm:min-h-14 lg:mt-7 lg:min-h-16 lg:w-auto lg:self-start lg:text-2xl"
+            className={`${phase === 'done' ? 'invisible' : ''} pointer-events-auto mt-3 inline-flex min-h-12 w-full select-none items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-sun px-5 font-display text-xl font-extrabold text-ink shadow-[0_6px_0_rgb(150_118_80),0_10px_18px_rgb(0_0_0/0.35)] transition-[transform,box-shadow,background-color,opacity] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] [-webkit-tap-highlight-color:transparent] aria-[disabled=false]:active:translate-y-[5px] aria-[disabled=false]:active:bg-sun-bright aria-[disabled=false]:active:shadow-[0_1px_0_rgb(150_118_80),0_2px_6px_rgb(0_0_0/0.3)] aria-[disabled=false]:active:duration-75 aria-disabled:cursor-default aria-disabled:bg-sun/35 aria-disabled:shadow-none [@media(hover:hover)_and_(pointer:fine)]:aria-[disabled=false]:hover:bg-sun-bright sm:min-h-14 lg:mt-4 lg:min-h-16 lg:w-auto lg:self-start lg:text-2xl`}
           >
             <DishIcon className="h-6 w-6 shrink-0" />
             {phase === 'send' ? 'On its way to Mars' : phase === 'drive' ? 'Driving' : phase === 'night' ? 'Night on Mars' : 'Send my drive'}
           </button>
-        )}
         {/* How to plan: the keys while keying; where there is a mouse, how to click and how to reach the keys. On
             touch screens the first news line already says to pick spots on the photo. */}
         <div id="drive-help" className="mt-3 grid gap-1.5">
-          {!busy && (
-            <p className={`${keying ? 'block' : 'hidden [@media(hover:hover)_and_(pointer:fine)]:block'} text-sm leading-[2.1] text-sun/80 sm:text-base`}>
+          {/* While it drives, the hint keeps its room (hidden), so the controls do not jump */}
+            <p className={`${busy ? 'invisible' : ''} ${keying ? 'block' : 'hidden [@media(hover:hover)_and_(pointer:fine)]:block'} text-sm leading-[2.1] text-sun/80 sm:text-base`}>
               {keying ? (
                 <>
                   Move with{' '}
@@ -808,8 +1036,7 @@ export default function DrivePlan() {
                 </>
               )}
             </p>
-          )}
-          <p className="text-sm text-sun/60">Real photos from the lander. My outline and the drive are drawn for the game.</p>
+          <p className="text-sm text-sun/60">Real photos from the lander. My rover and the drive are drawn for the game.</p>
         </div>
       </div>
     </section>

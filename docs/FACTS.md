@@ -406,6 +406,9 @@ The rover's outline, the drive, its speed, the rock outlines, how much it slips 
 - **PIA00751** = Photojournal, "Area of 360 Degree Color Panorama" — https://science.nasa.gov/photojournal/area-of-360-degree-color-panorama/
 - **PIA00670** = Photojournal, "Sojourner Does a Wheelie on 'Yogi'" — https://science.nasa.gov/photojournal/sojourner-does-a-wheelie-on-yogi/
 - **NSR**: see the Sojourner sources above.
+- **RDESC** = NASA Planetary Data System, "Mars Pathfinder Rover Description" — https://planetarydata.jpl.nasa.gov/img/data/mpf/rover/mprv_0001/document/insthost.htm
+- **APXSI** = NASA Planetary Data System, "Alpha Proton X-ray Spectrometer Instrument Description" — https://pds.nasa.gov/data/mpfr-m-apxs-5-ddr-v1.0/mprv_0001/document/apxsinst.htm
+- **NSSDCA (MESURPR)** = NSSDCA, Mars Pathfinder Rover — https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=MESURPR
 
 | Claim | Source | Checked |
 |-------|--------|---------|
@@ -424,5 +427,10 @@ The rover's outline, the drive, its speed, the rock outlines, how much it slips 
 | Yogi hides ground behind it: "a rock taller than rover Sojourner" (the game forbids stops inside Yogi's outline in the photo) | PIA00639 (Sojourner step 6) | Checked |
 | Days 8 to 10 photo: "rover tracks leading up to the large rock "Yogi." Rover Sojourner is seen using its Alpha Proton X-Ray Spectrometer (APXS) instrument to study Yogi's composition … taken … over sols 8, 9, and 10" → "the real me beside Yogi, with my real tracks" | PIA00751 | Checked |
 | The ring is where the rover stands in PIA00751, found by laying that photo over PIA00660 (same lander camera; aligned by image matching, scale 0.99, no rotation) | PIA00660, PIA00751 | Checked (alignment ours) |
+| The drawn rover: "a six-wheeled vehicle … mounted on a "rocker-bogie" suspension" | NSSDCA (MESURPR) | Checked |
+| Turning in place with the front and rear wheels angled: "The front and rear wheels are independently steerable, providing the capability for the vehicle to turn in place"; wheels "a wheel diameter (13 cm)" → drawn wheels 13 cm across | RDESC | Checked |
+| The panel's cells: "a 0.22 square meter solar panel comprised of 13 strings of 18, 5.5 mil GaAs cells each" → a grid of 13 by 18 | RDESC | Checked |
+| The sensor at the rear: "The sensor head is mounted on the end of an arm on the rear of the rover called the APXS Deployment Mechanism" → at the end the rover turns its back to Yogi and the arm reaches out; "Now the sensor on my back touches Yogi, to find out what it is made of" (APXS "Determined the elemental composition of rocks and soils", PATH, Sojourner step 5) | APXSI, PIA00751 | Checked |
+| Drawn for the game (covered by "My rover and the drive are drawn for the game"): the rover's look and its tuned size, the bumps and rocking, the dust, the jolt, the wheel climbing Yogi in any game bump (the real one was the left rear wheel, PIA00670), the Earth to Mars strip and its light, the frame glow, the touch pulse. The drawing has no antenna, since where it sat is not checked | ours | Scene |
 
 Traps (drive game): the top speed differs between sources (NSSDCA/NASA History "0.39 inch per second", about 1 cm/s; ICES "about 0.7 cm/sec"; OPS "~0.4 meter/minute"); the game shows no speed. ICES says "over 500 images" from the rover, the PDS mission page "over 600": the game uses neither.
