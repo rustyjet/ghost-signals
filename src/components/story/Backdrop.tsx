@@ -355,7 +355,7 @@ function Layer({ scene, shots, model, modelRef, title, loaded }: {
         aria-hidden="true"
         className="absolute inset-x-5 top-[12%] whitespace-nowrap font-display text-[clamp(2.5rem,13.2vw,15rem)] font-extrabold leading-[0.9] tracking-[-0.03em] text-on-sky md:inset-x-10 lg:top-[13%] lg:text-[clamp(3.6rem,15vw,15rem)]"
       >
-        <span data-title="" className="block [&>div]:-mb-[0.3em] [&>div]:-mt-[0.12em] [&>div]:pb-[0.3em] [&>div]:pt-[0.12em]">
+        <span data-title="" className="block">
           {title}
         </span>
       </div>

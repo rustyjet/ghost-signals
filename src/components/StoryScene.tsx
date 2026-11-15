@@ -1,7 +1,7 @@
 import type { ModelViewerElement } from '@google/model-viewer'
 import { useEffect, useRef, useState } from 'react'
 import type { Chapter, Figure } from '../data/types'
-import { gsap, isNarrow, prefersReducedMotion, ScrollTrigger, SplitText, useGSAP } from '../scroll/smoothScroll'
+import { gsap, isNarrow, prefersReducedMotion, ScrollTrigger, SplitText, splitTitle, TITLE_RISE, useGSAP } from '../scroll/smoothScroll'
 import Backdrop, { makeBackdropController, type Shot } from './story/Backdrop'
 
 /** Numbers as the story shows them: grouped thousands (unless `plain`), and a true minus sign. */
@@ -121,8 +121,8 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
         document.fonts.ready.then(
           contextSafe!(() => {
             // Words as well as letters, so a long name can only break between words
-            const title = SplitText.create(titleEl, { type: 'words,chars', mask: 'chars' })
-            gsap.from(title.chars, { yPercent: 110, duration: 0.8, ease: 'expo.out', stagger: 0.025, delay: 0.1 })
+            const title = splitTitle(titleEl)
+            gsap.from(title.chars, { yPercent: TITLE_RISE, duration: 0.8, ease: 'expo.out', stagger: 0.025, delay: 0.1 })
             // Fixed values (no per-letter measuring), so a refresh mid-scroll can never strand a letter.
             gsap.to(title.masks, {
               yPercent: -60,

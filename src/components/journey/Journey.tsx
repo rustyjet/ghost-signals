@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { getChapter } from '../../data/chapters'
 import { globes, stops, type Globe, type Pose } from '../../data/journey'
-import { gsap, isNarrow, prefersReducedMotion, ScrollTrigger, SplitText, useGSAP } from '../../scroll/smoothScroll'
+import { gsap, isNarrow, prefersReducedMotion, ScrollTrigger, SplitText, splitTitle, TITLE_RISE, useGSAP } from '../../scroll/smoothScroll'
 
 const GLOBES: Globe[] = ['earth', 'moon', 'mars']
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
@@ -164,8 +164,8 @@ export default function Journey() {
         document.fonts.ready.then(
           contextSafe!(() => {
             // Words as well as letters, so a line can only break between words
-            const title = SplitText.create(titleEl, { type: 'words,chars', mask: 'chars' })
-            gsap.from(title.chars, { yPercent: 110, duration: 0.8, ease: 'expo.out', stagger: 0.03, delay: 0.1 })
+            const title = splitTitle(titleEl)
+            gsap.from(title.chars, { yPercent: TITLE_RISE, duration: 0.8, ease: 'expo.out', stagger: 0.03, delay: 0.1 })
             gsap.to(title.masks, {
               yPercent: -60,
               opacity: 0,
