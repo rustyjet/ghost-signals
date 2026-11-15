@@ -196,6 +196,7 @@ export const ingenuity: Chapter = {
   interaction: 'rotor-lift',
   game: {
     name: 'Lift off',
+    verb: 'Get a helicopter off Mars.',
     photo: {
       src: 'photos/ingenuity.webp',
       alt: 'Ingenuity standing on the ground of Jezero crater, seen by Perseverance, 5 April 2021.',

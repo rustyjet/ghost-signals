@@ -35,7 +35,7 @@ export default function PlayGame() {
             Hear {chapter.name}&rsquo;s story
           </Link>
           <Link to="/play" className="inline-flex min-h-11 items-center font-display text-lg font-bold text-sun underline decoration-1 underline-offset-[6px]">
-            All five games
+            Try another machine
           </Link>
         </div>
       </Closing>

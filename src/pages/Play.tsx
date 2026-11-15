@@ -28,9 +28,9 @@ export default function Play() {
           Ghost Signals
         </Link>
         <div className="mt-[12svh]">
-          <h1 className="max-w-[12ch] text-balance text-[clamp(3rem,11vw,7.5rem)] leading-[0.88]">Play the five games.</h1>
+          <h1 className="max-w-[12ch] text-balance text-[clamp(3rem,11vw,7.5rem)] leading-[0.88]">Take the controls.</h1>
           <p className="mt-6 max-w-[38ch] text-xl leading-snug md:text-2xl">
-            Each one puts you in charge of a NASA machine, with one real problem its team had to solve.
+            You&rsquo;ve heard what the five machines did. Now try the problem each team had to solve.
           </p>
         </div>
       </header>
@@ -50,9 +50,9 @@ export default function Play() {
                 />
               </div>
               <div className="flex flex-col">
-                <h2 className="text-[clamp(2.2rem,6vw,3.6rem)] leading-[0.95]">{g.name}</h2>
+                <h2 className="text-balance text-[clamp(2.2rem,6vw,3.6rem)] leading-[0.95]">{g.verb}</h2>
                 <p className="mt-2 text-base text-sun/70 md:text-lg">
-                  {c.name}, {c.place}
+                  {g.name}, with {c.name} in {c.place}
                 </p>
                 <p className="mt-4 max-w-[40ch] text-xl leading-snug">{c.learn}</p>
                 <p className="mt-4 max-w-[46ch] text-base leading-relaxed text-sun/80">
@@ -69,7 +69,7 @@ export default function Play() {
                 <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
                   {/* The whole row opens the game; the story and the source sit above that */}
                   <Link to={`/play/${c.slug}`} className={`${pill} after:absolute after:inset-0 after:content-['']`}>
-                    Play {g.name}
+                    Take the controls
                   </Link>
                   <Link to={`/signal/${c.slug}`} className={`${textLink} relative z-10 font-display text-lg font-bold`}>
                     Or hear its story first

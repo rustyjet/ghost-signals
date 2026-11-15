@@ -136,6 +136,8 @@ export interface Chapter {
   /** The game after the story, as the list of games shows it: its name, its photo and the real number behind it. */
   game?: {
     name: string
+    /** The challenge in a few words, as the list of games headlines it ("Catch a marsquake."). Says only what the game does. */
+    verb: string
     /** `whole`: shown uncropped on black (the whole Moon), instead of filling its frame. */
     photo: { src: string; alt: string; credit: string; whole?: boolean }
     /** One true sentence from NASA that the game is built on. Needs a checked row in docs/FACTS.md. */

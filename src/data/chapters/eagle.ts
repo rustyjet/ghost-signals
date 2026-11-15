@@ -212,6 +212,7 @@ export const eagle: Chapter = {
   interaction: 'laser-ranging',
   game: {
     name: 'Find the mirrors',
+    verb: 'Fire a laser at the Moon.',
     photo: {
       src: 'photos/moon-near.webp',
       alt: 'The near side of the Moon, with the Apollo landing sites numbered.',

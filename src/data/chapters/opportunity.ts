@@ -244,6 +244,7 @@ export const opportunity: Chapter = {
   interaction: 'dust-storm',
   game: {
     name: 'Last Light',
+    verb: 'Outlast the dust storm.',
     photo: {
       src: 'photos/selfie-clean.webp',
       alt: "Opportunity's deck and solar panels, freshly cleaned by the wind, March 2014.",

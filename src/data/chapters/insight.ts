@@ -212,6 +212,7 @@ export const insight: Chapter = {
   interaction: 'seismometer',
   game: {
     name: 'Listen for marsquakes',
+    verb: 'Catch a marsquake.',
     photo: {
       src: 'photos/insight-dome-arm.webp',
       alt: "The dome over InSight's seismometer on the Martian ground, seen by its arm camera.",

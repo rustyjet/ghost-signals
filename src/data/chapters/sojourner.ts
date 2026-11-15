@@ -208,6 +208,7 @@ export const sojourner: Chapter = {
   interaction: 'drive-plan',
   game: {
     name: 'Plan my drive',
+    verb: 'Drive a rover blind.',
     photo: {
       src: 'photos/sojourner-drive-day3.webp',
       alt: 'Sojourner beside the rocks Barnacle Bill and Yogi, seen from the lander on day 3, in black and white.',

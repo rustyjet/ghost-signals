@@ -394,7 +394,7 @@ export default function Journey() {
                   to="/play"
                   className="mt-6 inline-flex min-h-12 items-center rounded-full bg-sun px-6 font-display text-lg font-extrabold text-ink transition-transform duration-150 ease-out hover:bg-sun-bright active:scale-[0.97]"
                 >
-                  Play all five games
+                  Now take the controls
                 </Link>
               )}
             </div>
