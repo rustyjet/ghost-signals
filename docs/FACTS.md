@@ -100,7 +100,7 @@ More sources:
 | 8 | Endeavour crater about 22 km across; route ended on its rim | MP, MARA map | Checked |
 | 9 | Self-portrait taken on sol 5,000 ("to celebrate the 5000th Martian Day, or sol") | JPL "Opportunity's First Selfie" (pia22222), read in browser 15 Nov 2026 | Checked |
 | 9 | "14 years on Mars" by sol 5,000: the page gives no calendar date; 2004 landing (MP) plus about 14 years is our arithmetic | MP, pia22222 | Checked (arithmetic ours) |
-| 9 | Front wheels: right-front steering not used "since 2005"; left-front stalled on 4 June, straightened 17 June; "we don't plan to use either front wheel for steering" for the immediate future. The page text sent does not show the year of the stall; WALK17 gives 2017, so check the date at the top of the page | JPL "Mars Rover Opportunity on Walkabout Near Rim", read in browser 15 Nov 2026 | Checked (2017: a NASA Robotics reprint of the story is dated 27 June 2017, found by search; the page's own date not seen) |
+| 9 | Front wheels: right-front steering not used "since 2005"; left-front stalled on 4 June, straightened 17 June; "we don't plan to use either front wheel for steering" for the immediate future. Dated 23 June 2017 on the page | JPL "Mars Rover Opportunity on Walkabout Near Rim", read in browser 15 Nov 2026 | Checked |
 | 9 | Flash memory "amnesia" events and computer resets after reformatting; rover shifted to a working mode that avoids the flash storage (no-flash mode) | JPL "Opportunity Working in No-Flash Mode for Now", read in browser 15 Nov 2026 | Checked |
 | 9–12 | Ground photo: Perseverance Valley, Opportunity's last panorama, sols 5,084–5,111 | LEGACY | Checked |
 | 10 | Day 5,111 (10 June 2018): global dust storm; last image, dark and incomplete | LAST, END | Checked |
