@@ -74,3 +74,20 @@ NASA content is generally not subject to copyright in the United States; NASA's 
 | `eagle-plaque.webp` | The plaque on the descent-stage ladder strut, on the Moon | NASA/JSC (AS11-40-5899) | https://images.nasa.gov/details/as11-40-5899 | 2400 px. |
 | `moon.webp` (reused) | Full Moon from Apollo 11 on the way home | NASA/JSC (AS11-44-6667) | https://images.nasa.gov/details/as11-44-6667 | See home page row. |
 | `moon-near.webp` | The near side of the Moon from LRO's wide-angle camera, with NASA's numbered markers for the six Apollo landing sites (final frame of "Apollo Landing Sites with Moon Phases", 20 Dec 1972 view) | NASA's Scientific Visualization Studio (visualizer Ernie Wright, scientist Noah Petro) | https://svs.gsfc.nasa.gov/4731 | Frame `apollo_phases.2609.tif` from the 3840×2160 `moon` frame set; cropped square around the disc and scaled to 2000 px. The markers are NASA's own. Used in the laser game. |
+
+## InSight chapter photos (downloaded 15 Nov 2026)
+
+All from Photojournal; full-size files at `https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/piaNN/piaNNNNN/PIANNNNN.jpg`. The 3D model is `insight.glb` (models table above).
+
+| File | What | Credit | Changes |
+|---|---|---|---|
+| `insight-pano.webp` | Homestead Hollow panorama, sol 14 (PIA23140) | NASA/JPL-Caltech | Right part only (no solar panel, no black mosaic edge); 3770 px. |
+| `insight-ground-wide.webp`, `insight-ground-narrow.webp` | The same panorama, horizon down, as the ground under the 3D lander | NASA/JPL-Caltech (PIA23140) | Sky trimmed so the model stands on the plain, not on the stitched haze; 3770 px and 2062 px. |
+| `insight-selfie-wide.webp`, `insight-selfie-tall.webp` | First full selfie, sol 10 (PIA22876) | NASA/JPL-Caltech | Two crops clear of the black mosaic gaps; 2400 px and 1200 px. |
+| `insight-dome-arm.webp` | The Wind and Thermal Shield over the seismometer, sol 110 (PIA23177) | NASA/JPL-Caltech | WebP only. |
+| `insight-dome-clean.webp` | Clouds over the shield at sunset, sol 145 (PIA23180) | NASA/JPL-Caltech | WebP only. |
+| `insight-dome-dusty.webp` | One of InSight's last images, sol 1,436 (PIA25680) | NASA/JPL-Caltech | WebP only. |
+| `insight-mole-out.webp` | Heat probe partly backed out of its hole, sol 325 (PIA23213) | NASA/JPL-Caltech | WebP only. |
+| `insight-mole-rest.webp` | The mole comes to rest under the scoop, sol 754 (PIA24263) | NASA/JPL-Caltech | WebP only. |
+| `insight-dusty-panel.webp` | Dusty solar panel, sol 1,211 (PIA25286) | NASA/JPL-Caltech | WebP only. |
+| `insight-sunset.webp` | Sunset, sol 145 (PIA23202) | NASA/JPL-Caltech | WebP only. |

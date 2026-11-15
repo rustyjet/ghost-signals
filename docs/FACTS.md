@@ -278,3 +278,52 @@ How often light comes back in the game (35% of pulses at Apollo 11 and 14, 70% a
 | The Moon is about 385,000 km away ("about 240,000 miles (385,000 kilometers)") | BEAMS | Checked |
 | Only 1 photon in 25 million launched from Earth reaches the Apollo 11 reflector (told as "1 bit of light in 25 million") | BEAMS | Checked |
 | Green laser light, as traditionally used | BEAMS ("visible green wavelength of light that scientists have traditionally used") | Checked |
+
+### InSight (15 Nov 2026)
+
+Read by a research agent on 15 Nov 2026, directly on the nasa.gov / science.nasa.gov / NSSDCA copies (quotes below). The counter is the sol, landing day being sol 0.
+
+- **IMP** = NASA Science, InSight mission page — https://science.nasa.gov/mission/insight/
+- **ISC** = NASA Science, InSight spacecraft — https://science.nasa.gov/mission/insight/spacecraft/
+- **LANDED** = NASA, "NASA InSight Lander Arrives on Martian Surface to Learn What Lies Beneath" (26 Nov 2018) — https://www.nasa.gov/news-release/nasa-insight-lander-arrives-on-martian-surface-to-learn-what-lies-beneath/
+- **SEISDEP** = NASA, "SEIS Deployed on Mars" — https://www.nasa.gov/image-article/seis-deployed-mars/
+- **QUAKE1** = NASA Science, "NASA's InSight Detects First Likely 'Quake' on Mars" (23 Apr 2019) — https://science.nasa.gov/missions/insight/nasas-insight-detects-first-likely-quake-on-mars/
+- **MOLEOUT** = NASA, "NASA InSight's 'Mole' Is Out of Sight" (16 Oct 2020) — https://www.nasa.gov/centers-and-facilities/jpl/nasa-insights-mole-is-out-of-sight/
+- **MOLEEND** = NASA, "NASA InSight's 'Mole' Ends Its Journey on Mars" (14 Jan 2021) — https://www.nasa.gov/centers-and-facilities/jpl/nasa-insights-mole-ends-its-journey-on-mars/
+- **BOOST** = NASA, "NASA's InSight Mars Lander Gets a Power Boost" (3 Jun 2021) — https://www.nasa.gov/centers-and-facilities/jpl/nasas-insight-mars-lander-gets-a-power-boost/
+- **INTERIOR** = NASA, "NASA's InSight Reveals the Deep Interior of Mars" (22 Jul 2021) — https://www.nasa.gov/centers-and-facilities/jpl/nasas-insight-reveals-the-deep-interior-of-mars/
+- **THREE** = NASA, "NASA's InSight Finds Three Big Marsquakes, Thanks to Solar-Panel Dusting" (22 Sep 2021) — https://www.nasa.gov/missions/insight/nasas-insight-finds-three-big-marsquakes-thanks-to-solar-panel-dusting/
+- **MONSTER** = NASA, "NASA's InSight Records Monster Quake on Mars" (9 May 2022) — https://www.nasa.gov/missions/insight/nasas-insight-records-monster-quake-on-mars/
+- **HUNT** = NASA, "NASA's InSight Still Hunting Marsquakes as Power Levels Diminish" (17 May 2022) — https://www.nasa.gov/missions/insight/nasas-insight-still-hunting-marsquakes-as-power-levels-diminish/
+- **BLOG** = NASA Science InSight blog, power level as of 12 Dec 2022 — https://science.nasa.gov/blogs/insight/2022/12/12/nasa-insights-power-level-as-of-dec-12-2022/
+- **INSEND** = see the home page sources above.
+
+| Step | Claim | Source | Checked |
+|------|-------|--------|---------|
+| Title | "more than four years of collecting unique science on Mars" → "stayed in one spot for four years" | INSEND | Checked |
+| Title | Place: Elysium Planitia ("a flat, smooth plain called Elysium Planitia") | IMP | Checked |
+| Counter | Day N = sol N; sol 0 = 26 Nov 2018 ("acquired on Nov. 26, 2018, Sol 0"); values shown: 0, 10, 110, 128, 325, 754, 884, 1,000, 1,222, 1,436 (each from its row below) | LANDED, rows below | Checked |
+| 1 | Landed 26 Nov 2018 on Elysium Planitia, "near Mars' equator" | IMP | Checked |
+| 1 | "We hit the Martian atmosphere at 12,300 mph (19,800 kilometers per hour), and the whole sequence to touching down on the surface took only six-and-a-half minutes" | LANDED | Checked |
+| 2 | 360 kg ("Weight: 794 pounds (360 kilograms)") | ISC | Checked |
+| 2 | "designed to take the planet's vital signs: its pulse, temperature, and reflexes" → "the pulse and the temperature of Mars". A lander: it never drove | IMP | Checked |
+| 2 | Photo: first selfie, "taken on Dec. 6, 2018 (Sol 10)" | PIA22876 caption | Checked |
+| 3 | Arm 1.8 m ("5 feet 9 inches (1.8 meters)") | ISC | Checked |
+| 3 | "This was the first time a seismometer had ever been placed onto the surface of another planet." | SEISDEP | Checked |
+| 3 | The dome: "Wind and Thermal Shield, to protect it from the planet's extreme temperature changes and high winds"; photo taken on sol 110 | QUAKE1, PIA23177 caption | Checked |
+| 4 | "recorded on April 6, the lander's 128th Martian day, or sol" | QUAKE1 | Checked |
+| 4 | "The Martian surface is extremely quiet … In contrast, Earth's surface is quivering constantly from seismic noise created by oceans and weather." | QUAKE1 | Checked |
+| 5 | Probe meant to dig "16 feet (5 meters) down"; a self-hammering "pile driver" | MOLEEND | Checked |
+| 5 | "the soil sticks together, forming a small pit around the device"; on sol 325 (26 Oct 2019) the mole is "backing about halfway out of the hole" | MOLEOUT, PIA23213 caption | Checked |
+| 6 | "For two years, the team worked to adapt…"; the scoop pressed "against and down on the mole"; "500 additional hammer strokes on Saturday, Jan. 9, with no progress, the team called an end"; sol 754 | MOLEEND, PIA24263 caption | Checked |
+| 7 | Sol 884 (22 May 2021): "The lander's robotic arm trickled sand near one solar panel, helping the wind to carry off some of the panel's dust. The result was a gain of about 30 watt-hours of energy per sol"; "at around noon Mars time – the windiest time of day" | BOOST, PIA24664 caption | Checked |
+| 7 | The photo is from sol 1,211 (24 Apr 2022) and is named so in the credits | PIA25286 caption | Checked |
+| 8 | "confirmation that the planet's center is molten" (22 Jul 2021, before sol 1,000 on 18 Sep 2021) | INTERIOR, THREE | Checked |
+| 8 | "It took scientists hundreds of years to measure Earth's core … InSight took just two years to measure Mars' core." (Simon Stähler) | INTERIOR | Checked |
+| 9 | "an estimated magnitude 5 temblor that occurred on May 4, 2022, the 1,222nd Martian day"; "the biggest ever detected on another planet"; shook "for at least six hours" | MONSTER | Checked |
+| 9 | The photo is a sunset from sol 145 (25 Apr 2019) and is named so in the credits | PIA23202 caption | Checked |
+| 10 | Power "around 5,000 watt-hours each Martian day" at landing; "~285 watt-hours" as of 12 Dec 2022 | HUNT, BLOG | Checked |
+| 10 | Before/after: PIA23180 (sol 145, Apr 2019) and PIA25680 ("one of the last images … Dec. 11, 2022, the 1,436th Martian day") share the same camera framing | PIA23180, PIA25680 captions | Checked (framing compared by eye) |
+| 11 | "detected 1,319 marsquakes"; "The last time InSight communicated with Earth was Dec. 15."; "will continue to listen for a signal from the lander, just in case" | INSEND | Checked |
+
+Traps: NASA pages give four different core sizes and two crust thicknesses, so the app gives neither. InSight's "final tweet" is on no NASA page: never quote it. The seismometer was "the last science instrument that remained powered on"; the app does not claim it was still listening at the end.
