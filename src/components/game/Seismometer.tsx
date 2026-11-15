@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { news as item, NewsLine, type News } from './LastLightHud'
 import { isNarrow, prefersReducedMotion } from '../../scroll/smoothScroll'
+import { Key } from './Key'
 import { StageHeading } from './StageHeading'
 
 // "Listen for marsquakes": InSight's seismometer draws a line, and a quake is a wiggle in it.
@@ -73,6 +74,14 @@ export default function Seismometer() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const countRef = useRef<HTMLSpanElement>(null)
   const hudRef = useRef<HTMLDivElement>(null)
+  const quakeBtnRef = useRef<HTMLButtonElement>(null)
+  const spaceKeyRef = useRef<HTMLElement>(null)
+  /** The button and the hint's drawn key sink together while space or Enter is held. */
+  function holdKey(on: boolean) {
+    const v = on ? 'true' : 'false'
+    if (quakeBtnRef.current) quakeBtnRef.current.dataset.held = v
+    if (spaceKeyRef.current) spaceKeyRef.current.dataset.held = v
+  }
 
   // Everything the loop reads lives in refs, so the line never re-renders React.
   const game = useRef({
@@ -551,20 +560,53 @@ export default function Seismometer() {
           </div>
         </div>
 
+        {/* Space and Enter catch on the key going down, not on the button's own click when it comes up, so a quick
+            press is never late; the key-up click is cancelled so one press never counts twice. The button and the
+            drawn key in the hint both sink while the key is held. */}
         <button
+          ref={quakeBtnRef}
           type="button"
+          data-held="false"
+          aria-describedby="seis-help"
+          onPointerDown={(e) => e.currentTarget.focus({ preventScroll: true })}
           onClick={() => {
             press()
             kick.current()
           }}
-          className="mt-5 inline-flex min-h-14 w-full select-none items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-sun px-5 font-display text-xl font-extrabold text-ink shadow-[0_6px_0_rgb(150_118_80),0_10px_18px_rgb(0_0_0/0.35)] transition-[transform,box-shadow,background-color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] [-webkit-tap-highlight-color:transparent] active:translate-y-[5px] active:bg-sun-bright active:shadow-[0_1px_0_rgb(150_118_80),0_2px_6px_rgb(0_0_0/0.3)] active:duration-75 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-sun-bright lg:mt-7 lg:min-h-16 lg:w-auto lg:self-start lg:text-2xl"
+          onKeyDown={(e) => {
+            if (e.key !== ' ' && e.key !== 'Enter') return
+            e.preventDefault()
+            holdKey(true)
+            if (!e.repeat) {
+              press()
+              kick.current()
+            }
+          }}
+          onKeyUp={(e) => {
+            if (e.key !== ' ' && e.key !== 'Enter') return
+            e.preventDefault()
+            holdKey(false)
+          }}
+          onBlur={() => holdKey(false)}
+          className="mt-5 inline-flex min-h-14 w-full select-none items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-sun px-5 font-display text-xl font-extrabold text-ink shadow-[0_6px_0_rgb(150_118_80),0_10px_18px_rgb(0_0_0/0.35)] transition-[transform,box-shadow,background-color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] [-webkit-tap-highlight-color:transparent] active:translate-y-[5px] active:bg-sun-bright active:shadow-[0_1px_0_rgb(150_118_80),0_2px_6px_rgb(0_0_0/0.3)] active:duration-75 data-[held=true]:translate-y-[5px] data-[held=true]:bg-sun-bright data-[held=true]:shadow-[0_1px_0_rgb(150_118_80),0_2px_6px_rgb(0_0_0/0.3)] data-[held=true]:duration-75 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-sun-bright lg:mt-7 lg:min-h-16 lg:w-auto lg:self-start lg:text-2xl"
         >
           <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
             <path d="M2.5 12 H6 L8 8 L10.5 16.5 L13 5.5 L15.5 18 L17.5 9.5 L19 12 H21.5" />
           </svg>
           That’s a quake
         </button>
-        <p className="mt-3 text-sm text-sun/70 sm:text-base">The line is drawn for the game, and real marsquakes came far less often.</p>
+        {/* Two separate things, as in Lift off: how to use a keyboard (only where there is a mouse, so most likely a
+            keyboard), with a drawn key that sinks while space is held; and the honest note about the game, quieter. */}
+        <div id="seis-help" className="mt-3 grid gap-1.5">
+          <p className="hidden flex-wrap items-center gap-x-2 gap-y-1 text-sm text-sun/80 sm:text-base [@media(hover:hover)_and_(pointer:fine)]:flex">
+            Or click it once, then press
+            <Key ref={spaceKeyRef} data-held="false" className="min-w-[4.5rem] px-2.5">
+              space
+            </Key>
+            when the line wiggles
+          </p>
+          <p className="text-sm text-sun/60">The line is drawn for the game, and real marsquakes came far less often.</p>
+        </div>
       </div>
     </section>
   )
