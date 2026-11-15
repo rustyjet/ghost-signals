@@ -184,7 +184,7 @@ export const opportunity: Chapter = {
       sound: {
         src: 'audio/perseverance-wind.mp3',
         label: 'Hear the wind on Mars',
-        caption: 'I had no microphone. This is Mars wind, heard by the Perseverance rover on 22 February 2021.',
+        caption: 'I had no microphone. This is Mars wind, heard by Perseverance on 22 February 2021, raised two octaves so speakers can play it.',
         credit: 'NASA/JPL-Caltech/LANL/CNES/CNRS/ISAE-Supaéro',
         name: 'Mars wind, heard by Perseverance on 22 February 2021',
         url: 'https://science.nasa.gov/resource/perseverance-rovers-supercam-records-wind-on-mars/',

@@ -133,11 +133,11 @@ Used only in the demo videos (`demo-video/`: the 30-second pitch and the 3-minut
 
 ## Story sounds (downloaded 16 Nov 2026)
 
-Played on the site only when a reader presses "Hear it" (`public/audio/`). Every clip is mono, 96 kb/s MP3, levelled to the same loudness (ffmpeg `loudnorm`).
+Played on the site only when a reader presses "Hear it" (`public/audio/`). Every clip is mono, 96 kb/s MP3, levelled to the same loudness (ffmpeg `loudnorm`). The three Mars clips are almost all below 150 Hz as NASA released them, which laptop and phone speakers cannot play, so we raised them two octaves; their captions say so.
 
 | File | What | Credit | Source | Changes |
 |---|---|---|---|---|
-| `ingenuity-flight4.mp3` | Ingenuity's fourth flight, 30 Apr 2021, heard by Perseverance's SuperCam microphone (NASA already isolated and boosted the 84 Hz blade hum) | NASA/JPL-Caltech/ASU/MSSS/LANL/CNES/CNRS/ISAE-Supaéro | https://science.nasa.gov/resource/listen-to-nasas-ingenuity-mars-helicopter-in-flight/ (640 px video) | Audio only, 1:44 to 2:04, short fades. |
+| `ingenuity-flight4.mp3` | Ingenuity's fourth flight, 30 Apr 2021, heard by Perseverance's SuperCam microphone (NASA already isolated and boosted the 84 Hz blade hum) | NASA/JPL-Caltech/ASU/MSSS/LANL/CNES/CNRS/ISAE-Supaéro | https://science.nasa.gov/resource/listen-to-nasas-ingenuity-mars-helicopter-in-flight/ (640 px video) | Audio only, 1:44 to 2:04, raised two octaves (ffmpeg `rubberband`, pitch x4, same length) so laptop and phone speakers can play the 84 Hz hum, rumble under 150 Hz cut, short fades. |
 | `apollo11-landing.mp3` | "Tranquility Base here. The Eagle has landed." | NASA | https://nssdc.gsfc.nasa.gov/planetary/lunar/a11landing.aiff | MP3 from the 8-bit AIFF, 0.4 s of silence at the end. |
-| `insight-wind.mp3` | Wind on InSight's solar panels, heard by its seismometer, raised two octaves by NASA | NASA/JPL-Caltech/CNES/IPGP/Imperial College London/Oxford | https://science.nasa.gov/resource/more-audible-sounds-from-insights-seismometer-on-mars | Same 20 s as the demo video's `insight-wind.wav`, short fades. |
-| `perseverance-wind.mp3` | Mars wind, sol 4 (22 Feb 2021), Perseverance's SuperCam microphone | NASA/JPL-Caltech/LANL/CNES/CNRS/ISAE-Supaéro | https://science.nasa.gov/resource/perseverance-rovers-supercam-records-wind-on-mars/ | 0:10 to 0:30, short fades. |
+| `insight-wind.mp3` | Wind on InSight's solar panels, heard by its seismometer, raised two octaves by NASA | NASA/JPL-Caltech/CNES/IPGP/Imperial College London/Oxford | https://science.nasa.gov/resource/more-audible-sounds-from-insights-seismometer-on-mars | Same 20 s as the demo video's `insight-wind.wav`, raised two more octaves (pitch x4) for small speakers, rumble under 150 Hz cut, short fades. |
+| `perseverance-wind.mp3` | Mars wind, sol 4 (22 Feb 2021), Perseverance's SuperCam microphone | NASA/JPL-Caltech/LANL/CNES/CNRS/ISAE-Supaéro | https://science.nasa.gov/resource/perseverance-rovers-supercam-records-wind-on-mars/ | 0:10 to 0:30, raised two octaves (pitch x4) for small speakers, rumble under 150 Hz cut, short fades. |

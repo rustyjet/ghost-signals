@@ -130,7 +130,7 @@ export const insight: Chapter = {
       sound: {
         src: 'audio/insight-wind.mp3',
         label: 'Hear the wind on my panels',
-        caption: 'Before my arm set it down, my seismometer felt the wind on my solar panels. NASA raised the sound two octaves so we can hear it.',
+        caption: 'Before my arm set it down, my seismometer felt the wind on my panels. NASA raised the sound two octaves, and we raised it two more.',
         credit: 'NASA/JPL-Caltech/CNES/IPGP/Imperial College London/Oxford',
         name: 'Wind on my solar panels, felt by my seismometer',
         url: 'https://science.nasa.gov/resource/more-audible-sounds-from-insights-seismometer-on-mars',

@@ -111,7 +111,7 @@ export const ingenuity: Chapter = {
       sound: {
         src: 'audio/ingenuity-flight4.mp3',
         label: 'Hear my blades on Mars',
-        caption: 'My fourth flight, 30 April 2021, heard by the Perseverance rover 80 metres away. NASA made the hum louder.',
+        caption: 'My fourth flight, heard by Perseverance 80 metres away. NASA made the hum louder; we raised it two octaves so speakers can play it.',
         credit: 'NASA/JPL-Caltech/ASU/MSSS/LANL/CNES/CNRS/ISAE-Supaéro',
         name: 'My blades on my fourth flight, heard by Perseverance',
         url: 'https://science.nasa.gov/resource/listen-to-nasas-ingenuity-mars-helicopter-in-flight/',
