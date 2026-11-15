@@ -12,11 +12,14 @@ import { gsap, prefersReducedMotion, useGSAP } from '../../scroll/smoothScroll'
 export function StageHeading({
   text,
   reserve = [],
+  reserveClass = '',
   className = '',
   ref,
 }: {
   text: string
   reserve?: string[]
+  /** Extra classes for the reserved stages, such as `lg:hidden` where the room is not needed. */
+  reserveClass?: string
   className?: string
   ref?: Ref<HTMLHeadingElement>
 }) {
@@ -33,7 +36,7 @@ export function StageHeading({
   return (
     <h2 ref={ref} className={`-mb-[0.12em] grid items-end overflow-hidden pb-[0.12em] ${className}`}>
       {reserve.map((r) => (
-        <span key={r} aria-hidden="true" className="invisible [grid-area:1/1]">
+        <span key={r} aria-hidden="true" className={`invisible [grid-area:1/1] ${reserveClass}`}>
           {r}
         </span>
       ))}

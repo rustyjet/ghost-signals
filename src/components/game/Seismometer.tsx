@@ -12,7 +12,7 @@ import { StageHeading } from './StageHeading'
 // six hours. The line, the shapes of the quakes and how often they come are game numbers; the screen says so.
 
 const RATE = 90 // samples of the line a second
-const FAINT = 0.3 // a marsquake's height, as a share of the band's half height
+const FAINT = 0.36 // a marsquake's height, as a share of the band's half height
 const TARGET = 3 // marsquakes to catch before trying Earth
 const S_AFTER = 1.4 // seconds from the first, small wave to the bigger one
 
@@ -53,6 +53,37 @@ const HEADING: Record<Stage, string> = {
   done: 'You heard Mars.',
 }
 
+/** The game's sound, turned on: what is real about it, and what it is made from (docs/FACTS.md). */
+const SOUND_LINE = 'Marsquakes are too slow to hear, so NASA sped one up 60 times. This sound is made from the game’s line.'
+
+// The longest news lines and every heading, sitting invisibly under the shown ones so the controls keep one height
+// (on phones that height sets where the line is drawn, so a longer line used to shift it). Keep the longest of any
+// new line here.
+const RESERVE = [
+  'The dome keeps the wind off. Now watch the line for a faint wiggle: a marsquake.',
+  'Earth’s ground never stops shaking, from oceans and weather. Can you still find a quake?',
+  'Found it, just. On Earth a quake that small gets lost among tiny crackles. Switch back to Mars.',
+  'A quake just went by, lost in Earth’s noise. Did you see it? Switch back to Mars.',
+  'There was a quake in there, hidden by the wind. Put the dome over the seismometer.',
+  'You missed a magnitude 5, like the biggest quake ever detected on another planet.',
+  SOUND_LINE,
+].map((t) => item('goal', t, 'good'))
+const STAGES = Object.values(HEADING)
+
+/** How hard the wind is gusting at game time t, 0.35 to 1 (the same gusts the line shows). */
+function gustAt(t: number, ph: number[]) {
+  return 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * 0.8 + ph[0])) * (0.5 + 0.5 * Math.sin(t * 1.9 + ph[1]))
+}
+
+function SoundIcon({ on, className }: { on: boolean; className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 9.5 H7.5 L12 5.5 V18.5 L7.5 14.5 H4 Z" />
+      {on ? <path d="M15.5 9 A4 4 0 0 1 15.5 15 M18 6.5 A7.5 7.5 0 0 1 18 17.5" /> : <path d="M16 9.5 L21 14.5 M21 9.5 L16 14.5" />}
+    </svg>
+  )
+}
+
 function DomeIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -68,6 +99,7 @@ export default function Seismometer() {
   const [heard, setHeard] = useState(0)
   const [news, setNews] = useState<News>(() => item('gust', 'Wind is shaking the seismometer. Could you spot a quake in all that?'))
   const [said, setSaid] = useState('')
+  const [sound, setSound] = useState(false)
 
   const rootRef = useRef<HTMLElement>(null)
   const shakeRef = useRef<HTMLDivElement>(null)
@@ -76,6 +108,78 @@ export default function Seismometer() {
   const hudRef = useRef<HTMLDivElement>(null)
   const quakeBtnRef = useRef<HTMLButtonElement>(null)
   const spaceKeyRef = useRef<HTMLElement>(null)
+  const photoRef = useRef<HTMLDivElement>(null)
+  const bareRef = useRef<HTMLImageElement>(null)
+  const dustRef = useRef<HTMLCanvasElement>(null)
+  /** The sound, once turned on: noise for the wind and Earth's crackles, a low rumble for quakes. */
+  const audio = useRef<{ ac: AudioContext; wind: GainNode; crackle: GainNode; rumble: GainNode; pitch: OscillatorNode; master: GainNode } | null>(null)
+  const soundOn = useRef(false)
+
+  function makeAudio() {
+    const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+    if (!Ctor) return null
+    const ac = new Ctor()
+    const buf = ac.createBuffer(1, ac.sampleRate * 2, ac.sampleRate)
+    const d = buf.getChannelData(0)
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1
+    const noise = ac.createBufferSource()
+    noise.buffer = buf
+    noise.loop = true
+    const master = ac.createGain()
+    master.gain.value = 0.8
+    master.connect(ac.destination)
+    const gain = () => {
+      const g = ac.createGain()
+      g.gain.value = 0
+      g.connect(master)
+      return g
+    }
+    // Wind: a soft low hiss
+    const wind = gain()
+    const lp = ac.createBiquadFilter()
+    lp.type = 'lowpass'
+    lp.frequency.value = 520
+    noise.connect(lp).connect(wind)
+    // Earth's crackles: a brighter hiss
+    const crackle = gain()
+    const bp = ac.createBiquadFilter()
+    bp.type = 'bandpass'
+    bp.frequency.value = 1500
+    bp.Q.value = 2.5
+    noise.connect(bp).connect(crackle)
+    // A quake: a deep rumble, a little rougher with some low noise
+    const rumble = gain()
+    const pitch = ac.createOscillator()
+    pitch.type = 'sine'
+    pitch.frequency.value = 46
+    const second = ac.createOscillator()
+    second.type = 'triangle'
+    second.frequency.value = 69
+    const low = ac.createBiquadFilter()
+    low.type = 'lowpass'
+    low.frequency.value = 180
+    pitch.connect(rumble)
+    second.connect(low).connect(rumble)
+    noise.connect(low)
+    noise.start()
+    pitch.start()
+    second.start()
+    return { ac, wind, crackle, rumble, pitch, master }
+  }
+
+  function toggleSound() {
+    const on = !soundOn.current
+    if (on && !audio.current) audio.current = makeAudio()
+    const a = audio.current
+    if (!a) return
+    soundOn.current = on
+    setSound(on)
+    if (on) {
+      void a.ac.resume()
+      setNews(item('quake', SOUND_LINE))
+    } else void a.ac.suspend()
+  }
+  useEffect(() => () => void audio.current?.ac.close(), [])
   /** The button and the hint's drawn key sink together while space or Enter is held. */
   function holdKey(on: boolean) {
     const v = on ? 'true' : 'false'
@@ -154,7 +258,7 @@ export default function Seismometer() {
     q.caught = true
     shake.current = Math.min(1, shake.current + (q.big ? 0.8 : 0.35))
     if (q.ground === 'earth') {
-      setNews(item('goal', 'You found it, but only just. On Earth a quake that small gets lost among tiny crackles. Switch back to Mars.', 'good'))
+      setNews(item('goal', 'Found it, just. On Earth a quake that small gets lost among tiny crackles. Switch back to Mars.', 'good'))
       return
     }
     g.caughtMars += 1
@@ -186,7 +290,7 @@ export default function Seismometer() {
       setNews(
         q.caught
           ? item('goal', 'In real life it shook for at least six hours. InSight heard 1,319 marsquakes in all.', 'good')
-          : item('quake', 'That was a magnitude 5, like the biggest quake ever detected on another planet. InSight heard 1,319 marsquakes in all.'),
+          : item('quake', 'You missed a magnitude 5, like the biggest quake ever detected on another planet.'),
       )
       g.next = g.t + 3
       return
@@ -232,11 +336,15 @@ export default function Seismometer() {
     // Earth's crackles: little bursts all the time
     let crackles: { t0: number; amp: number; dur: number; f: number }[] = []
     let nextCrackle = 0
+    // The latest sample's parts, for the scene and the sound: wind, Earth's shaking, quakes
+    let windNow = 0
+    let earthNow = 0
+    let quakeNow = 0
 
     function sample(t: number) {
       base = base * 0.7 + (Math.random() - 0.5) * 0.05
       gustJ = gustJ * 0.35 + (Math.random() - 0.5) * 1.1
-      const gust = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * 0.8 + ph[0])) * (0.5 + 0.5 * Math.sin(t * 1.9 + ph[1]))
+      const gust = gustAt(t, ph)
       let quiver = 0
       if (earth > 0.01) {
         while (nextCrackle <= t) {
@@ -252,11 +360,50 @@ export default function Seismometer() {
       } else nextCrackle = t
       let qv = 0
       for (const q of g.quakes) qv += quakeAt(q, t)
-      return base + wind * gust * 0.42 * gustJ + earth * 0.8 * quiver + qv
+      windNow = wind * gust * 0.42 * gustJ
+      earthNow = earth * 0.8 * quiver
+      quakeNow = qv
+      return base + windNow + earthNow + qv
     }
 
     let w = 0
     let h = 0
+    // Dust blowing across the photo: the wind is always there; the dome only stops it shaking the seismometer
+    const dctx = dustRef.current?.getContext('2d') ?? null
+    let dw = 0
+    let dh = 0
+    // Soft, faint wisps of dust, each one blot stamped wider than tall, drifting with the gusts
+    const motes = Array.from({ length: isNarrow() ? 26 : 44 }, () => ({ x: Math.random(), y: 0.3 + Math.random() * 0.7, v: 0.6 + Math.random() * 0.8, r: 6 + Math.random() * 18, a: 0.1 + Math.random() * 0.16 }))
+    const blot = document.createElement('canvas')
+    blot.width = blot.height = 48
+    {
+      const bc = blot.getContext('2d')!
+      const gr = bc.createRadialGradient(24, 24, 0, 24, 24, 24)
+      gr.addColorStop(0, 'rgba(240, 210, 172, 1)')
+      gr.addColorStop(0.5, 'rgba(232, 196, 152, 0.45)')
+      gr.addColorStop(1, 'rgba(226, 188, 142, 0)')
+      bc.fillStyle = gr
+      bc.fillRect(0, 0, 48, 48)
+    }
+    function drawDust(dt: number) {
+      if (!dctx || !dw || !dh) return
+      dctx.clearRect(0, 0, dw, dh)
+      if (reduced) return
+      const gs = gustAt(g.t, ph)
+      for (const m of motes) {
+        const vx = (0.04 + 0.16 * gs) * m.v // share of the width a second
+        m.x += vx * dt
+        m.y += Math.sin(g.t * 1.3 + m.v * 9) * 0.01 * dt
+        if (m.x > 1.15) {
+          m.x = -0.15
+          m.y = 0.3 + Math.random() * 0.7
+        }
+        const r = m.r * (dw / 700)
+        dctx.globalAlpha = m.a * (0.45 + 0.55 * gs)
+        dctx.drawImage(blot, m.x * dw - r * 2.5, m.y * dh - r * 0.7, r * 5, r * 1.4)
+      }
+      dctx.globalAlpha = 1
+    }
     // Phones: the line sits just above where the words start, and the photo fills the space above it, so the
     // words never lie on the line however short the screen. Wide screens use the classes as written.
     const place = () => {
@@ -269,8 +416,9 @@ export default function Seismometer() {
         return
       }
       const H = root.clientHeight
-      const lineH = Math.max(76, Math.min(130, H * 0.15))
-      const top = Math.max(H * 0.18, Math.min(H * 0.37, hud.offsetTop - lineH - 6))
+      // Short phones: the line gives up some height (and the photo above it more) before it would touch the words
+      const lineH = Math.max(70, Math.min(150, H * 0.17, hud.offsetTop - H * 0.1 - 6))
+      const top = Math.max(H * 0.1, Math.min(H * 0.37, hud.offsetTop - lineH - 6))
       root.style.setProperty('--line-top', `${top}px`)
       root.style.setProperty('--line-h', `${lineH}px`)
       root.style.setProperty('--photo-h', `${top + lineH * 0.55}px`)
@@ -283,11 +431,21 @@ export default function Seismometer() {
       canvas.width = Math.round(w * dpr)
       canvas.height = Math.round(h * dpr)
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      const dc = dustRef.current
+      if (dc) {
+        dw = dc.clientWidth
+        dh = dc.clientHeight
+        dc.width = Math.round(dw * dpr)
+        dc.height = Math.round(dh * dpr)
+        dctx?.setTransform(dpr, 0, 0, dpr, 0, 0)
+      }
       draw()
     }
 
     const speed = () => (isNarrow() ? 62 : 120) // pixels a second
-    const penX = () => w - (isNarrow() ? 20 : 40)
+    const penX = () => w - (isNarrow() ? 46 : 92)
+    const armLen = () => (isNarrow() ? 30 : 66)
+    let stopHit = -9 // when the pen last hit one of its stops
 
     function draw() {
       if (!w || !h) return
@@ -296,6 +454,30 @@ export default function Seismometer() {
       const amp = h * 0.42
       const px = penX()
       const sp = speed()
+      // The record: a dark strip under the line, a tick every second scrolling with it, every fifth one stronger,
+      // and the pen's two stops, as far as it can swing
+      ctx!.fillStyle = 'rgba(14, 9, 6, 0.5)'
+      ctx!.fillRect(0, 0, w, h)
+      ctx!.strokeStyle = SUN
+      ctx!.lineWidth = 1
+      for (let T = Math.floor(g.t); ; T--) {
+        const x = px - (g.t - T) * sp
+        if (x < 0) break
+        ctx!.globalAlpha = T % 5 === 0 ? 0.16 : 0.06
+        ctx!.beginPath()
+        ctx!.moveTo(x, mid - amp)
+        ctx!.lineTo(x, mid + amp)
+        ctx!.stroke()
+      }
+      ctx!.globalAlpha = 0.16
+      ctx!.setLineDash([2, 6])
+      for (const y of [mid - amp, mid + amp]) {
+        ctx!.beginPath()
+        ctx!.moveTo(0, y)
+        ctx!.lineTo(px, y)
+        ctx!.stroke()
+      }
+      ctx!.setLineDash([])
       // The rest line
       ctx!.globalAlpha = 0.18
       ctx!.strokeStyle = SUN
@@ -352,6 +534,17 @@ export default function Seismometer() {
       ctx!.strokeStyle = SUN
       ctx!.lineWidth = isNarrow() ? 2 : 2.5
       ctx!.stroke()
+      // The big one: the ink spreads where the pen swings hard
+      for (const q of g.quakes) {
+        if (!q.big) continue
+        const a = Math.max(0, Math.floor((tNext - end(q)) * RATE))
+        const b = Math.floor((tNext - q.t0) * RATE)
+        if (a >= count || b < 0) continue
+        path(a, b)
+        ctx!.strokeStyle = 'rgba(255, 241, 214, 0.2)'
+        ctx!.lineWidth = isNarrow() ? 7 : 9
+        ctx!.stroke()
+      }
       // Caught quakes: the line itself drawn bolder and brighter over its band
       for (const q of g.quakes) {
         if (!q.caught) continue
@@ -363,8 +556,34 @@ export default function Seismometer() {
         ctx!.lineWidth = isNarrow() ? 3 : 3.5
         ctx!.stroke()
       }
-      // The pen, where the line is drawn now
+      // The pen on its arm, swinging from a pivot to the right; it flashes its stop when it hits one
       const y0 = filled ? yAt(0) : mid
+      const pv = { x: px + armLen(), y: mid }
+      const raw = filled ? vals[(head - 1 + N) % N] : 0
+      if (Math.abs(raw) >= 0.99) stopHit = g.t
+      const hit = Math.max(0, 1 - (g.t - stopHit) / 0.3)
+      if (hit > 0) {
+        ctx!.fillStyle = `rgba(255, 241, 214, ${(0.9 * hit).toFixed(3)})`
+        const sy = raw > 0 ? mid - amp : mid + amp
+        ctx!.fillRect(px - 16, sy - 1.5, 32, 3)
+      }
+      ctx!.lineCap = 'round'
+      ctx!.strokeStyle = 'rgba(20, 12, 8, 0.6)'
+      ctx!.lineWidth = isNarrow() ? 5 : 6
+      ctx!.beginPath()
+      ctx!.moveTo(pv.x, pv.y)
+      ctx!.lineTo(px, y0)
+      ctx!.stroke()
+      ctx!.strokeStyle = SUN
+      ctx!.lineWidth = isNarrow() ? 2 : 2.5
+      ctx!.stroke()
+      ctx!.fillStyle = INK
+      ctx!.strokeStyle = SUN
+      ctx!.lineWidth = 2
+      ctx!.beginPath()
+      ctx!.arc(pv.x, pv.y, isNarrow() ? 4.5 : 6, 0, Math.PI * 2)
+      ctx!.fill()
+      ctx!.stroke()
       ctx!.fillStyle = BRIGHT
       ctx!.beginPath()
       ctx!.arc(px, y0, isNarrow() ? 4 : 5, 0, Math.PI * 2)
@@ -375,6 +594,9 @@ export default function Seismometer() {
     let last = 0
     let visible = false
     let st = 0
+    let rumbleEnv = 0
+    let windEnv = 0
+    let earthEnv = 0
     const frame = (now: number) => {
       step(Math.min(0.05, last ? (now - last) / 1000 : 0))
       last = now
@@ -414,13 +636,43 @@ export default function Seismometer() {
       g.quakes = g.quakes.filter((q) => g.t - end(q) < keep)
       draw()
 
-      // The scene shakes on a catch (trauma², summed sines) and with the big one itself
+      // The scene: the ground in the photo trembles with each quake; the bare seismometer shivers in the wind
+      // (under the dome it is still); dust keeps blowing across, gusting with the wind.
+      let qs = 0
+      let bigSig = 0
+      for (const q of g.quakes) {
+        const v = quakeAt(q, g.t)
+        qs += v
+        if (q.big) bigSig += v
+      }
+      if (photoRef.current) photoRef.current.style.transform = reduced ? '' : `translate3d(0, ${(qs * (isNarrow() ? 5 : 8)).toFixed(2)}px, 0)`
+      if (bareRef.current) bareRef.current.style.transform = reduced || g.dome ? '' : `translate3d(${(windNow * 7).toFixed(2)}px, ${(windNow * 2).toFixed(2)}px, 0)`
+      drawDust(dt)
+
+      // A catch kicks the screen (trauma², summed sines); the big one rocks it with the line itself
       shake.current = Math.max(0, shake.current - 1.5 * dt)
       st += dt * 30
-      let big = 0
-      for (const q of g.quakes) if (q.big) big = Math.max(big, Math.abs(quakeAt(q, g.t)))
-      const s = reduced ? 0 : shake.current * shake.current + big * 0.6
-      if (shakeRef.current) shakeRef.current.style.transform = s > 0.001 ? `translate3d(${(9 * s * Math.sin(st * 1.7)).toFixed(2)}px, ${(6 * s * Math.sin(st * 2.3)).toFixed(2)}px, 0)` : ''
+      const kickS = reduced ? 0 : shake.current * shake.current
+      const swayY = reduced ? 0 : bigSig * 12
+      const swayX = reduced ? 0 : bigSig * 5
+      if (shakeRef.current)
+        shakeRef.current.style.transform =
+          kickS > 0.001 || Math.abs(bigSig) > 0.002
+            ? `translate3d(${(9 * kickS * Math.sin(st * 1.7) + swayX).toFixed(2)}px, ${(6 * kickS * Math.sin(st * 2.3) + swayY).toFixed(2)}px, 0)`
+            : ''
+
+      // The sound follows the same parts of the line: wind hiss, Earth's crackle, a quake's rumble
+      const a = audio.current
+      if (a && soundOn.current) {
+        const now = a.ac.currentTime
+        rumbleEnv = Math.max(Math.abs(quakeNow), rumbleEnv * Math.exp(-dt * 3))
+        windEnv = Math.max(Math.abs(windNow), windEnv * Math.exp(-dt * 4))
+        earthEnv = Math.max(Math.abs(earthNow), earthEnv * Math.exp(-dt * 5))
+        a.wind.gain.setTargetAtTime(Math.min(0.35, windEnv * 0.9), now, 0.05)
+        a.crackle.gain.setTargetAtTime(Math.min(0.18, earthEnv * 0.25), now, 0.04)
+        a.rumble.gain.setTargetAtTime(Math.min(0.9, rumbleEnv * 1.4), now, 0.04)
+        a.pitch.frequency.setTargetAtTime(40 + 22 * Math.min(1, rumbleEnv), now, 0.1)
+      }
 
     }
     kick.current = () => {
@@ -433,10 +685,13 @@ export default function Seismometer() {
     // The line only runs while the game is on screen
     const io = new IntersectionObserver(([e]) => {
       visible = e.isIntersecting
-      if (visible) kick.current()
-      else {
+      if (visible) {
+        kick.current()
+        if (soundOn.current) void audio.current?.ac.resume()
+      } else {
         cancelAnimationFrame(raf)
         raf = 0
+        void audio.current?.ac.suspend()
       }
     })
     io.observe(root)
@@ -470,8 +725,9 @@ export default function Seismometer() {
       <div ref={shakeRef} className="absolute inset-0">
         {/* The seismometer, photographed by InSight's arm camera: bare on the ground, then under its dome. The same
             camera, nearly the same spot, so putting the dome on is a crossfade with a small drop. */}
-        <div className="absolute inset-x-0 top-0 h-[var(--photo-h,42%)] [mask-image:linear-gradient(to_bottom,black_55%,transparent)] lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[min(52vw,100svh)] lg:[mask-image:linear-gradient(to_right,transparent,black_30%)]">
+        <div ref={photoRef} className="absolute inset-x-0 top-0 h-[var(--photo-h,42%)] [mask-image:linear-gradient(to_bottom,black_55%,transparent)] lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[min(52vw,100svh)] lg:[mask-image:linear-gradient(to_right,transparent,black_30%)]">
           <img
+            ref={bareRef}
             src="photos/insight-seis-bare.webp"
             width={1024}
             height={1024}
@@ -487,76 +743,104 @@ export default function Seismometer() {
             className="absolute inset-0 h-full w-full object-cover object-[45%_80%] transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none lg:object-[45%_62%]"
             style={{ opacity: dome ? 1 : 0, transform: dome ? 'none' : 'translate3d(0,-3%,0) scale(1.03)' }}
           />
+          <canvas ref={dustRef} aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full" />
         </div>
         {/* Wide screens: a shade at the top so the line reads over the photo */}
         <div aria-hidden="true" className="absolute inset-x-0 top-0 hidden h-[45%] bg-gradient-to-b from-basalt/85 to-transparent lg:block" />
         <canvas
           ref={canvasRef}
           aria-hidden="true"
-          className="absolute inset-x-0 top-[var(--line-top,37%)] h-[var(--line-h,16%)] w-full [mask-image:linear-gradient(to_right,transparent,black_14%)] lg:top-[4%] lg:h-[22%]"
+          className="absolute inset-x-0 top-[var(--line-top,37%)] h-[var(--line-h,16%)] w-full [mask-image:linear-gradient(to_right,transparent,black_14%)] lg:top-[4%] lg:h-[22%] [@media(max-height:780px)_and_(min-width:1024px)]:top-[3%] [@media(max-height:780px)_and_(min-width:1024px)]:h-[17%]"
         />
       </div>
 
-      <div ref={hudRef} className="absolute inset-x-0 bottom-0 px-5 pb-6 md:px-10 lg:inset-y-0 lg:right-auto lg:flex lg:w-[min(36rem,40vw)] lg:flex-col lg:justify-end lg:pb-10">
-        {/* Short wide screens: a smaller heading, so the line above keeps its room */}
+      <div ref={hudRef} className="absolute inset-x-0 bottom-0 px-5 pb-6 md:px-10 lg:inset-y-0 lg:right-auto lg:flex lg:w-[min(36rem,44vw)] lg:flex-col lg:justify-end lg:pb-10">
+        {/* Short wide screens: a smaller heading, and on the shortest none, so the line above keeps its room */}
         <StageHeading
           text={HEADING[stage]}
-          className="text-[clamp(2rem,9vw,4rem)] [@media(max-height:760px)_and_(max-width:1023px)]:hidden [@media(max-height:780px)_and_(min-width:1024px)]:text-[2.75rem]"
+          reserve={STAGES}
+          reserveClass="lg:hidden"
+          className="text-[clamp(2rem,9vw,4rem)] [@media(max-height:760px)_and_(max-width:1023px)]:hidden [@media(max-height:780px)_and_(min-width:1024px)]:text-[2.75rem] [@media(max-height:720px)_and_(min-width:1024px)]:hidden"
         />
-        {/* Room for three lines of news on phones, so the line above never jumps when the news changes */}
-        <div className="mt-2 min-h-[4.3em] text-base sm:text-lg lg:min-h-0">
-          <NewsLine item={news} />
+        {/* Phones: the news keeps the room of its longest line, so the line above never jumps when the news changes
+            (wide screens draw the line at the top, whatever the words below do) */}
+        <div className="mt-2 grid text-base sm:text-lg">
+          {RESERVE.map((r) => (
+            <div key={r.text} aria-hidden="true" className="invisible [grid-area:1/1] lg:hidden">
+              <NewsLine item={r} className="" />
+            </div>
+          ))}
+          <div className="[grid-area:1/1]">
+            <NewsLine item={news} className="" />
+          </div>
         </div>
         <p className="sr-only" aria-live="assertive">
           {said}
         </p>
 
-        <div className="mt-3 flex flex-wrap items-end gap-x-8 gap-y-4 lg:mt-5">
-          <p>
+        {/* The count beside its label on phones (to leave the line its room), above it on wide screens */}
+        <div className="mt-3 flex flex-wrap items-end gap-x-6 gap-y-3 lg:mt-5">
+          <p className="flex items-baseline gap-2.5 lg:block">
             <span ref={countRef} className="block origin-left whitespace-nowrap font-display text-[clamp(2.2rem,10vw,4.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums">
               {heard}
             </span>
-            <span className="mt-2 block text-base text-sun/80">{heard === 1 ? 'marsquake heard' : 'marsquakes heard'}</span>
+            <span className="block whitespace-nowrap text-base text-sun/80 lg:mt-2">{heard === 1 ? 'marsquake heard' : 'marsquakes heard'}</span>
           </p>
+          {/* The sound: off until pressed. A round speaker on phones, beside the count; with words from sm up */}
+          <button
+            type="button"
+            aria-pressed={sound}
+            onClick={toggleSound}
+            className="ml-auto inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full bg-black/40 font-display text-base font-bold text-sun ring-1 ring-sun/25 transition-[transform,background-color,color] duration-150 ease-out active:scale-[0.97] aria-pressed:bg-sun aria-pressed:text-ink sm:px-4 lg:order-last lg:ml-0 [@media(hover:hover)_and_(pointer:fine)]:hover:ring-sun/60"
+          >
+            <SoundIcon on={sound} className="h-5 w-5" />
+            <span className="sr-only sm:not-sr-only">{sound ? 'Sound on' : 'Hear it'}</span>
+          </button>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
               aria-pressed={dome}
               onClick={() => putDome(!dome)}
-              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-black/40 px-4 font-display text-base font-bold text-sun ring-1 ring-sun/25 transition-[transform,background-color,color] duration-150 ease-out active:scale-[0.97] aria-pressed:bg-sun aria-pressed:text-ink [@media(hover:hover)_and_(pointer:fine)]:hover:ring-sun/60"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-black/40 px-3 font-display text-base font-bold text-sun ring-1 ring-sun/25 transition-[transform,background-color,color] duration-150 ease-out active:scale-[0.97] aria-pressed:bg-sun aria-pressed:text-ink sm:gap-2 sm:px-4 [@media(hover:hover)_and_(pointer:fine)]:hover:ring-sun/60"
             >
               <DomeIcon className="h-5 w-5" />
-              {dome ? 'Dome on' : 'Put the dome on'}
+              {/* Always as wide as its longer label, so the row never rewraps when it changes */}
+              <span className="grid text-left">
+                <span aria-hidden="true" className="invisible [grid-area:1/1]">
+                  Dome off
+                </span>
+                <span className="[grid-area:1/1]">{dome ? 'Dome on' : 'Dome off'}</span>
+              </span>
             </button>
-            {earthOpen && (
-              <div
-                role="radiogroup"
-                aria-label="Ground"
-                onKeyDown={(e) => {
-                  if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return
-                  e.preventDefault()
-                  const next: Ground = ground === 'mars' ? 'earth' : 'mars'
-                  chooseGround(next)
-                  e.currentTarget.querySelector<HTMLElement>(`[data-ground="${next}"]`)?.focus()
-                }}
-                className="grid grid-cols-2 rounded-full bg-black/40 p-1 ring-1 ring-sun/25 motion-safe:animate-[fade-in_300ms_ease-out]"
-              >
-                {(['mars', 'earth'] as Ground[]).map((gr) => (
-                  <button
-                    key={gr}
-                    type="button"
-                    role="radio"
-                    data-ground={gr}
-                    aria-checked={ground === gr}
-                    tabIndex={ground === gr ? 0 : -1}
-                    onClick={() => chooseGround(gr)}
-                    className="min-h-9 rounded-full px-3.5 font-display text-base font-bold text-sun/80 transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] aria-checked:bg-sun aria-checked:text-ink"
-                  >
-                    {gr === 'mars' ? 'Mars ground' : 'Earth ground'}
-                  </button>
-                ))}
-              </div>
-            )}
+            {/* Kept in place (hidden) until it opens, so the controls do not grow when it appears */}
+            <div
+              role="radiogroup"
+              aria-label="Ground"
+              onKeyDown={(e) => {
+                if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return
+                e.preventDefault()
+                const next: Ground = ground === 'mars' ? 'earth' : 'mars'
+                chooseGround(next)
+                e.currentTarget.querySelector<HTMLElement>(`[data-ground="${next}"]`)?.focus()
+              }}
+              aria-hidden={!earthOpen}
+              className={`${earthOpen ? 'motion-safe:animate-[fade-in_300ms_ease-out]' : 'invisible'} grid grid-cols-2 rounded-full bg-black/40 p-1 ring-1 ring-sun/25`}
+            >
+              {(['mars', 'earth'] as Ground[]).map((gr) => (
+                <button
+                  key={gr}
+                  type="button"
+                  role="radio"
+                  data-ground={gr}
+                  aria-checked={ground === gr}
+                  tabIndex={ground === gr ? 0 : -1}
+                  onClick={() => chooseGround(gr)}
+                  className="min-h-9 rounded-full px-2.5 font-display text-base font-bold text-sun/80 sm:px-3 transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] aria-checked:bg-sun aria-checked:text-ink"
+                >
+                  {gr === 'mars' ? 'Mars' : 'Earth'}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -588,7 +872,7 @@ export default function Seismometer() {
             holdKey(false)
           }}
           onBlur={() => holdKey(false)}
-          className="mt-5 inline-flex min-h-14 w-full select-none items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-sun px-5 font-display text-xl font-extrabold text-ink shadow-[0_6px_0_rgb(150_118_80),0_10px_18px_rgb(0_0_0/0.35)] transition-[transform,box-shadow,background-color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] [-webkit-tap-highlight-color:transparent] active:translate-y-[5px] active:bg-sun-bright active:shadow-[0_1px_0_rgb(150_118_80),0_2px_6px_rgb(0_0_0/0.3)] active:duration-75 data-[held=true]:translate-y-[5px] data-[held=true]:bg-sun-bright data-[held=true]:shadow-[0_1px_0_rgb(150_118_80),0_2px_6px_rgb(0_0_0/0.3)] data-[held=true]:duration-75 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-sun-bright lg:mt-7 lg:min-h-16 lg:w-auto lg:self-start lg:text-2xl"
+          className="mt-5 inline-flex min-h-14 w-full select-none items-center justify-center gap-2.5 whitespace-nowrap rounded-full bg-sun px-5 font-display text-xl font-extrabold text-ink shadow-[0_6px_0_rgb(150_118_80),0_10px_18px_rgb(0_0_0/0.35)] transition-[transform,box-shadow,background-color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] [-webkit-tap-highlight-color:transparent] active:translate-y-[5px] active:bg-sun-bright active:shadow-[0_1px_0_rgb(150_118_80),0_2px_6px_rgb(0_0_0/0.3)] active:duration-75 data-[held=true]:translate-y-[5px] data-[held=true]:bg-sun-bright data-[held=true]:shadow-[0_1px_0_rgb(150_118_80),0_2px_6px_rgb(0_0_0/0.3)] data-[held=true]:duration-75 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-sun-bright lg:mt-7 lg:min-h-16 lg:w-auto lg:self-start lg:text-2xl [@media(max-height:780px)_and_(min-width:1024px)]:mt-4 [@media(max-height:780px)_and_(min-width:1024px)]:min-h-14 [@media(max-height:780px)_and_(min-width:1024px)]:text-xl"
         >
           <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
             <path d="M2.5 12 H6 L8 8 L10.5 16.5 L13 5.5 L15.5 18 L17.5 9.5 L19 12 H21.5" />

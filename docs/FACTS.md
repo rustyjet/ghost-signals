@@ -380,6 +380,7 @@ The line, the shapes of the quakes, how big they look and how often they come ar
 - **SEISPIA** = NASA Photojournal, "SEIS Deployed on Mars" (PIA22956) — https://science.nasa.gov/photojournal/seis-deployed-on-mars
 - **WTS** = NASA Photojournal, "InSight Deploys Its Wind and Thermal Shield" (PIA22959) — https://science.nasa.gov/photojournal/insight-deploys-its-wind-and-thermal-shield/
 - **QUAKE1**, **MONSTER**, **INSEND**: see the InSight sources above.
+- **QUAKE1AUD** = NASA Science, "First Likely Marsquake Heard by NASA's InSight" (audio) — https://science.nasa.gov/resource/first-likely-marsquake-heard-by-nasas-insight/
 
 | Claim | Source | Checked |
 |-------|--------|---------|
@@ -392,6 +393,8 @@ The line, the shapes of the quakes, how big they look and how often they come ar
 | First marsquake on 6 April 2019 | QUAKE1 | Checked (same as InSight step 4) |
 | Magnitude 5 on 4 May 2022, "the biggest ever detected on another planet", shaking "for at least six hours" (the game's version lasts seconds and is called "like 4 May 2022", not a recording of it) | MONSTER | Checked |
 | "detected 1,319 marsquakes" | INSEND | Checked |
+| Sound: "Audio from both sets of sensors have been sped up by a factor of 60" and "the actual vibrations on Mars would not have been audible to the human ear" → "Marsquakes are too slow to hear, so NASA sped one up 60 times" | QUAKE1AUD | Checked |
+| Drawn for the game (covered by "The line is drawn for the game" and "This sound is made from the game's line"): the record strip, ticks and pen arm, the dust, the shiver and tremble in the photos, the big one's sway, and the sound itself (synthesised from the game's line, not NASA's audio) | ours | Scene |
 
 
 ### Plan my drive (the Sojourner driving game, 15 Nov 2026)
