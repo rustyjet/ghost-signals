@@ -47,6 +47,30 @@ interface Pulse {
   started: boolean
 }
 
+/**
+ * The site a tap or click at (x, y) on a Moon `w` px wide was meant for, or null. A tap on a site's number label
+ * counts as that site (a finger goes to the number, which sits off the dot), and a finger reaches a little further
+ * than HIT, which is only a few pixels on a phone. The label box is worked out as it is drawn below.
+ */
+function siteAtTap(x: number, y: number, w: number, finger: boolean): Site | null {
+  const em = Math.max(0.0255 * w, 10.5) / w
+  const reach = finger ? Math.max(HIT, 22 / w) : HIT
+  let best: Site | null = null
+  let bestD = Infinity
+  for (const s of SITES) {
+    const above = s.label[1] < 0
+    const edge = s.y + (s.label[1] + (above ? 35 : -35)) / 2000
+    const cx = s.x + s.label[0] / 2000
+    const onLabel = Math.abs(x - cx) <= 1.05 * em && (above ? y >= edge - 1.65 * em && y <= edge : y >= edge && y <= edge + 1.65 * em)
+    const d = onLabel ? 0 : Math.hypot(s.x - x, s.y - y)
+    if (d <= reach && d < bestD) {
+      best = s
+      bestD = d
+    }
+  }
+  return best
+}
+
 function targetAt(x: number, y: number): Target {
   let best: Site | null = null
   let bestD = HIT
@@ -457,6 +481,13 @@ export default function LaserRanging() {
     const m = moonRef.current!.getBoundingClientRect()
     return { x: (e.clientX - m.left) / m.width, y: (e.clientY - m.top) / m.height }
   }
+  /** Where a tap or the mouse points, snapped onto a site's dot when it was meant for that site (see siteAtTap). */
+  const meantAt = (e: React.PointerEvent | React.MouseEvent) => {
+    const p = pointerAt(e)
+    const type = (e.nativeEvent as PointerEvent).pointerType
+    const s = siteAtTap(p.x, p.y, moonRef.current!.getBoundingClientRect().width, type ? type !== 'mouse' : !mouse)
+    return s ? { x: s.x, y: s.y } : p
+  }
 
   return (
     <section
@@ -471,9 +502,14 @@ export default function LaserRanging() {
           tabIndex={0}
           aria-label="The Moon. Tap a spot, or aim with the arrow keys, then press Enter to fire."
           aria-describedby="laser-aim"
-          onClick={(e) => fire(aimAt(pointerAt(e).x, pointerAt(e).y))}
+          onClick={(e) => {
+            const p = meantAt(e)
+            fire(aimAt(p.x, p.y))
+          }}
           onPointerMove={(e) => {
-            if (e.pointerType === 'mouse' && !pulse.current) aimAt(pointerAt(e).x, pointerAt(e).y)
+            if (e.pointerType !== 'mouse' || pulse.current) return
+            const p = meantAt(e)
+            aimAt(p.x, p.y)
           }}
           onPointerEnter={(e) => e.pointerType === 'mouse' && setPointing(true)}
           onPointerLeave={() => setPointing(false)}
