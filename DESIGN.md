@@ -86,6 +86,7 @@ The Moon: a chapter page with `data-world="moon"` swaps the tokens: black sky to
 - One big **Hold to spin** button (touch, mouse, space bar): holding speeds the blades up, letting go slows them. A **Mars air / Earth air** switch. The speed and height are big numbers; a news line says what happened.
 - In the scene: dust kicked up near the ground, the shadow shrinking, a 3 m band that lights and counts while you hover. Small shake at lift-off, bigger on a hard landing.
 - Height you can see: the view is zoomed out so the ground, the shadow and the 3 m band are all on screen at the start, and the helicopter is drawn at true scale against them (the model fills about half its frame, so the frame is twice its size). A height pole stands on the ground beside it, marked every half metre and numbered every metre to 8 m. The camera follows only when the rotor would leave the top of the screen; then the pole's marks slide past and the near ground drops away, while a far crater floor (the same NASA Jezero photo, finer and hazier) moves a fifth as fast, so more distant ground shows behind as it climbs. The band's label sits at the right edge and hides when the band drops behind the controls.
+- Standing on the ground: the ground photo's top edge is its far, hazy distance, so the photo starts a little above the ground line and the feet stand inside it on rocks, with a dark shadow under them at rest.
 - Phones: the ground line sits just above the controls, measured from where they actually end up.
 
 ## Motion

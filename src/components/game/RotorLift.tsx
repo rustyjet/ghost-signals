@@ -181,7 +181,7 @@ export default function RotorLift() {
       if (shadowRef.current) {
         const sc = 1 / (1 + s.h * 0.35)
         shadowRef.current.style.transform = `translate(-50%, -50%) scale(${sc})`
-        shadowRef.current.style.opacity = String(0.55 * sc)
+        shadowRef.current.style.opacity = String(0.75 * sc)
       }
       if (rpmRef.current) rpmRef.current.textContent = fmt(s.rpm)
       if (altRef.current) altRef.current.textContent = `${Math.max(0, s.h).toFixed(1)} m`
@@ -233,7 +233,7 @@ export default function RotorLift() {
             ground, so as the helicopter climbs and the near ground drops away, more distant ground shows behind it. */}
         <div
           ref={farRef}
-          className="absolute inset-x-0 top-[calc(var(--ground)-var(--k)*0.15)] h-[calc(100%-var(--ground)+40svh)] will-change-transform [mask-image:linear-gradient(to_bottom,transparent,black_5%)]"
+          className="absolute inset-x-0 top-[calc(var(--ground)-var(--k)*1.35)] h-[calc(100%-var(--ground)+var(--k)*1.35+40svh)] will-change-transform [mask-image:linear-gradient(to_bottom,transparent,black_5%)]"
           style={{
             backgroundImage:
               'linear-gradient(to bottom, rgb(226 189 143 / 0.6), rgb(226 189 143 / 0.3) 35%, rgb(226 189 143 / 0.15)), url(photos/jezero-ground-wide.webp)',
@@ -243,13 +243,14 @@ export default function RotorLift() {
           }}
         />
         <div ref={worldRef} className="absolute inset-0 will-change-transform">
-          {/* Jezero crater floor */}
+          {/* Jezero crater floor. Its top edge is the far distance, so it starts above the ground line: the
+              helicopter's feet stand inside the ground, not on its hazy horizon. */}
           <picture>
             <source media="(max-width: 1023px)" srcSet="photos/jezero-ground-narrow.webp" />
             <img
               src="photos/jezero-ground-wide.webp"
               alt=""
-              className="absolute inset-x-0 top-[var(--ground)] h-[calc(100%-var(--ground)+40svh)] w-full object-cover object-top [mask-image:linear-gradient(to_bottom,transparent,black_6%)]"
+              className="absolute inset-x-0 top-[calc(var(--ground)-var(--k)*1.2)] h-[calc(100%-var(--ground)+var(--k)*1.2+40svh)] w-full object-cover object-top [mask-image:linear-gradient(to_bottom,transparent,black_6%)]"
             />
           </picture>
 
@@ -286,7 +287,7 @@ export default function RotorLift() {
           <div
             ref={shadowRef}
             className="absolute left-1/2 top-[calc(var(--ground)+var(--k)*0.05)] h-[calc(var(--k)*0.4)] w-[calc(var(--k)*2)] rounded-[50%] bg-black/70 blur-[6px] lg:left-[54%]"
-            style={{ transform: 'translate(-50%, -50%)', opacity: 0.55 }}
+            style={{ transform: 'translate(-50%, -50%)', opacity: 0.75 }}
           />
           <div
             ref={heliRef}
