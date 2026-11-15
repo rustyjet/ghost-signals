@@ -13,6 +13,27 @@ ScrollTrigger.config({ ignoreMobileResize: true })
 // back the setting it found at startup on every refresh.
 ScrollTrigger.clearScrollMemory('manual')
 
+/**
+ * The stage (index.css `--stage`): 1% of the screen's height, measured now and again only when ScrollTrigger would
+ * re-measure too. Its rule, copied: on a touch-only screen a change of height alone, up to a quarter of the screen, is
+ * the toolbar sliding, not a new layout. So the page keeps one length while you scroll, and the scroll animations,
+ * measured once, stay where the words are.
+ */
+let stageW = -1
+let stageH = -1
+function measureStage() {
+  const w = window.innerWidth
+  const h = window.innerHeight
+  if (ScrollTrigger.isTouch === 1 && w === stageW && Math.abs(h - stageH) <= h * 0.25) return
+  stageW = w
+  stageH = h
+  document.documentElement.style.setProperty('--stage', `${h / 100}px`)
+}
+if (typeof window !== 'undefined') {
+  measureStage()
+  window.addEventListener('resize', measureStage)
+}
+
 export const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 

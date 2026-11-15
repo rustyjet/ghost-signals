@@ -352,7 +352,7 @@ export default function Journey() {
       </div>
 
       <div className="relative z-10">
-        <header className="relative flex h-[100svh] items-start justify-center px-5 pt-[16svh] text-center md:px-10 lg:items-center lg:pt-0">
+        <header className="relative flex h-stage-100 items-start justify-center px-5 pt-[16svh] text-center md:px-10 lg:items-center lg:pt-0">
           <div>
             <h1 data-title="" className="text-[clamp(3.6rem,15vw,11rem)] leading-[0.85]">
               Ghost Signals
@@ -367,7 +367,7 @@ export default function Journey() {
           const chapter = s.machine?.slug ? getChapter(s.machine.slug) : undefined
           return (
             // Phones: a machine stop is longer, as its photo is held until its words have gone (see `gone`)
-            <article key={s.id} className={`flex items-start justify-center px-5 md:px-10 lg:min-h-[100svh] lg:items-center ${s.machine ? 'min-h-[110svh]' : 'min-h-[80svh]'}`}>
+            <article key={s.id} className={`flex items-start justify-center px-5 md:px-10 lg:min-h-stage-100 lg:items-center ${s.machine ? 'min-h-stage-110' : 'min-h-stage-80'}`}>
               <div data-stop="" data-low={s.machine ? '' : undefined} className="w-full max-w-[34rem] text-center text-sun lg:w-[min(36rem,42vw)]">
                 <div data-words="">
                   {s.figure && (
@@ -423,7 +423,7 @@ export default function Journey() {
           )
         })}
         {/* The last photo sinks into black before the footer, so the trip never ends on a hard edge */}
-        <div aria-hidden="true" className="h-[40svh] bg-gradient-to-b from-transparent to-black" />
+        <div aria-hidden="true" className="h-stage-40 bg-gradient-to-b from-transparent to-black" />
       </div>
     </section>
   )

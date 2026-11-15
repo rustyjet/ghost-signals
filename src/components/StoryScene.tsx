@@ -316,7 +316,7 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
 
       {/* The words. They scroll like any page. */}
       <div className="relative z-10">
-        <header className="relative h-[100svh]">
+        <header className="relative h-stage-100">
           <h1 className="sr-only">{chapter.name}</h1>
           <div
             data-tagline=""
@@ -336,7 +336,7 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
         </header>
 
         {chapter.steps.map((s) => (
-          <article key={s.heading} className="flex min-h-[70svh] items-start justify-center px-5 md:px-10 lg:min-h-[100svh] lg:items-center">
+          <article key={s.heading} className="flex min-h-stage-70 items-start justify-center px-5 md:px-10 lg:min-h-stage-100 lg:items-center">
             <div data-block="" className="w-full max-w-[34rem] text-center text-sun lg:w-[min(36rem,42vw)]">
               <div data-words="">
                 <p className="sr-only">
@@ -362,7 +362,7 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
           </article>
         ))}
         {/* Room after the last words, so the rover is seen alone before the picture sinks into the dark */}
-        <div aria-hidden="true" className="h-[70svh] lg:h-[60svh]" />
+        <div aria-hidden="true" className="h-stage-70 lg:h-stage-60" />
       </div>
     </section>
   )

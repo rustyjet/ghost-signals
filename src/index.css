@@ -52,6 +52,23 @@ body {
   overflow-x: clip;
 }
 
+/*
+  The stage: 1% of the screen's height, measured once (smoothScroll.ts) and kept while a phone's toolbar slides
+  in and out. Some phone browsers (Telegram's, for one) resize svh with the toolbar; every section sized by it
+  then grew as you scrolled down, the page slid out from under the scroll animations, and words faded before
+  they reached the screen. Sections that set the page's length use these; things drawn over it can still use svh.
+  Before the script runs it is plain svh.
+*/
+:root {
+  --stage: 1svh;
+}
+@utility h-stage-* {
+  height: calc(var(--stage) * --value(integer));
+}
+@utility min-h-stage-* {
+  min-height: calc(var(--stage) * --value(integer));
+}
+
 /* No single word left alone on the last line of a paragraph. Only the wrap *style*, in the base layer:
    the `text-wrap` shorthand would also switch wrapping back on and beat utilities like whitespace-nowrap. */
 @layer base {
