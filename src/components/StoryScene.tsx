@@ -317,7 +317,7 @@ export default function StoryScene({ chapter }: { chapter: Chapter }) {
           <h1 className="sr-only">{chapter.name}</h1>
           <div
             data-tagline=""
-            className="absolute inset-x-5 bottom-[9svh] md:inset-x-10 lg:bottom-auto lg:top-[calc(13%+clamp(3.6rem,15vw,15rem)*0.98)]"
+            className={`${taglineShade} absolute inset-x-5 bottom-[9svh] md:inset-x-10 lg:bottom-auto lg:top-[calc(13%+clamp(3.6rem,15vw,15rem)*0.98)]`}
           >
             <p className="max-w-[24ch] font-display text-[clamp(1.4rem,6.4vw,2.25rem)] font-bold leading-tight text-sun [text-shadow:0_1px_14px_rgb(0_0_0/0.65)] lg:max-w-[26ch] lg:[text-shadow:none] lg:font-body lg:text-2xl lg:font-normal lg:text-on-sky">
               {chapter.tagline}
@@ -389,6 +389,9 @@ function SceneDescription({ scene }: { scene: Chapter['steps'][number]['scene'] 
  */
 const wordsShade =
   'relative isolate before:pointer-events-none before:absolute before:-inset-x-12 before:-inset-y-10 before:-z-10 before:bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--color-basalt)_68%,transparent)_0%,color-mix(in_srgb,var(--color-basalt)_68%,transparent)_55%,transparent_100%)] lg:before:hidden'
+/** The same shade behind the opening line on phones, which is set left, so its middle sits left too. */
+const taglineShade =
+  'isolate before:pointer-events-none before:absolute before:-inset-x-5 before:-inset-y-10 before:-z-10 before:bg-[radial-gradient(farthest-side_at_38%_50%,color-mix(in_srgb,var(--color-basalt)_68%,transparent)_0%,color-mix(in_srgb,var(--color-basalt)_68%,transparent)_50%,transparent_100%)] md:before:-inset-x-10 lg:before:hidden'
 
 function FigureView({ figure }: { figure: Figure }) {
   const d = figure.decimals ?? 0
