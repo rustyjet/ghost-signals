@@ -89,7 +89,8 @@ export const ingenuity: Chapter = {
       heading: "I'm small.",
       body: 'I rode to Mars folded up under the belly of the Perseverance rover.',
       storm: 0,
-      scene: { kind: 'photo', image: belly, from: { x: 0.5, y: 0.35, zoom: 1.05 }, to: { x: 0.52, y: 0.55, zoom: 1.2 } },
+      // Wide screens: the folded helicopter under the rover sits left of the words. Phones keep the original pan.
+      scene: { kind: 'photo', image: belly, from: { x: 1, y: 0.32, zoom: 1.45 }, to: { x: 1, y: 0.45, zoom: 1.6 }, narrow: [{ x: 0.5, y: 0.35, zoom: 1.05 }, { x: 0.52, y: 0.55, zoom: 1.2 }] },
     },
     {
       spine: 0,
@@ -116,8 +117,9 @@ export const ingenuity: Chapter = {
       scene: {
         kind: 'photo',
         image: firstFlight,
-        from: { x: 0.5, y: 0.45, zoom: 1.05 },
-        to: { x: 0.5, y: 0.5, zoom: 1.7 },
+        // Wide screens: the helicopter hovers in the left third as the camera moves in.
+        from: { x: 1, y: 0.5, zoom: 1.4 },
+        to: { x: 0.8, y: 0.5, zoom: 1.75 },
         // Phones: lift the helicopter into the top half, clear of the words
         narrow: [{ x: 0.5, y: 0.62, zoom: 1.5 }, { x: 0.5, y: 0.7, zoom: 2 }],
       },
@@ -128,7 +130,8 @@ export const ingenuity: Chapter = {
       heading: 'I carry the first plane.',
       body: "Taped under my solar panel is a scrap of cloth the size of a stamp, from the wing of the Wright brothers' plane.",
       storm: 0,
-      scene: { kind: 'photo', image: rotor, from: { x: 0.6, y: 0.25, zoom: 1.2 }, to: { x: 0.04, y: 0.5, zoom: 1.35 }, narrow: [{ x: 0.6, y: 0.25, zoom: 1.2 }, { x: 0.12, y: 0.85, zoom: 1.6 }] },
+      // Wide screens: a slow push in on the cloth (wrapped round the cable), right of the words.
+      scene: { kind: 'photo', image: rotor, from: { x: 0, y: 0.5, zoom: 1.65 }, to: { x: 0, y: 0.56, zoom: 1.8 }, narrow: [{ x: 0.6, y: 0.25, zoom: 1.2 }, { x: 0.12, y: 0.85, zoom: 1.6 }] },
     },
     {
       spine: 5,
@@ -152,7 +155,8 @@ export const ingenuity: Chapter = {
       heading: 'Flight 72.',
       body: 'The sand below was too smooth for my camera to follow. I came down hard, and my blades were damaged.',
       storm: 0,
-      scene: { kind: 'photo', image: bladeShadow, from: { x: 0.6, y: 0.6, zoom: 1.05 }, to: { x: 0.55, y: 0.75, zoom: 1.2 } },
+      // Wide screens: the broken blade's shadow falls right of the words.
+      scene: { kind: 'photo', image: bladeShadow, from: { x: 0, y: 0.6, zoom: 1.05 }, to: { x: 0.05, y: 0.75, zoom: 1.2 }, narrow: [{ x: 0.6, y: 0.6, zoom: 1.05 }, { x: 0.55, y: 0.75, zoom: 1.2 }] },
     },
     {
       spine: 72,

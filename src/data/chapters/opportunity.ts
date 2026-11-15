@@ -121,7 +121,9 @@ export const opportunity: Chapter = {
       heading: 'I landed in a hole.',
       body: 'Wrapped in airbags, I bounced across Mars and rolled into a crater 22 metres wide. My team called it a hole in one.',
       storm: 0,
-      scene: { kind: 'photo', image: eagle, from: { x: 0.28, y: 0.5, zoom: 1.05 }, to: { x: 0.47, y: 0.5, zoom: 1.05 } },
+      // Wide screens: the lander stands right of the words here and left of them on the next step, so the
+      // pan carries it across between the two. Phones keep the original pan.
+      scene: { kind: 'photo', image: eagle, from: { x: 0.25, y: 0.5, zoom: 1.2 }, to: { x: 0.5, y: 0.5, zoom: 1.2 }, narrow: [{ x: 0.28, y: 0.5, zoom: 1.05 }, { x: 0.47, y: 0.5, zoom: 1.05 }] },
     },
     {
       spine: 1,
@@ -129,7 +131,7 @@ export const opportunity: Chapter = {
       heading: 'The plan was short.',
       body: 'Ninety days on Mars. About one kilometre of driving. Then my job would be done.',
       storm: 0,
-      scene: { kind: 'photo', image: eagle, from: { x: 0.47, y: 0.5, zoom: 1.05 }, to: { x: 0.72, y: 0.5, zoom: 1.05 } },
+      scene: { kind: 'photo', image: eagle, from: { x: 0.5, y: 0.5, zoom: 1.2 }, to: { x: 0.75, y: 0.5, zoom: 1.2 }, narrow: [{ x: 0.47, y: 0.5, zoom: 1.05 }, { x: 0.72, y: 0.5, zoom: 1.05 }] },
     },
     {
       spine: 48,
@@ -140,9 +142,9 @@ export const opportunity: Chapter = {
       scene: {
         kind: 'photo',
         image: berries,
-        // The brushed circle sits right of the words on wide screens, and in the middle on phones.
-        from: { x: 0.1, y: 0.35, zoom: 1.12 },
-        to: { x: 0.22, y: 0.6, zoom: 1.3 },
+        // The brushed circle sits left of the words on wide screens, and in the middle on phones.
+        from: { x: 1, y: 0.45, zoom: 1.35 },
+        to: { x: 1, y: 0.65, zoom: 1.45 },
         narrow: [{ x: 0.38, y: 0.5, zoom: 1 }, { x: 0.42, y: 0.5, zoom: 1.2 }],
       },
     },
@@ -160,7 +162,8 @@ export const opportunity: Chapter = {
       heading: 'Stuck in the sand.',
       body: 'My wheels sank into a ripple about 30 centimetres tall. Getting out took more than five weeks of careful driving.',
       storm: 0.05,
-      scene: { kind: 'photo', image: purgatory, from: { x: 0.5, y: 0, zoom: 1.06 }, to: { x: 0.5, y: 1, zoom: 1.2 } },
+      // Wide screens: the ripple and my tracks stay right of the words.
+      scene: { kind: 'photo', image: purgatory, from: { x: 0.06, y: 0, zoom: 1.06 }, to: { x: 0.1, y: 1, zoom: 1.2 }, narrow: [{ x: 0.5, y: 0, zoom: 1.06 }, { x: 0.5, y: 1, zoom: 1.2 }] },
     },
     {
       spine: 1235,
@@ -184,7 +187,8 @@ export const opportunity: Chapter = {
       heading: 'I finished a marathon.',
       body: 'It took me 11 years and two months. The finish line was the rim of Endeavour, a crater 22 kilometres wide.',
       storm: 0,
-      scene: { kind: 'photo', image: marathon, from: { x: 0.04, y: 0, zoom: 2 }, to: { x: 0.3, y: 0.78, zoom: 2 } },
+      // Wide screens: the camera follows the route down the map, keeping it in the left third.
+      scene: { kind: 'photo', image: marathon, from: { x: 0.2, y: 0, zoom: 2 }, to: { x: 0.62, y: 0.74, zoom: 2 }, narrow: [{ x: 0.04, y: 0, zoom: 2 }, { x: 0.3, y: 0.78, zoom: 2 }] },
     },
     {
       spine: 5000,

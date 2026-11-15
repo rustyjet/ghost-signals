@@ -118,7 +118,8 @@ export const eagle: Chapter = {
       heading: 'They walked on the Moon.',
       body: 'Neil and Buzz climbed down my ladder and walked for 2 hours 31 minutes. Their footprint trails can still be seen from orbit.',
       storm: 0,
-      scene: { kind: 'photo', image: bootprint, from: { x: 0.7, y: 0.45, zoom: 1.05 }, to: { x: 0.75, y: 0.7, zoom: 1.3 } },
+      // Wide screens: the bootprint sits right of the words.
+      scene: { kind: 'photo', image: bootprint, from: { x: 0, y: 0.8, zoom: 1.3 }, to: { x: 0.2, y: 0.88, zoom: 1.5 }, narrow: [{ x: 0.7, y: 0.45, zoom: 1.05 }, { x: 0.75, y: 0.7, zoom: 1.3 }] },
     },
     {
       spine: 2,
@@ -134,7 +135,8 @@ export const eagle: Chapter = {
       heading: 'They took my top half.',
       body: 'My top half was their ride home. I was the launch pad, and I stayed. Buzz remembered seeing the flag fall over in the blast.',
       storm: 0,
-      scene: { kind: 'photo', image: ascent, from: { x: 0.5, y: 0.42, zoom: 1.04 }, to: { x: 0.5, y: 0.55, zoom: 1.08 } },
+      // Wide screens: the ascent stage rises in the left third.
+      scene: { kind: 'photo', image: ascent, from: { x: 0.95, y: 0.6, zoom: 1.25 }, to: { x: 1, y: 0.7, zoom: 1.35 }, narrow: [{ x: 0.5, y: 0.42, zoom: 1.04 }, { x: 0.5, y: 0.55, zoom: 1.08 }] },
     },
     {
       spine: 39,
@@ -145,8 +147,9 @@ export const eagle: Chapter = {
       scene: {
         kind: 'photo',
         image: easep,
-        from: { x: 0.55, y: 0.5, zoom: 1.15 },
-        to: { x: 0.35, y: 0.72, zoom: 1.6 },
+        // Wide screens: the sensor stays in the left third as the camera moves in.
+        from: { x: 1, y: 0.62, zoom: 1.3 },
+        to: { x: 0.75, y: 0.68, zoom: 1.6 },
         narrow: [{ x: 0.4, y: 0.5, zoom: 1.15 }, { x: 0.3, y: 0.8, zoom: 1.7 }],
       },
     },
@@ -174,7 +177,8 @@ export const eagle: Chapter = {
       heading: 'The words on my leg.',
       body: '"Here men from the planet Earth first set foot upon the Moon, July 1969 A.D. We came in peace for all mankind."',
       storm: 0,
-      scene: { kind: 'photo', image: plaque, from: { x: 0.45, y: 0.4, zoom: 1.25 }, to: { x: 0.45, y: 0.5, zoom: 1.6 } },
+      // Wide screens: the plaque sits left of the words, so both can be read.
+      scene: { kind: 'photo', image: plaque, from: { x: 1, y: 0.45, zoom: 1.45 }, to: { x: 0.92, y: 0.5, zoom: 1.6 }, narrow: [{ x: 0.45, y: 0.4, zoom: 1.25 }, { x: 0.45, y: 0.5, zoom: 1.6 }] },
     },
     {
       spine: today,
