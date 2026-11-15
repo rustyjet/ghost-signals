@@ -39,6 +39,9 @@ export default function RotorLift() {
   const rpmRef = useRef<HTMLSpanElement>(null)
   const altRef = useRef<HTMLSpanElement>(null)
   const holdRef = useRef<HTMLButtonElement>(null)
+  const bladeTopRef = useRef<SVGSVGElement>(null)
+  const bladeLowRef = useRef<SVGSVGElement>(null)
+  const blurDiscRef = useRef<HTMLSpanElement>(null)
   const hudRef = useRef<HTMLDivElement>(null)
   const mvRef = useRef<ModelViewerElement>(null)
   const stormRef = useRef(0)
@@ -68,6 +71,7 @@ export default function RotorLift() {
     let visible = false
     let trauma = 0
     let t = 0
+    let bladeAngle = 0
     let rotors: ReturnType<ModelScene['getObjectByName']>[] = []
     let scene: ModelScene | null = null
 
@@ -184,6 +188,16 @@ export default function RotorLift() {
         shadowRef.current.style.opacity = String(0.75 * sc)
       }
       if (rpmRef.current) rpmRef.current.textContent = fmt(s.rpm)
+      // The button's rotors turn with the real ones (two blades each, turning opposite ways) and blur into a
+      // disc as they speed up. Reduced motion: they stay put, only the disc shows the speed.
+      const spin = s.rpm / MAX_RPM
+      if (!reduced) bladeAngle = (bladeAngle + (s.rpm / MARS_RPM) * 1.6 * 360 * dt) % 360
+      bladeTopRef.current?.style.setProperty('transform', `rotate(${bladeAngle}deg)`)
+      bladeLowRef.current?.style.setProperty('transform', `rotate(${55 - bladeAngle}deg)`)
+      const bladeAlpha = String(1 - 0.75 * spin)
+      if (bladeTopRef.current) bladeTopRef.current.style.opacity = bladeAlpha
+      if (bladeLowRef.current) bladeLowRef.current.style.opacity = String(0.6 * (1 - 0.75 * spin))
+      if (blurDiscRef.current) blurDiscRef.current.style.opacity = String(Math.min(1, spin * 1.2))
       if (altRef.current) altRef.current.textContent = `${Math.max(0, s.h).toFixed(1)} m`
 
       // Downwash kicks up dust near the ground.
@@ -380,8 +394,22 @@ export default function RotorLift() {
               }}
               onBlur={() => hold(false)}
               onContextMenu={(e) => e.preventDefault()}
-              className="min-h-14 touch-none select-none rounded-full bg-sun px-7 font-display text-xl font-extrabold text-ink transition-[transform,background-color] duration-150 ease-out [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] data-[held=true]:scale-[0.97] data-[held=true]:bg-sun-bright lg:min-h-20 lg:text-2xl"
+              className="group/hold mb-1.5 inline-flex min-h-14 touch-none select-none items-center justify-center gap-3 rounded-full bg-sun px-7 font-display text-xl font-extrabold text-ink shadow-[0_6px_0_rgb(150_118_80),0_10px_18px_rgb(0_0_0/0.35)] transition-[transform,box-shadow,background-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] data-[held=true]:translate-y-[5px] data-[held=true]:bg-sun-bright data-[held=true]:shadow-[0_1px_0_rgb(150_118_80),0_2px_6px_rgb(0_0_0/0.3)] data-[held=true]:duration-75 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-sun-bright lg:min-h-20 lg:gap-4 lg:text-2xl"
             >
+              {/* Ingenuity's two rotors from above: they turn with the blades in the scene */}
+              <span aria-hidden="true" className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-ink lg:h-12 lg:w-12">
+                <span
+                  ref={blurDiscRef}
+                  className="absolute inset-[3px] rounded-full bg-[radial-gradient(circle,rgb(242_226_194/0.15)_20%,rgb(242_226_194/0.5)_62%,rgb(242_226_194/0.12)_72%,transparent_74%)] opacity-0"
+                />
+                <svg ref={bladeLowRef} viewBox="-12 -12 24 24" className="absolute inset-[3px] opacity-60" style={{ transform: 'rotate(55deg)' }}>
+                  <path d="M-10.5 0 L10.5 0" stroke="#f2e2c2" strokeWidth="2.6" strokeLinecap="round" />
+                </svg>
+                <svg ref={bladeTopRef} viewBox="-12 -12 24 24" className="absolute inset-[3px]">
+                  <path d="M-10.5 0 L10.5 0" stroke="#f2e2c2" strokeWidth="2.6" strokeLinecap="round" />
+                </svg>
+                <span className="relative h-2 w-2 rounded-full bg-sun ring-2 ring-ink" />
+              </span>
               Hold to spin
             </button>
             <p id="rotor-help" className="text-sm text-sun/70 sm:text-base">
