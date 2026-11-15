@@ -197,12 +197,15 @@ export default function Journey() {
           const heading = block.querySelector<HTMLElement>('[data-heading]')
           const rest = block.querySelectorAll('[data-rise]')
           const low = () => block.hasAttribute('data-low') || isNarrow()
+          // Phones fade the words out from the middle (50%), so they must be in by 82%, and follow the finger with no
+          // smoothing: with the old 66% and half a second of lag, a normal swipe carried them into the fade before
+          // they had come in, and they only ever showed on the way back up.
           const tl = gsap.timeline({
             scrollTrigger: {
               trigger: block,
-              start: () => (low() ? 'top 98%' : 'top 92%'),
-              end: () => (low() ? 'top 66%' : 'top 46%'),
-              scrub: 0.5,
+              start: () => (isNarrow() ? 'top 100%' : low() ? 'top 98%' : 'top 92%'),
+              end: () => (isNarrow() ? 'top 82%' : low() ? 'top 66%' : 'top 46%'),
+              scrub: isNarrow() ? true : 0.5,
               invalidateOnRefresh: true,
             },
           })
