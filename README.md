@@ -2,15 +2,15 @@
 
 A scrolling story about the machines NASA left on the Moon and Mars, for readers aged about 9 to 14. Made for the NASA Space Apps Challenge 2026 challenge *Abandoned but not Forgotten*.
 
-Scrolling is travelling. The start page moves out from Earth, past the Moon, to Mars, and stops at each machine. Three of them tell their own story in a chapter, and each chapter ends with a game:
+Scrolling is travelling. The start page moves out from Earth, past the Moon, to Mars, and stops at each machine. Each machine tells its own story in a chapter, and each chapter ends with a game:
 
 | Machine | Where | The game |
 |---|---|---|
 | Opportunity | Perseverance Valley, Mars | **Last Light**: keep the rover alive through a dust storm |
 | Ingenuity | Jezero crater, Mars | **Lift off**: hover at 3 metres in Mars air, then in Earth air |
 | Eagle (Apollo 11) | Sea of Tranquility, the Moon | **Find the mirrors**: time a laser's trip to the Moon and back |
-
-InSight and Sojourner are shorter stops on the way.
+| InSight | Elysium Planitia, Mars | **Listen for marsquakes**: catch faint quakes on a seismometer once the dome keeps the wind off |
+| Sojourner | Ares Vallis, Mars | **Plan my drive**: plan a day's drive on the lander's photo, because commands took minutes to arrive |
 
 ## Accuracy
 

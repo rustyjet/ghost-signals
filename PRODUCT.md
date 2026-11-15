@@ -24,7 +24,7 @@ Real NASA 3D models and real NASA photographs, told by the machine itself, with 
 - The page scrolls natively. Animation is scrubbed to the scrollbar; nothing snaps or hijacks the wheel.
 - Copy limits are enforced at build time: heading at most 5 words, body at most 150 characters.
 - Every number or historical claim needs a checked row in `docs/FACTS.md`.
-- Built solo over the hackathon weekend (14–15 Nov 2026).
+- Built by team Hack Tuah over the hackathon weekend (14–15 Nov 2026).
 
 ## Brand Commitments
 

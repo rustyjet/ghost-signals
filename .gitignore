@@ -7,3 +7,5 @@ assets-src
 
 # Claude Code local settings
 .claude/
+
+*.tsbuildinfo
