@@ -143,7 +143,7 @@ export const sojourner: Chapter = {
       spine: 7,
       figure: { value: 7, unit: 'days', label: 'the plan for me' },
       heading: 'My week was up.',
-      body: 'My plan was seven days, all within about 10 metres of my lander. On day 7 I was still going, so the team kept me driving.',
+      body: 'My plan was seven days, all within about 10 metres of my lander. On day 7 I was still working, so I carried on.',
       storm: 0,
       scene: { kind: 'photo', image: gallery, from: { x: 0.1, y: 0.5, zoom: 1 }, to: { x: 0.4, y: 0.5, zoom: 1 }, narrow: [{ x: 0.3, y: 0.5, zoom: 1 }, { x: 0.45, y: 0.5, zoom: 1 }] },
     },
@@ -151,7 +151,7 @@ export const sojourner: Chapter = {
       spine: 24,
       figure: { value: 8.5, decimals: 1, unit: 'million', label: 'weather readings by my lander' },
       heading: 'The sky turned blue.',
-      body: 'Day 24. Low over the Twin Peaks, the sky near the Sun was pale blue. Not from clouds: the dust itself does that.',
+      body: 'Day 24. Low over the Twin Peaks, the sky near the Sun was pale blue. The dust in the air made that colour.',
       storm: 0,
       // The Sun comes in from the right as the camera travels along the horizon. Phones: the strip is so
       // low that the Sun would sit under the words, so the camera goes close and the blue glow fills the top.
@@ -171,7 +171,7 @@ export const sojourner: Chapter = {
       spine: 83,
       silent: true,
       figure: { value: 83, unit: 'days', label: 'on Mars, out of 7 planned' },
-      heading: 'Then the line went quiet.',
+      heading: 'Then my lander stopped.',
       body: '27 September 1997: my lander sent its last data. I could only talk to Earth through it, so Earth heard no more from me.',
       storm: 0,
       scene: { kind: 'black' },

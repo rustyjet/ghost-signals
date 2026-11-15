@@ -66,7 +66,7 @@ export const ingenuity: Chapter = {
   name: 'Ingenuity',
   world: 'mars',
   place: 'Jezero crater, Mars',
-  tagline: 'Allowed five flights. Flew seventy-two.',
+  tagline: 'It was allowed five flights on Mars, and it made seventy-two.',
   spine: { before: 'Flight', after: 'of 5 planned', silentAfter: 'of 5 planned, then grounded' },
   title: {
     storm: 0,
@@ -163,7 +163,7 @@ export const ingenuity: Chapter = {
       silent: true,
       figure: { value: 17, unit: 'km', label: 'flown in all, in just over two hours' },
       heading: 'That was all of it.',
-      body: 'Seventy-two flights, more than 14 times farther than planned. Then the team said goodbye.',
+      body: 'I made seventy-two flights and flew more than 14 times farther than planned. Then the team said goodbye.',
       storm: 0,
       scene: { kind: 'photo', image: finalAirfield, from: { x: 0.5, y: 0.5, zoom: 1 }, to: { x: 0.52, y: 0.62, zoom: 1.5 } },
     },

@@ -178,7 +178,7 @@ Sources were read by a research agent on 14 Nov 2026; the exact sentences are qu
 | Ingenuity: "up to five experimental test flights"; "performed 72 flights" | INGEND | Checked |
 | InSight "detected 1,319 marsquakes" | INSEND | Checked |
 | Sojourner was the first rover on Mars ("the first-ever robotic rover, Sojourner, to the Martian surface") | PATH | Checked |
-| Sojourner: "spent 83 days of a planned seven-day mission" → "Planned for a week, it lasted 83 days" | PIA01122 caption | Checked |
+| Sojourner: "spent 83 days of a planned seven-day mission" → "Built for a week on Mars. It kept going for 83 days." (the chapter tagline) | PIA01122 caption | Checked |
 | Four of the story's machines are on Mars (Opportunity, Ingenuity, InSight, Sojourner) | chapters above | Checked |
 
 ### Ingenuity (14 Nov 2026)

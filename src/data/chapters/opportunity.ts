@@ -129,7 +129,7 @@ export const opportunity: Chapter = {
       spine: 1,
       figure: { value: 90, unit: 'days', label: 'the whole plan' },
       heading: 'The plan was short.',
-      body: 'Ninety days on Mars. About one kilometre of driving. Then my job would be done.',
+      body: 'I had ninety days on Mars to drive about one kilometre. Then my job would be done.',
       storm: 0,
       scene: { kind: 'photo', image: eagle, from: { x: 0.5, y: 0.5, zoom: 1.2 }, to: { x: 0.75, y: 0.5, zoom: 1.2 }, narrow: [{ x: 0.47, y: 0.5, zoom: 1.05 }, { x: 0.72, y: 0.5, zoom: 1.05 }] },
     },
@@ -137,7 +137,7 @@ export const opportunity: Chapter = {
       spine: 48,
       figure: { value: 4, unit: 'mm', label: 'across, each grey berry' },
       heading: 'The ground had berries.',
-      body: 'Tiny grey balls lay everywhere. They are hematite, a mineral that forms in water. Mars was once wet.',
+      body: 'Tiny grey balls lay everywhere. They are hematite, a mineral that forms in water, so Mars was once wet.',
       storm: 0,
       scene: {
         kind: 'photo',
@@ -194,7 +194,7 @@ export const opportunity: Chapter = {
       spine: 5000,
       figure: { value: 14, unit: 'years', label: 'on Mars by Day 5,000' },
       heading: 'I was getting old.',
-      body: 'For now, I do not steer with my front wheels. My memory kept forgetting things. I kept going.',
+      body: 'I stopped steering with my front wheels, and my memory kept forgetting things, but I kept going.',
       storm: 0.1,
       scene: { kind: 'photo', image: sprained, from: { x: 0.15, y: 0.5, zoom: 1.05 }, to: { x: 0.7, y: 0.5, zoom: 1.05 } },
     },
@@ -220,7 +220,7 @@ export const opportunity: Chapter = {
       silent: true,
       figure: { value: 45.16, decimals: 2, unit: 'km', label: 'driven in all' },
       heading: "I'm still here.",
-      body: 'Parked on the western edge of Perseverance Valley. Built for 90 days. I worked for 5,111.',
+      body: 'I am parked on the western edge of Perseverance Valley. I was built for 90 days and worked for 5,111.',
       storm: 0.15,
       scene: {
         kind: 'rover',
@@ -233,7 +233,7 @@ export const opportunity: Chapter = {
   interaction: 'dust-storm',
   closing: {
     heading: 'What I found.',
-    body: 'Rocks that formed in water. Long ago Mars was wet, and it may once have been a place where tiny living things could survive.',
+    body: 'I found rocks that formed in water. Long ago Mars was wet, and it may once have been a place where tiny living things could survive.',
   },
   sources: [
     { label: 'NASA Science: Opportunity mission page', url: 'https://science.nasa.gov/mission/mer-opportunity/' },

@@ -179,7 +179,7 @@ export const insight: Chapter = {
       spine: 1436,
       figure: { value: 285, unit: 'watt-hours', label: 'a day near the end, down from 5,000' },
       heading: 'The dust won.',
-      body: 'One of my last pictures. The same dome, the same view as in 2019, now coated in the same dust as me.',
+      body: 'One of my last pictures shows the dome from the same spot as in 2019. Now it is coated in dust, like me.',
       storm: 0,
       scene: { kind: 'compare', before: domeClean, after: domeDusty, from: { x: 0.5, y: 0.3, zoom: 1.05 }, to: { x: 0.5, y: 0.35, zoom: 1.15 } },
     },

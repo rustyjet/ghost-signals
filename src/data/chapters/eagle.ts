@@ -126,7 +126,7 @@ export const eagle: Chapter = {
       spine: 2,
       figure: { value: 100, unit: 'mirrors', label: 'in one small tray' },
       heading: 'Buzz set down mirrors.',
-      body: 'A hundred glass corners that send light straight back where it came from. They need no power. Remember them.',
+      body: 'Each of the hundred glass corners sends light straight back where it came from. They need no power at all.',
       storm: 0,
       scene: { kind: 'photo', image: easep, from: { x: 0.5, y: 0.4, zoom: 1.05 }, to: { x: 0.55, y: 0.5, zoom: 1.15 } },
     },
@@ -186,7 +186,7 @@ export const eagle: Chapter = {
       spine: today,
       silent: true,
       figure: { value: 0, unit: 'watts', label: 'the power my mirrors need' },
-      heading: 'Still here. Still working.',
+      heading: "I'm still on the Moon.",
       body: 'Neil and Buzz went home. I stayed, with the footprints and the mirrors, and lasers from Earth still find them.',
       storm: 0,
       scene: {
