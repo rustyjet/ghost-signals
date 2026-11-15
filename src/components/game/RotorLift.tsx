@@ -22,6 +22,32 @@ type Air = keyof typeof DENSITY
 type ModelScene = { getObjectByName(name: string): { rotateX(a: number): void } | undefined; queueRender(): void }
 
 const fmt = (n: number) => Math.round(n).toLocaleString('en-GB')
+const AIRS: Air[] = ['mars', 'earth']
+
+// Air drawn as dots in a circle: a few for thin Mars air, packed for Earth air (a picture, not to scale).
+const DOTS: Record<Air, [number, number][]> = {
+  mars: [[9, 9.5], [15, 12.5], [10.5, 16]],
+  earth: [[9, 7], [13, 6.5], [16.5, 9], [7, 10.5], [11, 10], [15, 11.5], [18, 13], [8, 14], [12, 13.5], [16, 15.5], [10, 17.5], [14, 18], [6.5, 14.5]],
+}
+
+function AirLabel({ air, done }: { air: Air; done: boolean }) {
+  return (
+    <span className="inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-display text-base font-bold min-[380px]:gap-2">
+      <svg viewBox="0 0 24 24" aria-hidden="true" className={`h-5 w-5 shrink-0 ${done ? 'hidden min-[380px]:block' : ''}`}>
+        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="1.6" opacity="0.7" />
+        {DOTS[air].map(([x, y]) => (
+          <circle key={`${x}-${y}`} cx={x} cy={y} r="1.25" fill="currentColor" />
+        ))}
+      </svg>
+      {air === 'mars' ? 'Mars air' : 'Earth air'}
+      {done && (
+        <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 shrink-0">
+          <path d="M5 12.5 L10 17 L19 7.5" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
+    </span>
+  )
+}
 
 export default function RotorLift() {
   const [air, setAir] = useState<Air>('mars')
@@ -51,6 +77,13 @@ export default function RotorLift() {
   const airRef = useRef<Air>(air)
   airRef.current = air
   const sim = useRef({ rpm: 0, h: 0, v: 0, inBand: 0, airborne: false, liftRpm: 0, said: new Set<string>() })
+
+  function chooseAir(a: Air) {
+    if (a === airRef.current) return
+    setAir(a)
+    sim.current.said.delete(`lift-${a}`)
+    setNews(a === 'earth' ? 'Air as thick as Earth’s. Hold the button and watch the speed.' : 'Back to thin Mars air.')
+  }
 
   function hold(on: boolean) {
     held.current = on
@@ -352,24 +385,48 @@ export default function RotorLift() {
           </div>
 
           <div className="grid gap-3 lg:w-[24rem]">
-            <div role="radiogroup" aria-label="Air" className="grid grid-cols-2 gap-1 rounded-full bg-black/40 p-1 ring-1 ring-sun/20">
-              {(['mars', 'earth'] as const).map((a) => (
+            {/* Narrow phones: once a side is done, its tick takes the place of the drawing so the words fit.
+                Two sides, one cream thumb that slides. The thumb is a dark-lettered copy of the labels clipped to
+                one half, so the lettering changes colour exactly at the thumb's edge as it slides. Each side draws
+                its air: a few dots for thin Mars air, packed dots for Earth air. A tick marks a side you hovered in. */}
+            <div
+              role="radiogroup"
+              aria-label="Air"
+              onKeyDown={(e) => {
+                if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return
+                e.preventDefault()
+                const next: Air = air === 'mars' ? 'earth' : 'mars'
+                chooseAir(next)
+                e.currentTarget.querySelector<HTMLElement>(`[data-air="${next}"]`)?.focus()
+              }}
+              className="relative grid grid-cols-2 rounded-full bg-black/40 p-1 ring-1 ring-sun/20"
+            >
+              {AIRS.map((a) => (
                 <button
                   key={a}
                   type="button"
                   role="radio"
+                  data-air={a}
                   aria-checked={air === a}
-                  onClick={() => {
-                    setAir(a)
-                    sim.current.said.delete(`lift-${a}`)
-                    setNews(a === 'earth' ? 'Air as thick as Earth’s. Hold the button and watch the speed.' : 'Back to thin Mars air.')
-                  }}
-                  className={`min-h-11 rounded-full px-4 font-display text-base font-bold transition-[background-color,color,transform] duration-150 active:scale-[0.97] ${air === a ? 'bg-sun text-ink' : 'text-sun/80 hover:text-sun'}`}
+                  tabIndex={air === a ? 0 : -1}
+                  onClick={() => chooseAir(a)}
+                  className="min-h-11 rounded-full px-1.5 text-sun/80 transition-[color,transform] duration-150 active:scale-[0.97] min-[380px]:px-3 [@media(hover:hover)_and_(pointer:fine)]:hover:text-sun"
                 >
-                  {a === 'mars' ? 'Mars air' : 'Earth air'}
+                  <AirLabel air={a} done={hovered.includes(a)} />
                   {hovered.includes(a) && <span className="sr-only"> (hovered)</span>}
                 </button>
               ))}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-1 grid grid-cols-2 rounded-full bg-sun text-ink shadow-[0_2px_8px_rgb(0_0_0/0.35)] transition-[clip-path] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none"
+                style={{ clipPath: air === 'mars' ? 'inset(0 50% 0 0 round 999px)' : 'inset(0 0 0 50% round 999px)' }}
+              >
+                {AIRS.map((a) => (
+                  <span key={a} className="grid min-h-11 place-items-center px-1.5 min-[380px]:px-3">
+                    <AirLabel air={a} done={hovered.includes(a)} />
+                  </span>
+                ))}
+              </div>
             </div>
             <button
               ref={holdRef}
