@@ -894,6 +894,8 @@ export class RoverWorld {
     y /= m
     // The lower part of the screen belongs to the words and switches
     y = Math.max(y, this.narrow ? 0.25 : -0.05)
+    // ...and the top belongs to the day counter
+    y = Math.min(y, this.narrow ? 0.58 : 0.66)
     el.style.opacity = '1'
     el.style.transform = `translate(${(x * 0.5 + 0.5) * 100}cqw, ${(-y * 0.5 + 0.5) * 100}cqh) translate(-50%, -50%) rotate(${angle}rad)`
   }

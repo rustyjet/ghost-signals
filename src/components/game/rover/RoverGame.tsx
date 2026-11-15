@@ -12,7 +12,7 @@ import {
   type GameState,
   type Plan,
 } from '../dustStormModel'
-import { BatteryCell, Ending, SentHome, Lever, NewsLine, news, newsFor, type News } from '../LastLightHud'
+import { BatteryCell, DayCounter, Ending, SentHome, Lever, NewsLine, news, newsFor, type News } from '../LastLightHud'
 import LastLight from '../LastLight'
 import { RoverWorld, type DriveInput, type Status } from './RoverWorld'
 
@@ -321,7 +321,7 @@ function Game({ onFail }: { onFail: () => void }) {
           }}
         />
         {/* Out of the story's dark at the top; dark ground for the controls at the bottom */}
-        <div className="absolute inset-x-0 top-0 h-[14svh] bg-gradient-to-b from-basalt to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-[24svh] bg-gradient-to-b from-basalt from-20% via-basalt/60 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 h-[56%] bg-gradient-to-t from-basalt from-25% via-basalt/80 to-transparent lg:h-[40%] lg:from-20% lg:via-basalt/70" />
         {/* Wide screens: a soft oval of dark behind the words, so they read on any ground and the rover stays bright */}
         <div className="absolute inset-0 hidden bg-[radial-gradient(ellipse_40%_30%_at_19%_70%,rgb(36_24_18/0.85),rgb(36_24_18/0.6)_45%,transparent_78%)] lg:block" />
@@ -337,12 +337,7 @@ function Game({ onFail }: { onFail: () => void }) {
       </div>
 
       {/* The day of the storm, where the story kept its counter */}
-      <p
-        className={`absolute left-5 top-5 font-display text-[clamp(0.95rem,4.8vw,1.125rem)] font-bold leading-tight text-sun transition-opacity duration-500 md:left-10 md:text-lg lg:top-8 lg:text-2xl ${phase === 'intro' ? 'opacity-0' : 'opacity-100'}`}
-      >
-        Day <span className="tabular-nums">{state.sol}</span> of {TOTAL_SOLS}
-        {phase === 'paused' && <span className="text-sun/70">, paused</span>}
-      </p>
+      <DayCounter sol={state.sol} total={TOTAL_SOLS} paused={phase === 'paused'} hidden={phase === 'intro'} />
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 px-5 pb-6 md:px-10 lg:pb-10 [&_button]:pointer-events-auto">
         <div className="mx-auto max-w-6xl">

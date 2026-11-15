@@ -390,3 +390,55 @@ export function SentHome({ sent, waiting, radio }: { sent: number; waiting: numb
     </div>
   )
 }
+
+
+/**
+ * The day of the storm, with the sunlight ahead: one thin bar per day, as tall as that day's sunlight (the same
+ * curve the rules use), so the storm shows as a dip you can plan around. Days lived are solid, days ahead faint,
+ * today bright with a mark over it. Each new day number rises in; under reduced motion it just changes.
+ */
+export function DayCounter({ sol, total, paused, hidden }: { sol: number; total: number; paused: boolean; hidden: boolean }) {
+  return (
+    <div
+      className={`absolute left-5 top-5 text-sun transition-opacity duration-500 md:left-10 lg:top-8 ${hidden ? 'opacity-0' : 'opacity-100'}`}
+    >
+      <p className="font-display font-extrabold leading-none [text-shadow:0_1px_2px_rgb(0_0_0/0.5)]">
+        <span className="text-[clamp(1.35rem,6vw,2.25rem)] tracking-[-0.02em]">
+          Day{' '}
+          <span
+            key={sol}
+            className="inline-block tabular-nums motion-safe:animate-[news-in_300ms_cubic-bezier(0.23,1,0.32,1)] motion-reduce:animate-[fade-in_200ms_ease-out]"
+          >
+            {sol}
+          </span>
+        </span>
+        <span className="ml-[0.35em] text-[clamp(0.95rem,4vw,1.25rem)] font-bold text-sun/85">
+          of {total}
+          {paused && <span className="text-sun">, paused</span>}
+        </span>
+      </p>
+      <div className="mt-2 flex items-end gap-2">
+        <div
+          role="img"
+          aria-label={`Sunlight for each of the ${total} days. The storm is darkest in the middle days.`}
+          className="relative flex h-[1.1rem] w-[10rem] items-end gap-px rounded-[4px] bg-basalt/75 px-[3px] pb-[3px] pt-[6px] shadow-[inset_0_0_0_1px_rgb(242_226_194/0.25)] sm:gap-[2px] lg:h-[1.9rem] lg:w-[16rem]"
+        >
+          {Array.from({ length: total }, (_, i) => {
+            const day = i + 1
+            const tall = Math.max(0.14, sunlight(day))
+            const tone = day === sol ? 'bg-sun-bright' : day < sol ? 'bg-sun/80' : 'bg-sun/40'
+            return (
+              <span key={day} className="relative flex h-full flex-1 items-end">
+                <span className={`block w-full rounded-[1px] transition-colors duration-300 ${tone}`} style={{ height: `${tall * 100}%` }} />
+                {day === sol && (
+                  <span aria-hidden="true" className="absolute -top-[5px] left-1/2 h-[3px] w-[3px] -translate-x-1/2 rounded-full bg-sun-bright" />
+                )}
+              </span>
+            )
+          })}
+        </div>
+        <span className="text-xs text-sun [text-shadow:0_1px_2px_rgb(0_0_0/0.6),0_0_10px_rgb(36_24_18/0.9)] lg:text-sm">sunlight</span>
+      </div>
+    </div>
+  )
+}

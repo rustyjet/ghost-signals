@@ -12,7 +12,7 @@ import {
   type GameState,
   type Plan,
 } from './dustStormModel'
-import { BatteryCell, Ending, SentHome, Lever, NewsLine, news, newsFor, type News } from './LastLightHud'
+import { BatteryCell, DayCounter, Ending, SentHome, Lever, NewsLine, news, newsFor, type News } from './LastLightHud'
 
 const SOL_MS = 1500
 const PHOTO = { clean: 'photos/selfie-clean.webp', dusty: 'photos/selfie-dusty.webp' }
@@ -255,12 +255,7 @@ export default function LastLight() {
       </div>
 
       {/* The day of the storm, where the story kept its counter */}
-      <p
-        className={`absolute left-5 top-5 font-display text-[clamp(0.95rem,4.8vw,1.125rem)] font-bold leading-tight text-sun transition-opacity duration-500 md:left-10 md:text-lg lg:top-8 lg:text-2xl ${phase === 'intro' ? 'opacity-0' : 'opacity-100'}`}
-      >
-        Day <span className="tabular-nums">{state.sol}</span> of {TOTAL_SOLS}
-        {phase === 'paused' && <span className="text-sun/70">, paused</span>}
-      </p>
+      <DayCounter sol={state.sol} total={TOTAL_SOLS} paused={phase === 'paused'} hidden={phase === 'intro'} />
 
       <div className="absolute inset-x-0 bottom-0 px-5 pb-6 md:px-10 lg:pb-10">
         <div className="mx-auto max-w-6xl">
