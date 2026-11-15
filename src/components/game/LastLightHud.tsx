@@ -143,6 +143,19 @@ function Thermometer({ warmth, className }: { warmth: number; className?: string
  * A big two-way switch. Up is on. The knob carries what it switches: the heater's thermometer shows the rover's
  * warmth, the radio's dish beats while it is on. The knob is thrown with a small overshoot; the track lights when on.
  */
+/**
+ * The game's buttons are clicked with a mouse or a finger while the keys drive, and Chrome then often treats a
+ * click as keyboard focus and draws the ring, which reads as "selected". So: no ring after a pointer press; the
+ * ring comes back when the button itself is used from the keyboard (Space, Enter) or reached with Tab.
+ */
+const pointerFocus = {
+  onPointerDown: (e: React.PointerEvent<HTMLElement>) => (e.currentTarget.dataset.pointer = 'true'),
+  onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.key === ' ' || e.key === 'Enter') e.currentTarget.dataset.pointer = 'false'
+  },
+  onBlur: (e: React.FocusEvent<HTMLElement>) => (e.currentTarget.dataset.pointer = 'false'),
+}
+
 export function Lever({
   label,
   cost,
@@ -169,7 +182,9 @@ export function Lever({
       role="switch"
       aria-checked={on}
       onClick={onToggle}
-      className={`group flex items-center gap-2 rounded-2xl p-2 text-left ring-1 transition-[transform,background-color,box-shadow] duration-200 ease-out active:scale-[0.97] min-[360px]:gap-3 min-[360px]:p-3 sm:gap-4 sm:p-4 ${on ? 'bg-basalt/85 ring-sun/40 hover:ring-sun/60' : 'bg-basalt/60 ring-sun/15 hover:ring-sun/35'}`}
+      {...pointerFocus}
+      // The keyboard ring follows the card's own edge (not outside it), so a focused switch never looks bigger
+      className={`group flex items-center gap-2 rounded-2xl p-2 text-left ring-1 focus-visible:outline-none! [&:focus-visible:not([data-pointer=true])]:ring-2 [&:focus-visible:not([data-pointer=true])]:ring-sun transition-[transform,background-color,box-shadow] duration-200 ease-out active:scale-[0.97] min-[360px]:gap-3 min-[360px]:p-3 sm:gap-4 sm:p-4 ${on ? 'bg-basalt/85 ring-sun/40 hover:ring-sun/60' : 'bg-basalt/60 ring-sun/15 hover:ring-sun/35'}`}
     >
       <span
         aria-hidden="true"
@@ -518,7 +533,8 @@ export function PauseButton({ paused, onToggle }: { paused: boolean; onToggle: (
       type="button"
       onClick={onToggle}
       aria-keyshortcuts="P"
-      className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full py-1.5 pl-1.5 pr-4 font-display text-lg font-bold transition-[transform,background-color,color,box-shadow] duration-200 ease-out active:scale-[0.97] ${paused ? 'bg-sun text-ink hover:bg-sun-bright motion-safe:animate-[breathe_2.4s_ease-out_infinite]' : 'bg-basalt/70 text-sun shadow-[inset_0_0_0_1px_rgb(242_226_194/0.3)] hover:shadow-[inset_0_0_0_1px_rgb(242_226_194/0.6)]'}`}
+      {...pointerFocus}
+      className={`[&[data-pointer=true]]:outline-none! inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full py-1.5 pl-1.5 pr-4 font-display text-lg font-bold transition-[transform,background-color,color,box-shadow] duration-200 ease-out active:scale-[0.97] ${paused ? 'bg-sun text-ink hover:bg-sun-bright motion-safe:animate-[breathe_2.4s_ease-out_infinite]' : 'bg-basalt/70 text-sun shadow-[inset_0_0_0_1px_rgb(242_226_194/0.3)] hover:shadow-[inset_0_0_0_1px_rgb(242_226_194/0.6)]'}`}
     >
       <span
         aria-hidden="true"
