@@ -1,6 +1,7 @@
 import type { ModelViewerElement } from '@google/model-viewer'
 import { useEffect, useRef, useState } from 'react'
 import DustField from '../DustField'
+import { news as item, NewsLine, type News } from './LastLightHud'
 import { loadModelViewer } from '../../lib/modelViewer'
 import { isNarrow, prefersReducedMotion } from '../../scroll/smoothScroll'
 
@@ -62,7 +63,7 @@ function AirLabel({ air, done }: { air: Air; done: boolean }) {
 
 export default function RotorLift() {
   const [air, setAir] = useState<Air>('mars')
-  const [news, setNews] = useState('Hold the button. The blades take a moment to speed up.')
+  const [news, setNews] = useState<News>(() => item('rotor', 'Hold the button. The blades take a moment to speed up.'))
   const [hovered, setHovered] = useState<Air[]>([])
 
   const rootRef = useRef<HTMLElement>(null)
@@ -99,7 +100,7 @@ export default function RotorLift() {
     if (a === airRef.current) return
     setAir(a)
     sim.current.said.delete(`lift-${a}`)
-    setNews(a === 'earth' ? 'Air as thick as Earth’s. Hold the button and watch the speed.' : 'Back to thin Mars air.')
+    setNews(item('air', a === 'earth' ? 'Air as thick as Earth’s. Hold the button and watch the speed.' : 'Back to thin Mars air.'))
   }
 
   function hold(on: boolean) {
@@ -151,7 +152,7 @@ export default function RotorLift() {
     }
     mvRef.current?.addEventListener('load', findRotors)
 
-    const say = (key: string, line: string, once = true) => {
+    const say = (key: string, line: News, once = true) => {
       const s = sim.current
       if (once && s.said.has(key)) return
       s.said.add(key)
@@ -179,8 +180,8 @@ export default function RotorLift() {
         if (s.airborne) {
           if (s.v < HARD_LANDING) {
             trauma = Math.min(1, trauma + 0.6)
-            say('hard', 'Bump. A hard landing. Let go a little at a time to come down gently.', false)
-          } else say('soft', 'Down gently. That is how Ingenuity landed.', false)
+            say('hard', item('bump', 'Bump. A hard landing. Let go a little at a time to come down gently.', 'warn'), false)
+          } else say('soft', item('land', 'Down gently. That is how Ingenuity landed.'), false)
         }
         s.h = 0
         s.v = Math.max(0, s.v)
@@ -190,13 +191,16 @@ export default function RotorLift() {
         trauma = Math.min(1, trauma + 0.2)
         say(
           `lift-${airRef.current}`,
-          airRef.current === 'mars'
-            ? `Lift-off at ${fmt(s.liftRpm)} turns a minute. Now try to hover at 3 metres.`
-            : `Lift-off at only ${fmt(s.liftRpm)} turns a minute. Thick air gives the blades much more to push against.`,
+          item(
+            'up',
+            airRef.current === 'mars'
+              ? `Lift-off at ${fmt(s.liftRpm)} turns a minute. Now try to hover at 3 metres.`
+              : `Lift-off at only ${fmt(s.liftRpm)} turns a minute. Thick air gives the blades much more to push against.`,
+          ),
         )
       }
-      if (!s.airborne && s.rpm > 1500 && airRef.current === 'mars') say('thin', 'Still on the ground. The air is too thin to push against. Keep holding.')
-      if (s.h > BAND[1] + 1.5) say('high', 'Too high. Let go a little and it will sink.', true)
+      if (!s.airborne && s.rpm > 1500 && airRef.current === 'mars') say('thin', item('air', 'Still on the ground. The air is too thin to push against. Keep holding.'))
+      if (s.h > BAND[1] + 1.5) say('high', item('high', 'Too high. Let go a little and it will sink.', 'warn'), true)
 
       // Hovering in the band counts up; drifting out drains it again, quickly but not all at once.
       const inside = s.h >= BAND[0] && s.h <= BAND[1]
@@ -208,9 +212,13 @@ export default function RotorLift() {
         setHovered((h) => (h.includes(done) ? h : [...h, done]))
         say(
           `hover-${done}`,
-          done === 'mars'
-            ? 'You hovered at 3 metres in Mars air. Ingenuity did that on 19 April 2021. Now switch to Earth air.'
-            : 'Hovered in Earth air. Same blades, a tenth of the speed: that is what thin air costs.',
+          item(
+            'goal',
+            done === 'mars'
+              ? 'You hovered at 3 metres in Mars air. Ingenuity did that on 19 April 2021. Now switch to Earth air.'
+              : 'Hovered in Earth air. Same blades, a tenth of the speed: that is what thin air costs.',
+            'good',
+          ),
         )
       }
 
@@ -400,9 +408,10 @@ export default function RotorLift() {
         <div className="mx-auto grid max-w-6xl gap-4 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-10">
           <div>
             <h2 className="text-[clamp(2rem,9vw,5rem)] [@media(max-height:700px)_and_(max-width:1023px)]:hidden">Your turn.</h2>
-            <p aria-live="polite" className="mt-2 min-h-[2.8em] max-w-[36ch] text-base leading-snug text-sun sm:text-lg lg:text-xl">
-              {news}
-            </p>
+            {/* The same news line as Last Light: a drawn badge for what happened, the line rising in as its blur clears */}
+            <div className="mt-2">
+              <NewsLine item={news} />
+            </div>
             {/* The speed carries a track with a lift-off mark for the air you are in (it slides when the air changes);
                 the fill brightens once it passes. The height says what the helicopter is doing, and warns in orange
                 (with the words) when it is coming down fast enough for a hard landing. */}

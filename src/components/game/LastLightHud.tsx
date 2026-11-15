@@ -236,9 +236,12 @@ export function Ending({
 }
 
 /** What a news line is about; it picks the badge drawn beside it. */
-export type NewsKind = 'power' | 'cold' | 'warm' | 'sky' | 'gust' | 'rock' | 'radio' | 'pause'
-/** info: plain; warn: act now (orange); cold: the electronics are cooling (frost). Always a badge shape too. */
-export type NewsTone = 'info' | 'warn' | 'cold'
+export type NewsKind =
+  | 'power' | 'cold' | 'warm' | 'sky' | 'gust' | 'rock' | 'radio' | 'pause'
+  // Lift off (Ingenuity)
+  | 'rotor' | 'up' | 'high' | 'land' | 'bump' | 'goal' | 'air'
+/** info: plain; warn: act now (orange); cold: the electronics are cooling (frost); good: a goal reached (cream). Always a badge shape too. */
+export type NewsTone = 'info' | 'warn' | 'cold' | 'good'
 export interface News {
   id: number
   text: string
@@ -292,6 +295,25 @@ function NewsIcon({ kind, className }: { kind: NewsKind; className?: string }) {
         </>
       )}
       {kind === 'gust' && <path d="M3 8.5 H13.5 A3 3 0 1 0 10.5 5.5 M3 12.5 H18 A3 3 0 1 1 15 15.5 M3 16.5 H9" />}
+      {kind === 'rotor' && (
+        <>
+          <path d="M3.5 12 H20.5 M7.5 4.6 L16.5 19.4" />
+          <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
+        </>
+      )}
+      {kind === 'up' && <path d="M12 19.5 V5 M6 11 L12 5 L18 11" />}
+      {kind === 'high' && <path d="M12 4.5 V19 M6 13 L12 19 L18 13" />}
+      {kind === 'land' && <path d="M12 3.5 V13.5 M8 9.5 L12 13.5 L16 9.5 M4 19 H20" />}
+      {kind === 'bump' && <path d="M4 19 H20 M12 8 V14 M6 10.5 L8.5 14.5 M18 10.5 L15.5 14.5" />}
+      {kind === 'goal' && <path d="M5 12.5 L10 17 L19 7.5" strokeWidth="3" />}
+      {kind === 'air' && (
+        <>
+          <circle cx="12" cy="12" r="9" strokeWidth="2" />
+          <circle cx="9" cy="9.5" r="1.4" fill="currentColor" stroke="none" />
+          <circle cx="15" cy="12.5" r="1.4" fill="currentColor" stroke="none" />
+          <circle cx="10.5" cy="16" r="1.4" fill="currentColor" stroke="none" />
+        </>
+      )}
       {kind === 'rock' && (
         <>
           <path d="M3.5 18.5 L6.5 11 L11.5 7.5 L17 9 L20.5 18.5 Z" fill="currentColor" fillOpacity="0.2" />
@@ -306,8 +328,9 @@ const BADGE: Record<NewsTone, string> = {
   info: 'bg-black/35 text-sun shadow-[inset_0_0_0_1px_rgb(242_226_194/0.35)]',
   warn: 'bg-warn text-ink',
   cold: 'bg-frost text-ink',
+  good: 'bg-sun text-ink',
 }
-const TEXT: Record<NewsTone, string> = { info: 'text-sun', warn: 'font-bold text-warn', cold: 'font-bold text-frost' }
+const TEXT: Record<NewsTone, string> = { info: 'text-sun', warn: 'font-bold text-warn', cold: 'font-bold text-frost', good: 'font-bold text-sun' }
 
 /**
  * The rover's news: a drawn badge for what it is about, then the line. Each new line rises in as its blur clears;
