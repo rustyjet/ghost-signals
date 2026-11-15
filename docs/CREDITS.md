@@ -107,3 +107,11 @@ All from Photojournal, credits as Photojournal prints them; full-size files at `
 | `sojourner-blue-sky.webp` | "True Color of Mars – Pathfinder Sol 24" (PIA01547) | NASA/JPL | Axis numbers along the bottom edge cropped off. |
 | `sojourner-mermaid.webp` | "Mosaic of Mermaid Dune", sol 30 (PIA01549) | NASA/JPL | WebP only. |
 | `sojourner-orbit.webp` | "Mars Pathfinder Landing Site and Surroundings", HiRISE, 21 Dec 2006 (PIA09105, unannotated) | NASA/JPL/Univ. of Arizona/USGS | 2400 px square cut from the 4000 px frame, round the lander. |
+
+## Listen for marsquakes (InSight game) photos (downloaded 15 Nov 2026)
+
+| File | What | Credit | Changes |
+|---|---|---|---|
+| `insight-seis-bare.webp` | "SEIS Deployed on Mars": the seismometer just set down, 19 Dec 2018, arm camera (PIA22956) | NASA/JPL-Caltech | WebP only. |
+| `insight-dome-arm.webp` (reused) | The dome over the seismometer, sol 110 (PIA23177) | NASA/JPL-Caltech | See the InSight chapter table. |
+

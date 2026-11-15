@@ -240,6 +240,8 @@ export type NewsKind =
   | 'power' | 'cold' | 'warm' | 'sky' | 'gust' | 'rock' | 'radio' | 'pause'
   // Lift off (Ingenuity)
   | 'rotor' | 'up' | 'high' | 'land' | 'bump' | 'goal' | 'air' | 'hover'
+  // Listen for marsquakes (InSight)
+  | 'quake' | 'dome'
 /** info: plain; warn: act now (orange); cold: the electronics are cooling (frost); good: a goal reached (cream). Always a badge shape too. */
 export type NewsTone = 'info' | 'warn' | 'cold' | 'good'
 export interface News {
@@ -307,6 +309,8 @@ function NewsIcon({ kind, className }: { kind: NewsKind; className?: string }) {
       {kind === 'bump' && <path d="M4 19 H20 M12 8 V14 M6 10.5 L8.5 14.5 M18 10.5 L15.5 14.5" />}
       {kind === 'hover' && <path d="M4 9 H20 M4 15 H20 M12 11.5 V12.5" />}
       {kind === 'goal' && <path d="M5 12.5 L10 17 L19 7.5" strokeWidth="3" />}
+      {kind === 'quake' && <path d="M2.5 12 H6 L8 8 L10.5 16.5 L13 5.5 L15.5 18 L17.5 9.5 L19 12 H21.5" strokeWidth="2.2" />}
+      {kind === 'dome' && <path d="M4 17.5 A8 8 0 0 1 20 17.5 Z M2.5 17.5 H21.5" />}
       {kind === 'air' && (
         <>
           <circle cx="12" cy="12" r="9" strokeWidth="2" />

@@ -6,6 +6,7 @@ import StoryScene from '../components/StoryScene'
 const RoverGame = lazy(() => import('../components/game/rover/RoverGame'))
 import RotorLift from '../components/game/RotorLift'
 import LaserRanging from '../components/game/LaserRanging'
+import Seismometer from '../components/game/Seismometer'
 import { sceneImages } from '../components/story/Backdrop'
 import { rememberChapter } from '../components/journey/Journey'
 import { getChapter } from '../data/chapters'
@@ -48,6 +49,7 @@ export default function Chapter() {
       )}
       {chapter.interaction === 'rotor-lift' && <RotorLift />}
       {chapter.interaction === 'laser-ranging' && <LaserRanging />}
+      {chapter.interaction === 'seismometer' && <Seismometer />}
 
       {chapter.closing && <Closing chapter={chapter} />}
       <Sources chapter={chapter} />
@@ -69,6 +71,7 @@ function Closing({ chapter }: { chapter: ChapterData }) {
 
 /** Pictures a game uses that no story step does. */
 const gamePictures: Partial<Record<NonNullable<ChapterData['interaction']>, { what: string; credit: string }[]>> = {
+  seismometer: [{ what: 'My seismometer, just set down on Mars, 19 December 2018', credit: 'NASA/JPL-Caltech (PIA22956)' }],
   'laser-ranging': [
     { what: 'The Moon in the laser game, with the Apollo landing sites', credit: "NASA's Scientific Visualization Studio, from LRO (SVS 4731)" },
   ],

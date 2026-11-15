@@ -372,3 +372,24 @@ Read by a research agent on 15 Nov 2026, directly on the NASA / NSSDCA pages (jp
 | 12 | HiRISE "took an image on Dec. 21, 2006"; "one can discern the ramps, science deck, and portions of the airbags"; "Sojourner?" "tentatively identified" (kept as "may be me"). Nine years: July 1997 to December 2006 | PIA09105 | Checked (arithmetic ours) |
 
 Traps (Sojourner): it was the first rover on Mars, not the first wheeled vehicle on another world (Lunokhod 1, Moon, 1970). Mass is 10.5 kg (NSSDCA) or 10.6 kg (PATH), height 28 or 30 cm, bounce height 12 or 15 m: the app uses only the 30 cm that PATH gives with the ramp moment. The ramp date is 5 July in Pacific time and 6 July in UT, so the app says "day 2". NASA never confirmed Sojourner was found from orbit.
+
+### Listen for marsquakes (the InSight seismometer game, 15 Nov 2026)
+
+The line, the shapes of the quakes, how big they look and how often they come are game numbers; the screen says so ("The line is drawn for the game, and real marsquakes came far less often."). The game shows three true things: wind shakes a seismometer, the dome keeps the wind off, and Mars is quiet where Earth never stops shaking. Quotes read directly on 15 Nov 2026.
+
+- **SEISPIA** = NASA Photojournal, "SEIS Deployed on Mars" (PIA22956) — https://science.nasa.gov/photojournal/seis-deployed-on-mars
+- **WTS** = NASA Photojournal, "InSight Deploys Its Wind and Thermal Shield" (PIA22959) — https://science.nasa.gov/photojournal/insight-deploys-its-wind-and-thermal-shield/
+- **QUAKE1**, **MONSTER**, **INSEND**: see the InSight sources above.
+
+| Claim | Source | Checked |
+|-------|--------|---------|
+| Wind can shake the seismometer: NASA calls the first marsquake "the first recorded trembling that appears to have come from inside the planet, as opposed to being caused by forces above the surface, such as wind" | QUAKE1 | Checked |
+| The dome keeps the wind off: the Wind and Thermal Shield protects the seismometer "from the planet's extreme temperature changes and high winds"; it went on 2 Feb 2019 (sol 66) over the seismometer set down on 19 Dec 2018 | QUAKE1, WTS | Checked |
+| The two photos: the bare seismometer just set down (PIA22956, "placed its seismometer on Mars on Dec. 19, 2018") and the same spot under the dome (PIA23177, sol 110), both from the arm camera | SEISPIA, PIA23177 caption | Checked |
+| "The Martian surface is extremely quiet, allowing SEIS … to pick up faint rumbles." → "Mars is so quiet that even faint rumbles show" | QUAKE1 | Checked |
+| "Earth's surface is quivering constantly from seismic noise created by oceans and weather." → "Earth's ground never stops shaking, from oceans and weather" | QUAKE1 | Checked |
+| "An event of this size in Southern California would be lost among dozens of tiny crackles that occur every day." → "On Earth a quake that small gets lost among tiny crackles" | QUAKE1 | Checked |
+| First marsquake on 6 April 2019 | QUAKE1 | Checked (same as InSight step 4) |
+| Magnitude 5 on 4 May 2022, "the biggest ever detected on another planet", shaking "for at least six hours" (the game's version lasts seconds and is called "like 4 May 2022", not a recording of it) | MONSTER | Checked |
+| "detected 1,319 marsquakes" | INSEND | Checked |
+

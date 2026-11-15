@@ -198,6 +198,7 @@ export const insight: Chapter = {
       },
     },
   ],
+  interaction: 'seismometer',
   sources: [
     { label: 'NASA Science: InSight mission page', url: 'https://science.nasa.gov/mission/insight/' },
     { label: 'NASA Science: InSight spacecraft', url: 'https://science.nasa.gov/mission/insight/spacecraft/' },
@@ -229,6 +230,7 @@ export const insight: Chapter = {
       label: 'NASA: NASA Retires InSight Mars Lander Mission After Years of Science',
       url: 'https://www.nasa.gov/missions/insight/nasa-retires-insight-mars-lander-mission-after-years-of-science/',
     },
+    { label: 'NASA Photojournal: SEIS Deployed on Mars (PIA22956)', url: 'https://photojournal.jpl.nasa.gov/catalog/PIA22956' },
     { label: 'NASA 3D Resources: InSight Cruise Lander', url: 'https://science.nasa.gov/3d-resources/insight-cruise-lander/' },
   ],
 }
