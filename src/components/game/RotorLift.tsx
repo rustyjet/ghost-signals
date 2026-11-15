@@ -72,6 +72,10 @@ export default function RotorLift() {
   const farRef = useRef<HTMLDivElement>(null)
   const heliRef = useRef<HTMLDivElement>(null)
   const shadowRef = useRef<HTMLDivElement>(null)
+  const castRef = useRef<HTMLDivElement>(null)
+  const contactRef = useRef<HTMLDivElement>(null)
+  const discShadowRef = useRef<HTMLDivElement>(null)
+  const bladeShadowRef = useRef<HTMLDivElement>(null)
   const bandRef = useRef<HTMLDivElement>(null)
   const bandTimeRef = useRef<HTMLSpanElement>(null)
   const bandFillRef = useRef<HTMLDivElement>(null)
@@ -290,11 +294,16 @@ export default function RotorLift() {
         poleMarkRef.current.style.transform = `translate3d(0, ${-s.h * k}px, 0)`
         poleMarkRef.current.style.opacity = s.h > 0.02 ? '1' : '0'
       }
-      if (shadowRef.current) {
-        const sc = 1 / (1 + s.h * 0.35)
-        shadowRef.current.style.transform = `translate(-50%, -50%) scale(${sc})`
-        shadowRef.current.style.opacity = String(0.75 * sc)
+      // The shadow: on the ground, a tight dark contact under the feet. Climbing, the cast shadow slides along the
+      // ground (the Sun is at an angle) and grows softer and fainter. Spinning blades turn the blade line into a disc.
+      if (castRef.current) {
+        castRef.current.style.transform = `translate3d(${s.h * k * 0.45}px, 0, 0)`
+        castRef.current.style.filter = s.h > 0.02 ? `blur(${Math.min(4, s.h * 0.6).toFixed(1)}px)` : ''
+        castRef.current.style.opacity = String(1 / (1 + s.h * 0.07))
       }
+      if (contactRef.current) contactRef.current.style.opacity = String(Math.max(0, 1 - s.h / 0.12))
+      if (discShadowRef.current) discShadowRef.current.style.opacity = String(0.1 + 0.9 * (s.rpm / MAX_RPM))
+      if (bladeShadowRef.current) bladeShadowRef.current.style.opacity = String(1 - Math.min(1, (s.rpm / MAX_RPM) * 1.6))
       if (rpmRef.current) rpmRef.current.textContent = fmt(s.rpm)
       // The button's rotors turn with the real ones (two blades each, turning opposite ways) and blur into a
       // disc as they speed up. Reduced motion: they stay put, only the disc shows the speed.
@@ -452,11 +461,26 @@ export default function RotorLift() {
             </div>
           </div>
 
-          <div
-            ref={shadowRef}
-            className="absolute left-1/2 top-[calc(var(--ground)+var(--k)*0.05)] h-[calc(var(--k)*0.4)] w-[calc(var(--k)*2)] rounded-[50%] bg-black/70 blur-[6px] lg:left-[54%]"
-            style={{ transform: 'translate(-50%, -50%)', opacity: 0.75 }}
-          />
+          {/* The helicopter's shadow, built from its parts: body, blades (a line at rest, a disc when spinning) and,
+              on the ground, a tight contact under the feet */}
+          <div ref={shadowRef} className="absolute left-1/2 top-[calc(var(--ground)+var(--k)*0.05)] h-0 w-0 lg:left-[54%]">
+            <div
+              ref={contactRef}
+              className="absolute left-0 top-0 h-[calc(var(--k)*0.14)] w-[calc(var(--k)*1.75)] -translate-x-1/2 -translate-y-1/2 rounded-[50%] bg-black/75 blur-[1.5px]"
+            />
+            <div ref={castRef} className="absolute left-0 top-0">
+              <div
+                ref={discShadowRef}
+                className="absolute left-0 top-0 h-[calc(var(--k)*0.36)] w-[calc(var(--k)*2.4)] -translate-x-1/2 -translate-y-1/2 rounded-[50%] bg-black/50 blur-[2px]"
+                style={{ opacity: 0.1 }}
+              />
+              <div
+                ref={bladeShadowRef}
+                className="absolute left-0 top-0 h-[3px] w-[calc(var(--k)*2.3)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/45 blur-[0.5px]"
+              />
+              <div className="absolute left-0 top-0 h-[calc(var(--k)*0.24)] w-[calc(var(--k)*0.8)] -translate-x-1/2 -translate-y-1/2 rounded-[45%] bg-black/80 blur-[2px]" />
+            </div>
+          </div>
           <div
             ref={heliRef}
             className="absolute left-1/2 top-[calc(var(--ground)-var(--k)*1.7)] h-[calc(var(--k)*2.4)] w-[calc(var(--k)*3.6)] lg:left-[54%]"
