@@ -6,7 +6,8 @@ import { createDownwash } from './downwash'
 import { addRotorBlur } from './rotorBlur'
 import { news as item, NewsLine, type News } from './LastLightHud'
 import { loadModelViewer } from '../../lib/modelViewer'
-import { gsap, isNarrow, prefersReducedMotion, useGSAP } from '../../scroll/smoothScroll'
+import { isNarrow, prefersReducedMotion } from '../../scroll/smoothScroll'
+import { StageHeading } from './StageHeading'
 
 // "Lift off": spin Ingenuity's blades and hover at 3 metres. Lift grows with air density × speed²
 // (NASA Glenn, the lift equation), so in air 100 times thinner the blades must spin 10 times faster.
@@ -113,7 +114,6 @@ export default function RotorLift() {
   // The heading is the stage you are on: your turn, then the other air, then done
   const stage =
     hovered.length === 0 ? 'Your turn.' : hovered.length === 1 ? `Now ${hovered[0] === 'mars' ? 'Earth' : 'Mars'} air.` : 'You flew it twice.'
-  const riseRef = useRef<HTMLSpanElement>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
   const poleRef = useRef<HTMLDivElement>(null)
   // Wide screens: the heading stops short of the height pole, shrinking just enough if the stage is long
@@ -131,15 +131,6 @@ export default function RotorLift() {
     if (right - left > room && room > 0) h2.style.fontSize = `${(parseFloat(getComputedStyle(h2).fontSize) * room) / (right - left)}px`
   }
   useLayoutEffect(fitHeading, [stage])
-  // It rises into view as the game arrives, scrubbed to the scroll like the story's headings (and back on the way up)
-  useGSAP(() => {
-    if (prefersReducedMotion() || !riseRef.current) return
-    gsap.from(riseRef.current, {
-      yPercent: 110,
-      ease: 'none',
-      scrollTrigger: { trigger: riseRef.current, start: 'top 100%', end: 'top 70%', scrub: 0.5 },
-    })
-  })
 
   function chooseAir(a: Air) {
     if (a === airRef.current) return
@@ -594,22 +585,11 @@ export default function RotorLift() {
       <div ref={hudRef} className="absolute inset-x-0 bottom-0 px-5 pb-6 md:px-10 lg:pb-10">
         <div className="mx-auto grid max-w-6xl gap-4 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-10">
           <div>
-            {/* A new stage rises in word by word out of a mask; reduced motion: it just changes */}
-            <h2 ref={headingRef} className="-mb-[0.12em] overflow-hidden pb-[0.12em] text-[clamp(2rem,9vw,4rem)] [@media(max-height:700px)_and_(max-width:1023px)]:hidden">
-              <span ref={riseRef} className="block">
-                {stage.split(' ').map((word, i) => (
-                  <span key={`${stage}-${i}`} data-word className="-mb-[0.12em] inline-block overflow-hidden pb-[0.12em] align-bottom">
-                    <span
-                      className="inline-block motion-safe:animate-[word-up_700ms_cubic-bezier(0.16,1,0.3,1)_both]"
-                      style={{ animationDelay: `${i * 70}ms` }}
-                    >
-                      {word}
-                    </span>
-                    {i < stage.split(' ').length - 1 && ' '}
-                  </span>
-                ))}
-              </span>
-            </h2>
+            <StageHeading
+              ref={headingRef}
+              text={stage}
+              className="text-[clamp(2rem,9vw,4rem)] [@media(max-height:700px)_and_(max-width:1023px)]:hidden"
+            />
             {/* The same news line as Last Light: a drawn badge for what happened, the line rising in as its blur clears */}
             <div className="mt-2">
               <NewsLine item={news} />

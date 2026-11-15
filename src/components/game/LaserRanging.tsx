@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { isNarrow, prefersReducedMotion } from '../../scroll/smoothScroll'
+import { StageHeading } from './StageHeading'
 
 // "Find the mirrors": fire a laser at the Moon and wait for the light to come back.
 // The picture is NASA SVS's LRO near-side Moon with NASA's own numbered Apollo landing sites; the site
@@ -445,7 +446,11 @@ export default function LaserRanging() {
       </div>
 
       <div ref={hudRef} className="absolute inset-x-0 bottom-0 px-5 pb-6 md:px-10 lg:inset-y-0 lg:right-auto lg:flex lg:w-[min(36rem,36vw)] lg:flex-col lg:justify-end lg:pb-12">
-        <h2 className="text-[clamp(2rem,9vw,5rem)] [@media(max-height:760px)_and_(max-width:1023px)]:hidden">Find the mirrors.</h2>
+        {/* The heading is how the hunt is going */}
+        <StageHeading
+          text={['Find the mirrors.', 'Two more to find.', 'One more to find.', 'All three found.'][found.length] ?? 'All three found.'}
+          className="text-[clamp(2rem,min(9vw,8svh),5rem)] [@media(max-height:760px)_and_(max-width:1023px)]:hidden"
+        />
         <p aria-live="polite" className="mt-2 min-h-[4.2em] max-w-[36ch] text-base leading-snug text-sun sm:text-lg lg:mt-4 lg:text-xl">
           {news}
         </p>
