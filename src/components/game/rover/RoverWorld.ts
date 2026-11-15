@@ -838,7 +838,8 @@ export class RoverWorld {
       pos.set(this.x + Math.sin(this.orbit + 2.4) * r, this.lift + 2.3, this.z + Math.cos(this.orbit + 2.4) * r)
       look.set(this.x, this.lift + 0.75, this.z)
       // Keep the rover clear of the intro words: to their right on wide screens, above them on phones
-      if (this.narrow) look.y -= 1.6
+      // (phones: about a fifth of the way down, as on a short phone the words start a third of the way down)
+      if (this.narrow) look.y -= 2.7
       else {
         const right = new THREE.Vector3().subVectors(look, pos).cross(THREE.Object3D.DEFAULT_UP).normalize()
         look.addScaledVector(right, -2.4)
