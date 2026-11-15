@@ -12,7 +12,7 @@ A scroll-driven web story for ages ~9–14. Scrolling is travelling: the start p
 2. Apollo 11 descent stage + laser retroreflector — laser-ranging toy
 3. Ingenuity — rotor lift toy (Earth air vs. Mars air)
 4. InSight — the seismometer, the stuck mole, the dust + "Listen for marsquakes" seismometer toy (wind, the dome, Mars vs Earth ground)
-5. Sojourner — the first rover on Mars (story chapter on photos only: NASA has no 3D model of it)
+5. Sojourner — the first rover on Mars (story chapter on photos only: NASA has no 3D model of it) + "Plan my drive" toy (plan a day's drive to Yogi on the lander's day 3 photo; the real days 8–10 photo when you park)
 6. Pioneer 10 — only if time remains
 
 ## Rules that must not be broken

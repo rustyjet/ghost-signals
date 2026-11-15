@@ -115,3 +115,9 @@ All from Photojournal, credits as Photojournal prints them; full-size files at `
 | `insight-seis-bare.webp` | "SEIS Deployed on Mars": the seismometer just set down, 19 Dec 2018, arm camera (PIA22956) | NASA/JPL-Caltech | WebP only. |
 | `insight-dome-arm.webp` (reused) | The dome over the seismometer, sol 110 (PIA23177) | NASA/JPL-Caltech | See the InSight chapter table. |
 
+## Plan my drive (Sojourner game) photos (downloaded 15 Nov 2026)
+
+| File | What | Credit | Changes |
+|---|---|---|---|
+| `sojourner-drive-day3.webp` | "Sojourner, 'Barnacle Bill,' & 'Yogi'", sol 3, black and white (PIA00660) | NASA/JPL | The right 8% cut off (outside the colour view), so both photos share one frame: 1028 x 840. WebP. |
+| `sojourner-drive-yogi.webp` | "Area of 360 Degree Color Panorama", sols 8 to 10 (PIA00751) | NASA/JPL | Cut and scaled (x 0.99 from 489, 288) to lie exactly on the sol 3 photo, found by image matching; no other change. WebP. |

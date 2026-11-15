@@ -393,3 +393,36 @@ The line, the shapes of the quakes, how big they look and how often they come ar
 | Magnitude 5 on 4 May 2022, "the biggest ever detected on another planet", shaking "for at least six hours" (the game's version lasts seconds and is called "like 4 May 2022", not a recording of it) | MONSTER | Checked |
 | "detected 1,319 marsquakes" | INSEND | Checked |
 
+
+### Plan my drive (the Sojourner driving game, 15 Nov 2026)
+
+The rover's outline, the drive, its speed, the rock outlines, how much it slips and how long the commands take in the game are game numbers; the screen says "My outline and the drive are drawn for the game", and the delay line says real commands took 10 to 15 minutes. The game shows true things: the rover could not be steered live, a day's commands were planned on the lander's photos, early drives were blind moves stopped by a bumper touch, it counted wheel turns to know where it was, and drivers saw where it really got to only in the end-of-day photos. Quotes read directly on 15 Nov 2026 (the PDS and JPL Robotics files open to automated requests).
+
+- **ICES** = Wilcox & Nguyen (JPL), "Sojourner on Mars and Lessons Learned for Future Planetary Rovers", SAE 981695, hosted by JPL Robotics — https://www-robotics.jpl.nasa.gov/media/documents/ICESpaper.pdf
+- **OPS** = NASA Planetary Data System, rover operations overview (a training page dated 21 Aug 1996, so it describes the plan before landing) — https://planetarydata.jpl.nasa.gov/img/data/mpf/rover/mprv_0001/document/roverdoc/uplkdocs/overview/opsvgs.htm
+- **EVT** = NASA Planetary Data System, "Summary of Rover operations" sol by sol, H. J. Moore, 25 Dec 1997 — https://planetarydata.jpl.nasa.gov/img/data/mpf/rover/mprv_0001/document/rovevent.asc
+- **SOL4** = NASA Planetary Data System, rover sequence planning report, sol 4 — https://planetarydata.jpl.nasa.gov/img/data/mpf/rover/mprv_0001/document/roverdoc/uplklogs/flight/sol04/sol4up.htm
+- **PIA00660** = Photojournal, "Sojourner, 'Barnacle Bill,' & 'Yogi'" — https://science.nasa.gov/photojournal/sojourner-barnacle-bill-and-yogi/
+- **PIA00751** = Photojournal, "Area of 360 Degree Color Panorama" — https://science.nasa.gov/photojournal/area-of-360-degree-color-panorama/
+- **PIA00670** = Photojournal, "Sojourner Does a Wheelie on 'Yogi'" — https://science.nasa.gov/photojournal/sojourner-does-a-wheelie-on-yogi/
+- **NSR**: see the Sojourner sources above.
+
+| Claim | Source | Checked |
+|-------|--------|---------|
+| "You can't steer me live": "the time delay was between 10 and 15 minutes … requiring some autonomous control"; "Due to communications constraints (light time delay, limited bandwidth, infrequent opportunities) … the rover must be capable of autonomous navigation" → "Real commands took 10 to 15 minutes to reach me" | NSR, OPS | Checked |
+| A day's drive sent at once: "the rover carried out its daily traversals autonomously based on sets of driver commands sent from Earth"; "nominally, expect to uplink one rover command sequence per sol" (the plan; the logs show some sols got a second sequence) | ICES, OPS | Checked |
+| Planned by picking spots on the lander's photos: "end-of-sol stereo images captured by the lander cameras"; "the operator specifies the rover destinations by placing the rover 3-D cursor at each waypoint, then clicking the mouse" → "Pick spots on the lander's photo to plan my whole drive" | ICES | Checked |
+| Early drives were blind moves: "most of the traversal commands used during the first 12 sols were low-level commands (i.e. Move, Turn, and Position APXS commands)"; Move uses "only odometry and no hazard avoidance" | ICES | Checked |
+| Bumper: "Bumper contact sensors: Any obstacle which somehow eluded the laser hazard detection system will, in the worst case, trigger the bumper contact sensors, aborting the traverse" → "My bumper touched a rock, so I stopped the drive" | OPS | Checked |
+| "The rover used "dead reckoning" counting wheel turns and using on-board rate sensors [to] estimate position"; "the vehicle's actual positions were not known until examination of the lander stereo images at the end of the sol" → "I only know where I am by counting wheel turns"; "Drivers only saw where I really got to in the lander's photos at the end of the day" | ICES | Checked |
+| "the gyro was drifting to the left while turning" → "My gyro drifted left when I turned" (the game's slip always ends a turn a little to the left; how much is a game number) | ICES | Checked |
+| Driver's note, sol 4: "We should take the time to learn how to drive on Mars." (written by a driver signed AHM; the app names no one) | SOL4 | Checked (real quote) |
+| Day 3 photo: "taken on Sol 3. "Barnacle Bill," the small rock at left, and "Yogi," the large rock at upper right … The lander's rear ramp … is at lower left" | PIA00660 | Checked |
+| Day 3 at Barnacle Bill: "Place APXS on rock (Barnacle Bill)", sol 3 → "Barnacle Bill, the rock I studied first" (its first rock, PIA00634 above) | EVT | Checked |
+| Day 6 at Yogi: "Sojourner has made contact with the rock "Yogi" in this image, taken … on Sol 6. The rover's left rear wheel has driven up onto the Yogi's surface in an attempt to get as close as possible to the rock's surface." → "The real me reached Yogi on day 6, and drove a wheel right up onto it" | PIA00670 | Checked |
+| Day 7: "Get wheel off Yogi"; "Move 0.35 m, turn right 11.0 deg." (behind "Back me off and try again") | EVT | Checked |
+| Yogi hides ground behind it: "a rock taller than rover Sojourner" (the game forbids stops inside Yogi's outline in the photo) | PIA00639 (Sojourner step 6) | Checked |
+| Days 8 to 10 photo: "rover tracks leading up to the large rock "Yogi." Rover Sojourner is seen using its Alpha Proton X-Ray Spectrometer (APXS) instrument to study Yogi's composition … taken … over sols 8, 9, and 10" → "the real me beside Yogi, with my real tracks" | PIA00751 | Checked |
+| The ring is where the rover stands in PIA00751, found by laying that photo over PIA00660 (same lander camera; aligned by image matching, scale 0.99, no rotation) | PIA00660, PIA00751 | Checked (alignment ours) |
+
+Traps (drive game): the top speed differs between sources (NSSDCA/NASA History "0.39 inch per second", about 1 cm/s; ICES "about 0.7 cm/sec"; OPS "~0.4 meter/minute"); the game shows no speed. ICES says "over 500 images" from the rover, the PDS mission page "over 600": the game uses neither.

@@ -259,6 +259,8 @@ export type NewsKind =
   | 'moon' | 'laser' | 'again' | 'none' | 'past'
   // Listen for marsquakes (InSight)
   | 'quake' | 'dome'
+  // Plan my drive (Sojourner)
+  | 'path' | 'sol'
 /** info: plain; warn: act now (orange); cold: the electronics are cooling (frost); good: a goal reached (cream). Always a badge shape too. */
 export type NewsTone = 'info' | 'warn' | 'cold' | 'good'
 export interface News {
@@ -354,6 +356,13 @@ function NewsIcon({ kind, className }: { kind: NewsKind; className?: string }) {
       {kind === 'goal' && <path d="M5 12.5 L10 17 L19 7.5" strokeWidth="3" />}
       {kind === 'quake' && <path d="M2.5 12 H6 L8 8 L10.5 16.5 L13 5.5 L15.5 18 L17.5 9.5 L19 12 H21.5" strokeWidth="2.2" />}
       {kind === 'dome' && <path d="M4 17.5 A8 8 0 0 1 20 17.5 Z M2.5 17.5 H21.5" />}
+      {kind === 'path' && (
+        <>
+          <path d="M4.5 19.5 L9.5 13 L14 15.5 L18.5 7.5" strokeDasharray="0.1 4.2" strokeWidth="2.6" />
+          <circle cx="18.5" cy="6" r="2.4" fill="currentColor" stroke="none" />
+        </>
+      )}
+      {kind === 'sol' && <path d="M2.5 17.5 H21.5 M6.5 17.5 A5.5 5.5 0 0 1 17.5 17.5 M12 5 V7.5 M4.6 9.1 L6.4 10.9 M19.4 9.1 L17.6 10.9" />}
       {kind === 'air' && (
         <>
           <circle cx="12" cy="12" r="9" strokeWidth="2" />

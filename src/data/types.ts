@@ -94,7 +94,7 @@ export interface Step {
   scene: Scene
 }
 
-export type InteractionId = 'dust-storm' | 'laser-ranging' | 'rotor-lift' | 'seismometer'
+export type InteractionId = 'dust-storm' | 'laser-ranging' | 'rotor-lift' | 'seismometer' | 'drive-plan'
 
 export interface Chapter {
   slug: string

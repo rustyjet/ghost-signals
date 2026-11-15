@@ -203,6 +203,7 @@ export const sojourner: Chapter = {
       scene: { kind: 'photo', image: orbit, from: { x: 0, y: 0.09, zoom: 1.5 }, to: { x: 0.317, y: 0.148, zoom: 3 }, narrow: [{ x: 0.467, y: 0.07, zoom: 1.5 }, { x: 0.473, y: 0.16, zoom: 3 }] },
     },
   ],
+  interaction: 'drive-plan',
   sources: [
     { label: 'NASA Science: Mars Pathfinder mission page', url: 'https://science.nasa.gov/mission/mars-pathfinder/' },
     { label: 'NSSDCA: Mars Pathfinder', url: 'https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1996-068A' },
@@ -218,5 +219,12 @@ export const sojourner: Chapter = {
     { label: 'NASA Space Place: The Mars Rovers: Sojourner', url: 'https://spaceplace.nasa.gov/mars-sojourner/en/' },
     { label: 'JPL Robotics: Mars Pathfinder', url: 'https://www-robotics.jpl.nasa.gov/what-we-do/flight-projects/pathfinder/' },
     { label: 'NASA Photojournal: Mars Pathfinder Landing Site and Surroundings (PIA09105)', url: 'https://photojournal.jpl.nasa.gov/catalog/PIA09105' },
+    { label: 'JPL: Sojourner on Mars and Lessons Learned for Future Planetary Rovers (Wilcox and Nguyen)', url: 'https://www-robotics.jpl.nasa.gov/media/documents/ICESpaper.pdf' },
+    { label: 'NASA Planetary Data System: Sojourner operations log, sol by sol (H. J. Moore)', url: 'https://planetarydata.jpl.nasa.gov/img/data/mpf/rover/mprv_0001/document/rovevent.asc' },
+    { label: 'NASA Planetary Data System: rover operations overview', url: 'https://planetarydata.jpl.nasa.gov/img/data/mpf/rover/mprv_0001/document/roverdoc/uplkdocs/overview/opsvgs.htm' },
+    { label: 'NASA Planetary Data System: rover sequence planning report, sol 4', url: 'https://planetarydata.jpl.nasa.gov/img/data/mpf/rover/mprv_0001/document/roverdoc/uplklogs/flight/sol04/sol4up.htm' },
+    { label: 'NASA Photojournal: Sojourner, Barnacle Bill and Yogi, sol 3 (PIA00660)', url: 'https://science.nasa.gov/photojournal/sojourner-barnacle-bill-and-yogi/' },
+    { label: 'NASA Photojournal: Area of 360 Degree Color Panorama, sols 8 to 10 (PIA00751)', url: 'https://science.nasa.gov/photojournal/area-of-360-degree-color-panorama/' },
+    { label: 'NASA Photojournal: Sojourner Does a Wheelie on Yogi, sol 6 (PIA00670)', url: 'https://science.nasa.gov/photojournal/sojourner-does-a-wheelie-on-yogi/' },
   ],
 }
