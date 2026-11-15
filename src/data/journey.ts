@@ -34,6 +34,8 @@ export interface MachinePhoto {
   narrowFocus?: string
   /** 'contain' shows the whole photo on black (for mosaics with black gaps). Default: fill the screen. */
   fit?: 'cover' | 'contain'
+  /** 'contain' on screens under 1024 px only, when filling a tall screen would cut the machine's sides off. */
+  narrowFit?: 'contain'
 }
 
 export interface Stop {
@@ -136,11 +138,13 @@ export const stops: Stop[] = [
         credit: 'NASA, photographed by Neil Armstrong (AS11-40-5927)',
         name: 'Eagle on the Moon, July 1969',
         focus: '50% 40%',
+        narrowFit: 'contain',
       },
     },
     body: 'The half that stayed, from Apollo 11.',
     globes: { earth: { x: -0.08, y: 0.4, s: 0.05, o: 0 }, moon: { x: 0.28, y: 0, s: 1.1, o: 0.4 }, mars: gone },
-    narrow: { moon: { x: 0, y: -0.2, s: 0.9, o: 0.4 } },
+    // Phones show the photo whole, blended with lighten, so a Moon behind it would show through the black sky.
+    narrow: { moon: { x: 0, y: -0.2, s: 0.9, o: 0 } },
   },
   {
     id: 'between',
@@ -231,9 +235,12 @@ export const stops: Stop[] = [
         alt: 'The small six-wheeled Sojourner rover, with a flat solar panel on top, among rocks on Mars.',
         credit: 'NASA/JPL, photographed by the Pathfinder lander (PIA01122)',
         name: 'Sojourner on Mars, 1997',
+        narrowFit: 'contain',
       },
     },
     body: 'The first rover on Mars. Planned for a week, it lasted 83 days.',
     globes: { mars: { x: 0.28, y: 0, s: 1.1, o: 0.4 } },
+    // Shown whole on phones and blended with lighten, so no Mars behind it there (as InSight).
+    narrow: { mars: { x: 0, y: -0.2, s: 0.9, o: 0 } },
   },
 ]

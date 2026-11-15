@@ -300,31 +300,32 @@ export default function Journey() {
         ))}
         {machines.map((m) => {
           const p = m.machine!.photo
-          return p.fit === 'contain' ? (
-            // A photo shown whole is sized to its own shape, its edges feathered and blended with lighten, so it
-            // melts out of the photo before it (its black mosaic corners vanish) instead of cutting a hard frame
-            // across it. Over plain black it looks the same. High on phones, like the other machines; centred wide.
+          // A photo shown whole is sized to its own shape, its edges feathered and blended with lighten, so it
+          // melts out of the photo before it (its black mosaic corners vanish) instead of cutting a hard frame
+          // across it. Over plain black it looks the same. High on phones, like the other machines; centred wide.
+          const whole =
+            'left-1/2 top-[22%] w-[var(--whole-w)] -translate-x-1/2 -translate-y-[22%] [aspect-ratio:var(--ratio)] mix-blend-lighten [mask-composite:intersect] [mask-image:linear-gradient(to_right,transparent,#000_9%,#000_91%,transparent),linear-gradient(to_bottom,transparent,#000_9%,#000_91%,transparent)]'
+          const fit =
+            p.fit === 'contain'
+              ? `${whole} lg:top-1/2 lg:-translate-y-1/2`
+              : p.narrowFit === 'contain'
+                ? // Whole on a tall phone screen, where filling it would cut the machine's sides off; full screen wide.
+                  `${whole} lg:inset-0 lg:h-full lg:w-full lg:translate-x-0 lg:translate-y-0 lg:[aspect-ratio:auto] lg:mix-blend-normal lg:[mask-image:none] lg:[object-position:var(--focus)]`
+                : 'inset-0 h-full w-full [object-position:var(--focus-narrow)] lg:[object-position:var(--focus)]'
+          return (
             <img
               key={m.id}
               data-photo={m.id}
               src={p.src}
               alt=""
               loading="lazy"
-              className="absolute left-1/2 top-[22%] -translate-x-1/2 -translate-y-[22%] object-cover mix-blend-lighten [mask-composite:intersect] [mask-image:linear-gradient(to_right,transparent,#000_9%,#000_91%,transparent),linear-gradient(to_bottom,transparent,#000_9%,#000_91%,transparent)] lg:top-1/2 lg:-translate-y-1/2"
-              style={{ opacity: 0, visibility: 'hidden', width: `min(100%, calc(100svh * ${p.w / p.h}))`, aspectRatio: `${p.w} / ${p.h}` }}
-            />
-          ) : (
-            <img
-              key={m.id}
-              data-photo={m.id}
-              src={p.src}
-              alt=""
-              loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover [object-position:var(--focus-narrow)] lg:[object-position:var(--focus)]"
+              className={`absolute object-cover ${fit}`}
               style={
                 {
                   opacity: 0,
                   visibility: 'hidden',
+                  '--whole-w': `min(100%, calc(100svh * ${p.w / p.h}))`,
+                  '--ratio': `${p.w} / ${p.h}`,
                   '--focus': p.focus ?? '50% 50%',
                   '--focus-narrow': p.narrowFocus ?? p.focus ?? '50% 50%',
                 } as React.CSSProperties
