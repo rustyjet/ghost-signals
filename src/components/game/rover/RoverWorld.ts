@@ -208,6 +208,12 @@ export class RoverWorld {
   private orbit = 0
   private running = false
   private disposed = false
+  // Phones: the open ground between the day counter and the words (screen pixels; x is the share of the
+  // width where the rover should sit). The view slides so the rover rides there on any phone's height.
+  private open: { top: number; bottom: number; x: number } | null = null
+  private shift = new THREE.Vector2()
+  private probe = new THREE.PerspectiveCamera()
+  private probePoint = new THREE.Vector3()
 
   constructor(canvas: HTMLCanvasElement, events: WorldEvents, opts: { reduced: boolean; narrow: boolean }) {
     this.events = events
@@ -431,6 +437,15 @@ export class RoverWorld {
     this.pointer = el
   }
 
+  /** Phones: the part of the screen the words leave open, where the rover should ride. */
+  setOpenSpace(open: { top: number; bottom: number; x: number } | null) {
+    this.open = open
+    if (!this.running) {
+      this.placeInOpen(this.cam, this.camLook, 0, true)
+      this.render()
+    }
+  }
+
   /** Runs or stops the render loop (paused, scrolled away or hidden: nothing draws). */
   setRunning(on: boolean) {
     if (on === this.running || this.disposed) return
@@ -506,6 +521,7 @@ export class RoverWorld {
     this.renderer.setSize(w, h, false)
     this.camera.aspect = w / h
     this.camera.updateProjectionMatrix()
+    this.placeInOpen(this.cam, this.camLook, 0, true)
     const scale = this.renderer.getDrawingBufferSize(new THREE.Vector2()).y / (2 * Math.tan((this.camera.fov * Math.PI) / 360))
     this.air.material.uniforms.uScale.value = scale
     this.puffs.material.uniforms.uScale.value = scale
@@ -817,6 +833,41 @@ export class RoverWorld {
     this.chaseTarget(this.cam, this.camLook)
     this.camera.position.copy(this.cam)
     this.camera.lookAt(this.camLook)
+    this.placeInOpen(this.cam, this.camLook, 0, true)
+  }
+
+  /**
+   * Slides the picture (a view offset, so the camera itself still moves the same) until the rover lands in the
+   * middle of the open ground. Worked out from where the camera is heading, not where it is, so the chase
+   * camera keeps its lag and the slide only moves when the open space changes.
+   */
+  private placeInOpen(pos: THREE.Vector3, look: THREE.Vector3, dt: number, snap = false) {
+    const c = this.renderer.domElement
+    const w = c.clientWidth
+    const h = c.clientHeight
+    if (!this.narrow || !this.open || !w || !h) {
+      this.shift.set(0, 0)
+      if (this.camera.view?.enabled) this.camera.clearViewOffset()
+      return
+    }
+    const p = this.probe
+    if (p.fov !== this.camera.fov || p.aspect !== this.camera.aspect) {
+      p.fov = this.camera.fov
+      p.aspect = this.camera.aspect
+      p.near = this.camera.near
+      p.far = this.camera.far
+      p.updateProjectionMatrix()
+    }
+    p.position.copy(pos)
+    p.lookAt(look)
+    p.updateMatrixWorld()
+    const s = this.probePoint.set(this.x, this.lift + 0.6, this.z).project(p)
+    const tx = (s.x * 0.5 + 0.5) * w - this.open.x * w
+    const ty = (-s.y * 0.5 + 0.5) * h - (this.open.top + this.open.bottom) / 2
+    const k = snap || this.reduced ? 1 : 1 - Math.exp(-4 * dt)
+    this.shift.x += (Math.max(-w * 0.4, Math.min(w * 0.4, tx)) - this.shift.x) * k
+    this.shift.y += (Math.max(-h * 0.45, Math.min(h * 0.45, ty)) - this.shift.y) * k
+    this.camera.setViewOffset(w, h, this.shift.x, this.shift.y, w, h)
   }
 
   private chaseTarget(pos: THREE.Vector3, look: THREE.Vector3) {
@@ -859,6 +910,7 @@ export class RoverWorld {
 
     this.camera.position.copy(this.cam)
     this.camera.lookAt(this.camLook)
+    this.placeInOpen(pos, look, dt)
 
     // Shake: decaying trauma, summed sines (never random buzz), added to the view only
     if (this.trauma > 0) {
@@ -893,10 +945,12 @@ export class RoverWorld {
     const m = Math.max(Math.abs(x) / 0.86, Math.abs(y) / 0.78)
     x /= m
     y /= m
-    // The lower part of the screen belongs to the words and switches
-    y = Math.max(y, this.narrow ? 0.25 : -0.05)
-    // ...and the top belongs to the day counter
-    y = Math.min(y, this.narrow ? 0.58 : 0.66)
+    // The lower part of the screen belongs to the words and switches, and the top to the day counter
+    // (phones: kept inside the open ground the words leave)
+    const h = this.renderer.domElement.clientHeight
+    const lo = this.narrow && this.open && h ? 1 - (2 * (this.open.bottom - 20)) / h : this.narrow ? 0.25 : -0.05
+    const hi = this.narrow && this.open && h ? 1 - (2 * (this.open.top + 20)) / h : this.narrow ? 0.58 : 0.66
+    y = Math.min(Math.max(y, lo), Math.max(lo, hi))
     el.style.opacity = '1'
     el.style.transform = `translate(${(x * 0.5 + 0.5) * 100}cqw, ${(-y * 0.5 + 0.5) * 100}cqh) translate(-50%, -50%) rotate(${angle}rad)`
   }

@@ -486,6 +486,7 @@ export function SentHome({ sent, waiting, radio }: { sent: number; waiting: numb
 export function DayCounter({ sol, total, paused, hidden }: { sol: number; total: number; paused: boolean; hidden: boolean }) {
   return (
     <div
+      data-day-counter=""
       className={`absolute left-5 top-5 text-sun transition-opacity duration-500 md:left-10 lg:top-8 ${hidden ? 'opacity-0' : 'opacity-100'}`}
     >
       <p className="font-display font-extrabold leading-none [text-shadow:0_1px_2px_rgb(0_0_0/0.5)]">

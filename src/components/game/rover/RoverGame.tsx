@@ -50,13 +50,16 @@ function Game({ onFail }: { onFail: () => void }) {
   const [delta, setDelta] = useState<{ sol: number; value: number } | null>(null)
   const [found, setFound] = useState(0) // rocks studied since the last sol
   const [loaded, setLoaded] = useState(false)
-  const [touch] = useState(() => window.matchMedia('(pointer: coarse)').matches)
+  // (?touch in dev: the stick on a desktop, to check the phone layout)
+  const [touch] = useState(() => window.matchMedia('(pointer: coarse)').matches || (import.meta.env.DEV && location.search.includes('touch')))
 
   const rootRef = useRef<HTMLElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const viewRef = useRef<HTMLDivElement>(null)
   const pointerRef = useRef<HTMLDivElement>(null)
   const curtainRef = useRef<HTMLDivElement>(null)
+  const hudRef = useRef<HTMLDivElement>(null)
+  const stickRef = useRef<HTMLDivElement>(null)
   const endingRef = useRef<HTMLHeadingElement>(null)
   const worldRef = useRef<RoverWorld | null>(null)
 
@@ -291,6 +294,31 @@ function Game({ onFail }: { onFail: () => void }) {
     }
   })
 
+  // Phones: tell the world where the open ground is (below the day counter, above the words, left of the
+  // stick), so the rover rides there on short screens as well as tall ones.
+  useEffect(() => {
+    const root = rootRef.current
+    const hud = hudRef.current
+    if (!root || !hud) return
+    const measure = () => {
+      const world = worldRef.current
+      if (!world) return
+      if (!isNarrow()) return world.setOpenSpace(null)
+      const r = root.getBoundingClientRect()
+      const counter = root.querySelector<HTMLElement>('[data-day-counter]')
+      const top = phase === 'intro' || !counter ? r.height * 0.04 : counter.getBoundingClientRect().bottom - r.top + 8
+      const bottom = Math.max(top + 40, hud.getBoundingClientRect().top - r.top - 8)
+      const stickBox = stickRef.current?.getBoundingClientRect()
+      const x = stickBox ? (stickBox.left - r.left) / 2 / r.width : 0.5
+      world.setOpenSpace({ top, bottom, x })
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(root)
+    ro.observe(hud)
+    return () => ro.disconnect()
+  }, [phase, loaded, touch])
+
   const cold = coldShown(state.warmth)
   const lowBattery = state.battery < 20
   const waiting = state.stored + found
@@ -353,20 +381,26 @@ function Game({ onFail }: { onFail: () => void }) {
       {/* The day of the storm, where the story kept its counter */}
       <DayCounter sol={state.sol} total={TOTAL_SOLS} paused={phase === 'paused'} hidden={phase === 'intro'} />
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 px-5 pb-6 md:px-10 lg:pb-10 [&_button]:pointer-events-auto">
+      {/* Short phones (under 700px tall): the words and switches sit closer, so the rover keeps open ground */}
+      <div
+        ref={hudRef}
+        className="pointer-events-none absolute inset-x-0 bottom-0 px-5 pb-6 md:px-10 lg:pb-10 [&_button]:pointer-events-auto [@media(max-height:700px)_and_(max-width:1023px)]:pb-4"
+      >
         <div className="mx-auto max-w-6xl">
           {phase === 'intro' && <Intro ready={loaded} onStart={start} />}
 
           {phase !== 'intro' && (
-            <div className="grid gap-4 sm:gap-5 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-10">
+            <div className="grid gap-4 sm:gap-5 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-10 [@media(max-height:700px)_and_(max-width:1023px)]:gap-3">
               <div className="relative">
                 {phase === 'over' ? (
                   <Ending state={state} headingRef={endingRef} onRetry={start} />
                 ) : (
-                  <NewsLine item={newsItem} />
+                  <NewsLine item={newsItem} className="min-h-[2.8em] [@media(max-height:700px)_and_(max-width:1023px)]:text-[0.875rem]" />
                 )}
 
-                <div className={`mt-4 flex items-end gap-6 sm:gap-12 ${phase === 'over' ? 'hidden' : ''}`}>
+                <div
+                  className={`mt-4 flex items-end gap-6 sm:gap-12 [@media(max-height:700px)_and_(max-width:1023px)]:mt-2.5 ${phase === 'over' ? 'hidden' : ''}`}
+                >
                   <div>
                     <p className="relative inline-block font-display text-[clamp(2.6rem,13vw,5.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em]">
                       <BatteryCell value={state.battery} instantKey={gameKey} />
@@ -381,7 +415,7 @@ function Game({ onFail }: { onFail: () => void }) {
                         </span>
                       )}
                     </p>
-                    <p className="mt-2 text-base text-sun/80">
+                    <p className="mt-2 text-base text-sun/80 [@media(max-height:700px)_and_(max-width:1023px)]:mt-1">
                       battery
                       {lowBattery ? (
                         <span className="font-bold text-warn">, low</span>
@@ -395,7 +429,7 @@ function Game({ onFail }: { onFail: () => void }) {
 
                 {/* The thumb stick rides above the words on the right, over the open ground */}
                 {touch && phase === 'running' && (
-                  <div className="absolute bottom-full right-0 mb-5 lg:right-auto lg:left-0">
+                  <div ref={stickRef} className="absolute bottom-full right-0 mb-5 lg:right-auto lg:left-0 [@media(max-height:700px)_and_(max-width:1023px)]:mb-3">
                     <Stick
                       onChange={(v) => {
                         stick.current = v
@@ -420,7 +454,7 @@ function Game({ onFail }: { onFail: () => void }) {
                     />
                     <Lever label="Radio" icon="radio" cost={COST_RADIO} on={plan.radio} onToggle={() => setPlan((p) => ({ ...p, radio: !p.radio }))} />
                   </div>
-                  <div className="mt-3 flex items-center justify-between gap-4">
+                  <div className="mt-3 flex items-center justify-between gap-4 [@media(max-height:700px)_and_(max-width:1023px)]:mt-2">
                     <p className="text-sm text-sun/75 sm:text-base">
                       Using {spend} a day, up to {spend + COST_DRIVE} driving.
                     </p>
@@ -440,18 +474,18 @@ function Intro({ ready, onStart }: { ready: boolean; onStart: () => void }) {
   return (
     <div className="max-w-[40rem]">
       <h2 className="text-[clamp(3rem,13vw,7rem)]">Your turn.</h2>
-      <p className="mt-4 max-w-[36ch] text-lg leading-snug text-sun lg:text-xl">
+      <p className="mt-4 max-w-[36ch] text-lg leading-snug text-sun lg:text-xl [@media(max-height:700px)_and_(max-width:1023px)]:mt-2 [@media(max-height:700px)_and_(max-width:1023px)]:text-base">
         A dust storm is coming. Drive Opportunity to the marked rocks, study them, and keep it warm and powered for {TOTAL_SOLS} days.
       </p>
-      <p className="mt-3 max-w-[40ch] text-base text-sun/80">
-        Driving, heaters and the radio all use power. Arrow keys or W A S D drive; on a phone, the stick. The game&rsquo;s numbers are
-        simpler than the real rover&rsquo;s.
+      <p className="mt-3 max-w-[40ch] text-base text-sun/80 [@media(max-height:700px)_and_(max-width:1023px)]:mt-2 [@media(max-height:700px)_and_(max-width:1023px)]:text-sm">
+        Driving, heaters and the radio all use power. Arrow keys or W&nbsp;A&nbsp;S&nbsp;D drive; on a phone, the stick. The game&rsquo;s
+        numbers are simpler than the real rover&rsquo;s.
       </p>
       <button
         type="button"
         onClick={onStart}
         disabled={!ready}
-        className="mt-6 min-h-14 rounded-full bg-sun px-7 font-display text-xl font-extrabold text-ink transition-[transform,opacity] duration-150 ease-out hover:bg-sun-bright active:scale-[0.97] disabled:cursor-wait disabled:opacity-60"
+        className="mt-6 min-h-14 [@media(max-height:700px)_and_(max-width:1023px)]:mt-4 [@media(max-height:700px)_and_(max-width:1023px)]:min-h-12 rounded-full bg-sun px-7 font-display text-xl font-extrabold text-ink transition-[transform,opacity] duration-150 ease-out hover:bg-sun-bright active:scale-[0.97] disabled:cursor-wait disabled:opacity-60"
       >
         {ready ? 'Start the storm' : 'Landing the rover'}
       </button>
@@ -464,12 +498,12 @@ function Stick({ onChange }: { onChange: (v: DriveInput | null) => void }) {
   const baseRef = useRef<HTMLDivElement>(null)
   const knobRef = useRef<HTMLDivElement>(null)
   const id = useRef<number | null>(null)
-  const R = 40
-
   function move(e: React.PointerEvent) {
     const base = baseRef.current
     if (!base) return
     const r = base.getBoundingClientRect()
+    // The knob's reach scales with the stick (smaller on short phones)
+    const R = r.width * 0.36
     let dx = e.clientX - (r.left + r.width / 2)
     let dy = e.clientY - (r.top + r.height / 2)
     const d = Math.hypot(dx, dy)
@@ -505,9 +539,9 @@ function Stick({ onChange }: { onChange: (v: DriveInput | null) => void }) {
       onPointerMove={(e) => e.pointerId === id.current && move(e)}
       onPointerUp={end}
       onPointerCancel={end}
-      className="pointer-events-auto relative ml-auto grid h-28 w-28 shrink-0 touch-none select-none place-items-center rounded-full bg-black/35 ring-1 ring-sun/30"
+      className="pointer-events-auto relative ml-auto grid h-28 w-28 shrink-0 touch-none select-none place-items-center rounded-full bg-black/35 ring-1 ring-sun/30 [@media(max-height:700px)_and_(max-width:1023px)]:h-24 [@media(max-height:700px)_and_(max-width:1023px)]:w-24"
     >
-      <div ref={knobRef} className="h-12 w-12 rounded-full bg-sun shadow-[0_4px_10px_rgb(0_0_0/0.45)]" />
+      <div ref={knobRef} className="h-12 w-12 rounded-full [@media(max-height:700px)_and_(max-width:1023px)]:h-10 [@media(max-height:700px)_and_(max-width:1023px)]:w-10 bg-sun shadow-[0_4px_10px_rgb(0_0_0/0.45)]" />
     </div>
   )
 }
