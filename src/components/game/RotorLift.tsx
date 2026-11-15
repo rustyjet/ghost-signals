@@ -73,6 +73,8 @@ export default function RotorLift() {
   const shakeRef = useRef<HTMLDivElement>(null)
   const worldRef = useRef<HTMLDivElement>(null)
   const farRef = useRef<HTMLDivElement>(null)
+  const skyRef = useRef<HTMLDivElement>(null)
+  const glowRef = useRef<HTMLDivElement>(null)
   const heliRef = useRef<HTMLDivElement>(null)
   const shadowRef = useRef<HTMLDivElement>(null)
   const castRef = useRef<HTMLDivElement>(null)
@@ -339,6 +341,9 @@ export default function RotorLift() {
         bandLabel.style.opacity = bandY < hudTop - 16 ? '1' : '0'
       }
       if (farRef.current) farRef.current.style.transform = `translate3d(0, ${cam * 0.2}px, 0)`
+      // The horizon glow stays on the far horizon; the Sun and the high haze are farthest of all
+      if (glowRef.current) glowRef.current.style.transform = `translate3d(0, ${cam * 0.2}px, 0)`
+      if (skyRef.current) skyRef.current.style.transform = `translate3d(0, ${cam * 0.06}px, 0)`
       heli.style.transform = `translate3d(-50%, ${-s.h * k}px, 0)`
       if (poleMarkRef.current) {
         poleMarkRef.current.style.transform = `translate3d(0, ${-s.h * k}px, 0)`
@@ -430,8 +435,31 @@ export default function RotorLift() {
     <section
       ref={rootRef}
       aria-label="Lift off, a helicopter game"
-      className="relative isolate h-[100svh] min-h-[560px] overflow-hidden bg-[linear-gradient(to_bottom,var(--color-mars-sky),var(--color-mars-horizon))]"
+      className="relative isolate h-[100svh] min-h-[560px] overflow-hidden bg-mars-sky"
+      style={{
+        // Deeper overhead, butterscotch in the middle, pale toward the horizon
+        backgroundImage:
+          'linear-gradient(to bottom, color-mix(in oklab, var(--color-mars-sky), #4a2c1a 24%) 0, var(--color-mars-sky) calc(var(--ground) * 0.5), var(--color-mars-horizon) calc(var(--ground) - var(--k) * 1.3))',
+      }}
     >
+      {/* The sky's far layer: a small pale Sun with a soft halo, up and to the left (the shadow falls the other way;
+          wide screens only, phones have no clear corner for it),
+          and faint bands of high dust haze drifting very slowly (still under reduced motion). */}
+      <div ref={skyRef} aria-hidden="true" className="pointer-events-none absolute inset-0 will-change-transform">
+        <div className="absolute left-[17%] top-[11%] hidden lg:block">
+          <div className="absolute left-1/2 top-1/2 h-[min(60vw,34rem)] w-[min(60vw,34rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(255_241_214/0.4),rgb(255_236_200/0.12)_45%,transparent)]" />
+          <div className="relative h-[clamp(1.3rem,2.6vw,2.2rem)] w-[clamp(1.3rem,2.6vw,2.2rem)] translate-x-[-50%] translate-y-[-50%] rounded-full bg-[#fff8ea] shadow-[0_0_14px_5px_rgb(255_244_224/0.7),0_0_40px_14px_rgb(255_236_200/0.35)]" />
+        </div>
+        <div className="absolute left-[-15%] top-[7%] h-[9%] w-[75%] rounded-[50%] bg-[radial-gradient(closest-side,rgb(240_206_160/0.28),transparent)] motion-safe:animate-[haze-drift_80s_ease-in-out_infinite_alternate]" />
+        <div className="absolute left-[40%] top-[17%] h-[7%] w-[70%] rounded-[50%] bg-[radial-gradient(closest-side,rgb(240_206_160/0.22),transparent)] motion-safe:animate-[haze-drift_110s_ease-in-out_-40s_infinite_alternate]" />
+        <div className="absolute left-[5%] top-[28%] h-[6%] w-[60%] rounded-[50%] bg-[radial-gradient(closest-side,rgb(236_200_152/0.18),transparent)] motion-safe:animate-[haze-drift_95s_ease-in-out_-20s_infinite_alternate]" />
+      </div>
+      {/* A soft bright haze just above the far horizon, where the air is thickest along the line of sight */}
+      <div
+        ref={glowRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-[calc(var(--ground)-var(--k)*2.8)] h-[calc(var(--k)*1.6)] bg-[linear-gradient(to_bottom,transparent,rgb(240_212_174/0.5)_70%,rgb(244_220_186/0.75))] will-change-transform"
+      />
       <div ref={shakeRef} aria-hidden="true" className="absolute inset-0">
         {/* Far crater floor: the same NASA photo at a finer scale, in haze. It moves a fifth as fast as the near
             ground, so as the helicopter climbs and the near ground drops away, more distant ground shows behind it. */}

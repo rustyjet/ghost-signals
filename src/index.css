@@ -95,6 +95,12 @@ h3 {
 }
 
 /* A new line of game news */
+/* High dust haze in the Lift off sky, drifting very slowly */
+@keyframes haze-drift {
+  from { transform: translateX(-5%); }
+  to { transform: translateX(5%); }
+}
+
 /* A game heading's words rising out of their masks when the stage changes */
 @keyframes word-up {
   from { transform: translateY(110%); }
