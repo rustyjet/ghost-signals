@@ -117,7 +117,7 @@ All from Photojournal, credits as Photojournal prints them; full-size files at `
 
 ## Demo video sound (downloaded 15 Nov 2026)
 
-Used only in the 30-second demo video (`demo-video/`), not on the site.
+Used only in the demo videos (`demo-video/`: the 30-second pitch and the 3-minute demo), not on the site. The 3-minute demo loops `music-energetic.wav` with crossfades.
 
 | File | What | Credit | Source |
 |---|---|---|---|

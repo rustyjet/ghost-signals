@@ -25,7 +25,7 @@ Ghost Signals is a scrolling story for readers aged about 9 to 14. Scrolling is 
 Each chapter opens and closes on NASA's 3D model of the machine, with real NASA photographs behind every step in between. NASA has no 3D model of Sojourner, so its chapter is told in photographs alone. Every chapter ends with something to do:
 
 - **Last Light** (Opportunity): keep the rover alive through a Mars dust storm by deciding when to run the heaters and the radio.
-- **Lift off** (Ingenuity): spin the rotors and hover at 3 metres, then switch to Earth air and see why Mars's thin air needs blades that spin ten times faster.
+- **Lift off** (Ingenuity): spin the rotors and hover at 3 metres, then switch to Earth air and see why Mars's thin air needs blades that spin about 2,400 times a minute, many times faster than a passenger helicopter's on Earth.
 - **Find the mirrors** (Eagle): fire a laser at the Moon, wait the real 2.5 seconds for the light to come back, and find which Apollo crews left mirrors.
 - **Listen for marsquakes** (InSight): watch the seismometer's line and catch faint marsquakes. The wind hides them until you put the dome over the seismometer. Switch to Earth's ground and the same small quake gets lost in Earth's constant shaking.
 - **Plan my drive** (Sojourner): nobody could steer Sojourner live, because commands took 10 to 15 minutes to reach Mars. You plan its day on the lander's real photo, send the commands, and watch it drive itself towards the rock Yogi, slipping a little and stopping when it bumps a rock. Park where the real rover stood and the lander's later colour photo appears, with the real rover and its real tracks in the same spot.
@@ -68,4 +68,5 @@ Vite, React, TypeScript, Tailwind CSS, GSAP ScrollTrigger and SplitText, Google'
 
 - Live site: https://rustyjet.github.io/ghost-signals/
 - Source code: https://github.com/rustyjet/ghost-signals
+- 3-minute demo video: [link]. Every chapter and all five games, with captions and music (no voice). Rendered from `demo-video/remotion` (composition `GhostSignalsLong`); site footage captured from the built site by `demo-video/capture/`.
 - Project demo (required): [link to the video or slide deck]. Either a video of 30 seconds or less, or a slide deck of up to seven slides including the title. Hosted on YouTube, Google Drive, GitHub or similar, publicly viewable with no login. Include the team name, team members, the challenge, and how NASA data made the project possible. Slide decks must be in English; a video in another language needs English subtitles. No images, video or audio of anyone under 18.
