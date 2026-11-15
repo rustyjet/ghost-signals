@@ -23,6 +23,17 @@ type ModelScene = { getObjectByName(name: string): { rotateX(a: number): void } 
 
 const fmt = (n: number) => Math.round(n).toLocaleString('en-GB')
 const AIRS: Air[] = ['mars', 'earth']
+// The blade speed that just lifts it: lift grows with density × speed², so thicker air needs less speed.
+const liftRpm = (a: Air) => MARS_RPM / Math.sqrt(DENSITY[a])
+
+type Motion = 'ground' | 'up' | 'hover' | 'down' | 'fast'
+const MOTION: Record<Motion, { d: string; word: string }> = {
+  ground: { d: 'M4 18 H20 M8 14 V18 M16 14 V18', word: 'On the ground' },
+  up: { d: 'M12 19 V6 M6.5 11.5 L12 6 L17.5 11.5', word: 'Going up' },
+  hover: { d: 'M5 9.5 H19 M5 14.5 H19', word: 'Hovering' },
+  down: { d: 'M12 5 V18 M6.5 12.5 L12 18 L17.5 12.5', word: 'Coming down' },
+  fast: { d: 'M12 4 V19 M5.5 12.5 L12 19 L18.5 12.5', word: 'Falling fast' },
+}
 
 // Air drawn as dots in a circle: a few for thin Mars air, packed for Earth air (a picture, not to scale).
 const DOTS: Record<Air, [number, number][]> = {
@@ -64,6 +75,10 @@ export default function RotorLift() {
   const bandTimeRef = useRef<HTMLSpanElement>(null)
   const rpmRef = useRef<HTMLSpanElement>(null)
   const altRef = useRef<HTMLSpanElement>(null)
+  const rpmFillRef = useRef<HTMLSpanElement>(null)
+  const motionRef = useRef<HTMLSpanElement>(null)
+  const motionPathRef = useRef<SVGPathElement>(null)
+  const motionWordRef = useRef<HTMLSpanElement>(null)
   const holdRef = useRef<HTMLButtonElement>(null)
   const bladeTopRef = useRef<SVGSVGElement>(null)
   const bladeLowRef = useRef<SVGSVGElement>(null)
@@ -77,6 +92,8 @@ export default function RotorLift() {
   const airRef = useRef<Air>(air)
   airRef.current = air
   const sim = useRef({ rpm: 0, h: 0, v: 0, inBand: 0, airborne: false, liftRpm: 0, said: new Set<string>() })
+
+  const liftPct = (liftRpm(air) / MAX_RPM) * 100
 
   function chooseAir(a: Air) {
     if (a === airRef.current) return
@@ -105,6 +122,7 @@ export default function RotorLift() {
     let trauma = 0
     let t = 0
     let bladeAngle = 0
+    let motion: Motion = 'ground'
     let rotors: ReturnType<ModelScene['getObjectByName']>[] = []
     let scene: ModelScene | null = null
 
@@ -231,7 +249,24 @@ export default function RotorLift() {
       if (bladeTopRef.current) bladeTopRef.current.style.opacity = bladeAlpha
       if (bladeLowRef.current) bladeLowRef.current.style.opacity = String(0.6 * (1 - 0.75 * spin))
       if (blurDiscRef.current) blurDiscRef.current.style.opacity = String(Math.min(1, spin * 1.2))
-      if (altRef.current) altRef.current.textContent = `${Math.max(0, s.h).toFixed(1)} m`
+      if (altRef.current) altRef.current.textContent = Math.max(0, s.h).toFixed(1)
+      if (rpmFillRef.current) {
+        rpmFillRef.current.style.transform = `scaleX(${s.rpm / MAX_RPM})`
+        rpmFillRef.current.dataset.over = String(s.rpm >= liftRpm(airRef.current))
+      }
+      // What it is doing, with a little stickiness so the word does not flicker at the edges
+      const v = s.v
+      const was = motion
+      if (!s.airborne) motion = 'ground'
+      else if (v < HARD_LANDING * 0.75) motion = 'fast'
+      else if (v > (was === 'up' ? 0.1 : 0.2)) motion = 'up'
+      else if (v < (was === 'down' || was === 'fast' ? -0.1 : -0.2)) motion = 'down'
+      else motion = 'hover'
+      if (motion !== was && motionRef.current) {
+        motionRef.current.dataset.motion = motion
+        motionPathRef.current?.setAttribute('d', MOTION[motion].d)
+        if (motionWordRef.current) motionWordRef.current.textContent = MOTION[motion].word
+      }
 
       // Downwash kicks up dust near the ground.
       stormRef.current = (s.rpm / MAX_RPM) * Math.max(0, 1 - s.h / 2) * (airRef.current === 'mars' ? 1 : 0.5)
@@ -368,18 +403,48 @@ export default function RotorLift() {
             <p aria-live="polite" className="mt-2 min-h-[2.8em] max-w-[36ch] text-base leading-snug text-sun sm:text-lg lg:text-xl">
               {news}
             </p>
-            <div className="mt-3 flex items-end gap-8 sm:gap-12">
-              <p>
+            {/* The speed carries a track with a lift-off mark for the air you are in (it slides when the air changes);
+                the fill brightens once it passes. The height says what the helicopter is doing, and warns in orange
+                (with the words) when it is coming down fast enough for a hard landing. */}
+            <div className="mt-3 flex items-start gap-5 min-[380px]:gap-8 sm:gap-12">
+              <p className="w-[clamp(6.25rem,30vw,12rem)] shrink-0">
                 <span ref={rpmRef} className="block whitespace-nowrap font-display text-[clamp(2.2rem,10vw,4.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums">
                   0
                 </span>
-                <span className="mt-2 block text-base text-sun/80">turns a minute</span>
+                <span className="mt-2 block whitespace-nowrap text-base text-sun/80">turns a minute</span>
+                <span aria-hidden="true" className="relative mt-2.5 block h-1.5 rounded-full bg-sun/20">
+                  <span
+                    ref={rpmFillRef}
+                    data-over="false"
+                    className="absolute inset-0 origin-left rounded-full bg-sun/60 transition-colors duration-200 data-[over=true]:bg-sun-bright"
+                    style={{ transform: 'scaleX(0)' }}
+                  />
+                  <span
+                    className="absolute -inset-y-1.5 w-[3px] -translate-x-1/2 rounded-full bg-sun-bright shadow-[0_0_0_2px_rgb(36_24_18/0.8)] transition-[left] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none"
+                    style={{ left: `${liftPct}%` }}
+                  />
+                </span>
+                <span aria-hidden="true" className="relative mt-1.5 block h-5">
+                  <span
+                    className="absolute top-0 whitespace-nowrap text-sm text-sun/80 transition-[left,transform] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none"
+                    style={{ left: `${liftPct}%`, transform: liftPct > 50 ? 'translateX(calc(-100% + 2px))' : 'translateX(-2px)' }}
+                  >
+                    lift-off
+                  </span>
+                </span>
               </p>
               <p>
-                <span ref={altRef} className="block whitespace-nowrap font-display text-[clamp(2.2rem,10vw,4.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums">
-                  0.0 m
+                <span className="block whitespace-nowrap font-display text-[clamp(2.2rem,10vw,4.5rem)] font-extrabold leading-[0.85] tracking-[-0.03em] tabular-nums">
+                  <span ref={altRef}>0.0</span>
+                  <span className="ml-[0.08em] text-[0.42em] font-bold tracking-normal">m</span>
                 </span>
                 <span className="mt-2 block text-base text-sun/80">off the ground</span>
+                <span ref={motionRef} data-motion="ground" className="mt-2 flex items-center gap-1.5 whitespace-nowrap text-sm text-sun/80 data-[motion=fast]:font-bold data-[motion=fast]:text-warn">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 shrink-0">
+                    <path ref={motionPathRef} d={MOTION.ground.d} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <span ref={motionWordRef}>{MOTION.ground.word}</span>
+                </span>
               </p>
             </div>
           </div>
